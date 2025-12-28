@@ -1,20 +1,28 @@
-from __future__ import annotations
-
 from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+import logging
 
-from analysis.runner import run_analysis
+from analysis.runner import run_analysis ### runner.py
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Definimos la app
-app = FastAPI(title="TFG - Analizador Estático (Backend)")
+app = FastAPI(
+    title="TFG - Analizador Estático (Backend)",
+    description="API para análisis estático de código", 
+    version="0.1.0"
+    )
 
 # Modelo/Plantilla de la solicitud
 class AnalyzeRequest(BaseModel):
     language: str
     code: str
     options: Optional[Dict[str, Any]] = None  # Campo para flags del analizador
+
+######### CORS (o proxy en vite)
 
 #----------------------------ENDPOINTS----------------------------
 
@@ -28,6 +36,8 @@ def health() -> Dict[str, str]:
 @app.post("/analyze")
 def analyze(request: AnalyzeRequest) -> Dict[str, Any]:
 
+    logger.info(f"Petición recibida para lenguaje: {request.language}")
+    
     # Validaciones
     if not request.code or not request.code.strip():
         raise HTTPException(status_code=400, detail="El campo 'code' está vacío.")
@@ -46,4 +56,5 @@ def analyze(request: AnalyzeRequest) -> Dict[str, Any]:
             detail=str(result["error"].get("message", "Error desconocido")),
         )
 
+    logger.info("Ánalisis completado con exito")
     return result
