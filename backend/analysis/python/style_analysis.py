@@ -14,11 +14,12 @@ def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_s
     # y salida JSON con --output-format json.
     cmd = _build_ruff_command(options)
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(prefix="static_code_analysis") as tmpdir:
         completed = subprocess.run(
             cmd,
             input=code,
             text=True,
+            capture_output=True,
             cwd=tmpdir,
             timeout=timeout_seconds,
         )
@@ -52,11 +53,9 @@ def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_s
 
 
 def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
-    
-    return
+    return ["ruff", "check", "--output-format", "json", "--stdin-filename", "input.py", "-"]
 
 
 def _normalize_ruff_issue(item: Dict[str, Any]) -> Dict[str, Any]:
-   return
-
-
+    
+    return item
