@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 from typing import Any, Dict, List, Optional
 
+
 def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10) -> List[Dict[str, Any]]:
     """
     Ejecuta la herramienta Ruff sobre el código del usuario 'code' sin ejecutarlo.
@@ -33,7 +34,7 @@ def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_s
 
     raw = (result.stdout or "").strip()
     if not raw:
-        return [] # No hay issues
+        return []  # No hay issues
 
     # Parseamos el JSON a estructura de Python
     try:
@@ -47,7 +48,9 @@ def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_s
     issues: List[Dict[str, Any]] = []
     for item in data:
         if isinstance(item, dict):
-            issues.append(_normalize_ruff_issue(item)) # Annadimos a la lista cada issue normalizado
+            issues.append(
+                _normalize_ruff_issue(item)
+            )  # Annadimos a la lista cada issue normalizado
 
     return issues
 
@@ -57,12 +60,14 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     Construye el comando de Ruff, aplicando opciones de entrada.
     """
     cmd = [
-        "ruff", # Herramienta empleada
-        "check", # Modo lint
-        "--isolated", # Ignora cualquier config externa
-        "--no-cache", # Evita cache (para que el análisis depende solo del código actual)
-        "--output-format", "json", # Formato de salida JSON
-        "--stdin-filename", "input.py", # Archivo ficticio para tratar el código como .py
+        "ruff",  # Herramienta empleada
+        "check",  # Modo lint
+        "--isolated",  # Ignora cualquier config externa
+        "--no-cache",  # Evita cache (para que el análisis depende solo del código actual)
+        "--output-format",
+        "json",  # Formato de salida JSON
+        "--stdin-filename",
+        "input.py",  # Archivo ficticio para tratar el código como .py
     ]
 
     # Opciones para filtrar reglas de Ruff
@@ -79,13 +84,26 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
         cmd += ["--extend-select", ",".join(extend_select)]
 
     # Leer desde stdin
-    cmd.append("-") 
+    cmd.append("-")
     return cmd
 
 
 def _normalize_ruff_issue(item: Dict[str, Any]) -> Dict[str, Any]:
-    
+
     return item
 
+
 def _is_str_list(value: Any) -> bool:
-    return value
+    """
+    Comprueba si el valor es una lista de strings
+    """
+    if not isinstance(value, list):
+        return False
+
+    for x in value:
+        if not isinstance(x, str):
+            return False
+        if x.strip() == "":  # Vacío o solo espacios
+            return False
+        
+    return True
