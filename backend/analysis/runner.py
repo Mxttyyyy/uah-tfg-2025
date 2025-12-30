@@ -25,6 +25,7 @@ def run_analysis(language: str, code: str, options: Optional[Dict[str, Any]] = N
     if not isinstance(timeout_seconds, int) or timeout_seconds <= 0:
         timeout_seconds = 10
 
+    # Ejecutamos el análisis
     try:
         style_issues = analyze_style(
             code=code, options=style_options, timeout_seconds=timeout_seconds
