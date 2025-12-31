@@ -151,7 +151,7 @@ def _severity_from_rule_code(rule_code: str) -> str:
 
 def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
     """
-    Pequeño diccionario de sugerencias típicas.
+    Devuelve una sugerencia a partir del código de regla de Ruff.
     """
     # Sugerencias específicas para las reglas más comunes
     tips = {
