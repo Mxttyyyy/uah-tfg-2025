@@ -4,9 +4,11 @@ import tempfile
 from typing import Any, Dict, List, Optional
 
 
-def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10) -> List[Dict[str, Any]]:
+def analyze_style(
+    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10
+) -> List[Dict[str, Any]]:
     """
-    Ejecuta la herramienta Ruff sobre el código del usuario 'code' sin ejecutarlo.
+    Ejecuta la herramienta Ruff sobre el código del usuario 'code'.
     Devuelve una lista de issues normalizados.
     """
     options = options or {}
@@ -28,6 +30,9 @@ def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_s
     # - exit code 0: sin issues
     # - exit code 1: con issues
     # - exit code 2: error de ejecución/config/CLI
+    # - stdout: salida normal de Ruff (en nuestro caso, el JSON de las issues)
+    # - stderr: mensajes de error/advertencias de Ruff
+
     if result.returncode == 2:
         stderr = (result.stderr or "").strip()
         raise RuntimeError(stderr or "Ruff falló con un error (exit code 2).")
@@ -46,11 +51,9 @@ def analyze_style(code: str, options: Optional[Dict[str, Any]] = None, timeout_s
         raise RuntimeError("Formato inesperado: Ruff no devolvió una lista JSON.")
 
     issues: List[Dict[str, Any]] = []
-    for item in data:
-        if isinstance(item, dict):
-            issues.append(
-                _normalize_ruff_issue(item)
-            )  # Annadimos a la lista cada issue normalizado
+    for issue in data:
+        if isinstance(issue, dict):
+            issues.append(_normalize_ruff_issue(issue))  # Annadimos a la lista cada issue normalizado
 
     return issues
 
@@ -88,23 +91,23 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     return cmd
 
 
-def _normalize_ruff_issue(item: Dict[str, Any]) -> Dict[str, Any]:
+def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normaliza el issue a un formato base.
     Eliminamos campos que el usuario no necesita (como cell, fix, url, etc.)
     """
-    rule_code = str(item.get("code") or "")
-    message = str(item.get("message") or "").strip()
+    rule_code = str(issue.get("code") or "")
+    message = str(issue.get("message") or "").strip()
 
-    #filename = str(item.get("filename") or "input.py")
-    location = item.get("location") if isinstance(item.get("location"), dict) else {}
+    # filename = str(issue.get("filename") or "input.py")
+    location = issue.get("location") if isinstance(issue.get("location"), dict) else {}
     line = _to_int(location.get("row"))
     column = _to_int(location.get("column"))
 
     suggestion = _suggestion_for_rule_code(rule_code, message)
     severity = _severity_from_rule_code(rule_code)
 
-    help_url = item.get("url")
+    help_url = issue.get("url")
 
     return {
         "tool": "ruff",
@@ -112,7 +115,7 @@ def _normalize_ruff_issue(item: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        #"path": filename,
+        # "path": filename,
         "line": line,
         "column": column,
         "suggestion": suggestion,
@@ -129,13 +132,14 @@ def _severity_from_rule_code(rule_code: str) -> str:
     """
     if not rule_code:
         return "warning"
-    
+
     # Reglas que suelen indicar fallo real (en runtime o por sintaxis) (ampliable)
     error_codes = {
         "E999",  # syntax-error
         "F821",  # undefined-name -> NameError
         "F823",  # undefined-local -> UnboundLocalError
         "F701",  # break-outside-loop -> SyntaxError
+        "F702",  # continue-outside-loop -> SyntaxError
         "F706",  # return-outside-function -> SyntaxError
     }
 
@@ -158,7 +162,7 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
         # Pyflakes (F)
         "F401": "Elimina el import si no se usa, o úsalo.",
         "F841": "Elimina la variable sin uso o úsala. Si es intencional, nómbrala con '_' (por ejemplo: _x).",
-        "F811": "Has redefinido un nombre que estaba sin usar. Renombra una de las variables o elimina la redefinición.",
+        "F811": "Has redefinido un nombre (ya estaba definido). Renombra una de las variables o elimina la redefinición.",
         "F821": "Estás usando un nombre no definido. Revisa si falta un import, una definición o hay un typo.",
         "F823": "Variable local usada antes de asignarse. Asegúrate de asignarla antes de usarla.",
 
@@ -177,8 +181,8 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
     }
     if rule_code in tips:
         return tips[rule_code]
-    
-    # Sugerencias genéricas según la familia/prefijo de la regla 
+
+    # Sugerencias genéricas según la familia/prefijo de la regla
     prefix = rule_code[:1] if rule_code else ""
     if prefix == "F":
         return "Revisa variables/imports; suele indicar problemas de uso (p. ej., imports o nombres no definidos)."
@@ -193,6 +197,7 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
 
     if message:
         return "Revisa este aviso y ajusta el código según la recomendación."
+
     return "Revisa este aviso."
 
 
