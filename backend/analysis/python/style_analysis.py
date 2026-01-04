@@ -160,7 +160,7 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
     # Sugerencias específicas para las reglas más comunes
     tips = {
         # Pyflakes (F)
-        "F401": "Elimina el import si no se usa, o úsalo.",
+        "F401": "Elimina el import si no se usa.",
         "F841": "Elimina la variable sin uso o úsala. Si es intencional, nómbrala con '_' (por ejemplo: _x).",
         "F811": "Has redefinido un nombre (ya estaba definido). Renombra una de las variables o elimina la redefinición.",
         "F821": "Estás usando un nombre no definido. Revisa si falta un import, una definición o hay un typo.",

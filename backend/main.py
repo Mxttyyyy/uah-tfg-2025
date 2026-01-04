@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import logging
 
@@ -53,10 +54,8 @@ def analyze(request: AnalyzeRequest) -> Dict[str, Any]:
 
     # Comprobamos si hay un error
     if "error" in result and isinstance(result["error"], dict):
-        raise HTTPException(
-            status_code=int(result["error"].get("http_status", 500)),
-            detail=str(result["error"].get("message", "Error desconocido")),
-        )
+        status = int(result["error"].get("http_status", 500))
+        return JSONResponse(status_code=status, content=result)
 
     logger.info("Ánalisis completado con exito")
     return result
