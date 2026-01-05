@@ -17,14 +17,17 @@ def analyze_style(
     cmd = _build_ruff_command(options)
 
     with tempfile.TemporaryDirectory(prefix="static_code_analysis") as tmpdir:
-        result = subprocess.run(
-            cmd,
-            input=code,
-            text=True,
-            capture_output=True,
-            cwd=tmpdir,
-            timeout=timeout_seconds,
-        )
+        try:
+            result = subprocess.run(
+                cmd,
+                input=code,
+                text=True,
+                capture_output=True,
+                cwd=tmpdir,
+                timeout=timeout_seconds,
+            )
+        except FileNotFoundError as exc:
+            raise RuntimeError("Bandit no está instalado o no se encuentra en el PATH.") from exc
 
     # Ruff devuelve:
     # - exit code 0: sin issues
