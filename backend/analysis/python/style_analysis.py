@@ -76,9 +76,9 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     # Opciones para filtrar reglas de Ruff
     select = options.get("select")
     ignore = options.get("ignore")
-    extend_select = options.get("extend_select") or options.get("extend-select")
+    extend_select = options.get("extend-select")
 
-    # Annadimos flags solo si las opciones son listas de strings válidas ["F401", "E501", etc]
+    # Annadimos flags solo si las opciones son listas de strings válidas (ej. ["F401", "E501"])
     if _is_str_list(select):
         cmd += ["--select", ",".join(select)]
     if _is_str_list(ignore):

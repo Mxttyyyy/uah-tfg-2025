@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 from typing import Any, Dict, List, Optional
 
+
 def analyze_security(
     code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10
 ) -> List[Dict[str, Any]]:
@@ -26,8 +27,9 @@ def analyze_security(
                 timeout=timeout_seconds,
             )
         except FileNotFoundError as exc:
-            raise RuntimeError("Bandit no está instalado o no se encuentra en el PATH.") from exc
-        
+            raise RuntimeError(
+                "Bandit no está instalado o no se encuentra en el PATH."
+            ) from exc
 
     # Bandit devuelve:
     # - exit code 0: sin issues
@@ -42,7 +44,7 @@ def analyze_security(
 
     raw = (result.stdout or "").strip()
     if not raw:
-        return []  # No hay issues
+        return []  # No hay salida procesable de Bandit
 
     # Parseamos el JSON a estructura de Python
     try:
@@ -50,13 +52,14 @@ def analyze_security(
     except json.JSONDecodeError as exc:
         raise RuntimeError(f"No se pudo parsear JSON de Bandit: {exc}") from exc
 
-    # Bandit devuelve un objeto JSON (dict) que contiene la lista de issues en "results"
+    # Verificamos que Bandit devuelve un objeto JSON (dict) y que este contiene la lista de issues en "results"
     if not isinstance(data, dict):
         raise RuntimeError("Formato inesperado: Bandit no devolvió una objeto JSON.")
 
+    # Validamos que exista la lista de issues
     results = data.get("results")
     if not isinstance(results, list):
-        return []
+        return []  # No hay issues
 
     issues: List[Dict[str, Any]] = []
     for issue in results:
@@ -65,40 +68,51 @@ def analyze_security(
 
     return issues
 
-def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
+
+def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
     """
-    Construye el comando de Ruff, aplicando opciones de entrada.
+    Construye el comando de Bandit, aplicando opciones de entrada.
+
+    Opciones permitidas:
+    - severity_level: all|low|medium|high
+    - confidence_level: all|low|medium|high
+    - skip: lista de IDs (ej. ["B101","B603"])
+    - tests: lista de IDs (ej. ["B101","B301"])
+
     """
     cmd = [
-        "ruff",  # Herramienta empleada
-        "check",  # Modo lint
-        "--isolated",  # Ignora cualquier config externa
-        "--no-cache",  # Evita cache (para que el análisis depende solo del código actual)
-        "--output-format",
-        "json",  # Formato de salida JSON
-        "--stdin-filename",
-        "input.py",  # Archivo ficticio para tratar el código como .py
+        "bandit",  # Herramienta empleada
+        "-f", "json", # Formato de salida JSON
+        "-n", # Número de líneas de código adyacentes al issue detectado (contexto)
+        "0", # No se incluye ninguna línea de código, solo la referencia al problema
     ]
 
-    # Opciones para filtrar reglas de Ruff
-    select = options.get("select")
-    ignore = options.get("ignore")
-    extend_select = options.get("extend_select") or options.get("extend-select")
+    # Nivel mínimo de severidad que deben tener las vulnerabilidades para ser reportadas
+    severity = options.get("severity-level")
+    if isinstance(severity, str) and severity.lower() in {"all", "low", "medium", "high"}:
+        cmd.append(f"--severity-level={severity.lower()}") # Bandit solo acepta valores en minúsculas
 
-    # Annadimos flags solo si las opciones son listas de strings válidas ["F401", "E501", etc]
-    if _is_str_list(select):
-        cmd += ["--select", ",".join(select)]
-    if _is_str_list(ignore):
-        cmd += ["--ignore", ",".join(ignore)]
-    if _is_str_list(extend_select):
-        cmd += ["--extend-select", ",".join(extend_select)]
+    # Nivel mínimo de confianza que Bandit asgina a una vulnerabilidad
+    confidence = options.get("confidence-level")
+    if isinstance(confidence, str) and confidence.lower() in {"all", "low", "medium", "high"}:
+        cmd.append(f"--confidence-level={confidence.lower()}")
+
+    # Reglas de seguridad que se deben ignorar
+    skip = options.get("skip")
+    if _is_str_list(skip):
+        cmd += ["--skip", ",".join(skip)]
+
+    # Reglas de seguridad que se deben ejecutar
+    tests = options.get("tests")
+    if _is_str_list(tests):
+        cmd += ["--tests", ",".join(tests)]
 
     # Leer desde stdin
     cmd.append("-")
     return cmd
 
 
-def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
+def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normaliza el issue a un formato base.
     Eliminamos campos que el usuario no necesita (como cell, fix, url, etc.)
@@ -194,7 +208,9 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
     if prefix == "F":
         return "Revisa variables/imports; suele indicar problemas de uso (p. ej., imports o nombres no definidos)."
     if prefix in ("E", "W"):
-        return "Ajusta estilo/formato; revisa el mensaje y aplica la corrección sugerida."
+        return (
+            "Ajusta estilo/formato; revisa el mensaje y aplica la corrección sugerida."
+        )
     if prefix == "I":
         return "Reordena los imports y mantén un orden consistente."
     if prefix == "N":
