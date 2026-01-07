@@ -78,19 +78,18 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
     - confidence_level: all|low|medium|high
     - skip: lista de IDs (ej. ["B101","B603"])
     - tests: lista de IDs (ej. ["B101","B301"])
-
     """
     cmd = [
         "bandit",  # Herramienta empleada
-        "-f", "json", # Formato de salida JSON
-        "-n", # Número de líneas de código adyacentes al issue detectado (contexto)
-        "0", # No se incluye ninguna línea de código, solo la referencia al problema
+        "-f","json",  # Formato de salida JSON
+        "-n",  # Número de líneas de código adyacentes al issue detectado (contexto)
+        "0",  # No se incluye ninguna línea de código, solo la referencia al problema
     ]
 
     # Nivel mínimo de severidad que deben tener las vulnerabilidades para ser reportadas
     severity = options.get("severity-level")
     if isinstance(severity, str) and severity.lower() in {"all", "low", "medium", "high"}:
-        cmd.append(f"--severity-level={severity.lower()}") # Bandit solo acepta valores en minúsculas
+        cmd.append(f"--severity-level={severity.lower()}")  # Bandit solo acepta valores en minúsculas
 
     # Nivel mínimo de confianza que Bandit asgina a una vulnerabilidad
     confidence = options.get("confidence-level")
@@ -115,113 +114,76 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
 def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normaliza el issue a un formato base.
-    Eliminamos campos que el usuario no necesita (como cell, fix, url, etc.)
+    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
     """
-    rule_code = str(issue.get("code") or "")
-    message = str(issue.get("message") or "").strip()
-
+    rule_code = str(issue.get("test_id") or "")
+    message = str(issue.get("issue_text") or "").strip()
     # filename = str(issue.get("filename") or "input.py")
-    location = issue.get("location") if isinstance(issue.get("location"), dict) else {}
-    line = _to_int(location.get("row"))
-    column = _to_int(location.get("column"))
+    line = _to_int(issue.get("line_number"))
 
-    suggestion = _suggestion_for_rule_code(rule_code, message)
-    severity = _severity_from_rule_code(rule_code)
+    bandit_sev = str(issue.get("issue_severity") or "").upper()
+    severity = _severity_from_bandit(bandit_sev)
 
-    help_url = issue.get("url")
+    confidence = str(issue.get("issue_confidence") or "").upper()
+    if confidence not in {"LOW", "MEDIUM", "HIGH"}:
+        confidence = None
+
+    # Enlace opcional a documentación adicional sobre la vulnerabilidad
+    help_url = issue.get("more_info")
+    if not isinstance(help_url, str) or not help_url.strip():
+        help_url = None
+
+    suggestion = _suggestion_for_bandit_rule(rule_code, message)
 
     return {
-        "tool": "ruff",
-        "category": "style",
+        "tool": "bandit",
+        "category": "security",
         "code": rule_code,
         "message": message,
         "severity": severity,
         # "path": filename,
         "line": line,
-        "column": column,
+        "column": None,  # Bandit no proporciona información de columnas
         "suggestion": suggestion,
+        "confidence": confidence,
         "help_url": help_url,
     }
 
 
-def _severity_from_rule_code(rule_code: str) -> str:
+def _severity_from_bandit(bandit_severity: str) -> str:
     """
-    Define el nivel de severidad según el prefijo del código de la regla.
-    - error: problemas que impiden ejecutar el código.
-    - warning: incidencias importantes de calidad y limpieza.
-    - info: recomendaciones de estilo y convenciones.
+    Mapea los niveles de severidad de Bandit (HIGH, MEDIUM, LOW) a los niveles normalizados del sistema (error, warning, info).
     """
-    if not rule_code:
-        return "warning"
-
-    # Reglas que suelen indicar fallo real (en runtime o por sintaxis) (ampliable)
-    error_codes = {
-        "E999",  # syntax-error
-        "F821",  # undefined-name -> NameError
-        "F823",  # undefined-local -> UnboundLocalError
-        "F701",  # break-outside-loop -> SyntaxError
-        "F702",  # continue-outside-loop -> SyntaxError
-        "F706",  # return-outside-function -> SyntaxError
-    }
-
-    if rule_code in error_codes:
+    if bandit_severity == "HIGH":
         return "error"
-
-    if rule_code.startswith(("E", "F", "W")):
+    if bandit_severity == "MEDIUM":
         return "warning"
 
-    # Resto (I, N, D, etc)
     return "info"
 
 
-def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
+def _suggestion_for_bandit_rule(rule_code: str, message: str) -> str:
     """
-    Devuelve una sugerencia a partir del código de regla de Ruff.
+    Devuelve una sugerencia a partir del código de regla de Bandit.
     """
-    # Sugerencias específicas para las reglas más comunes
+    # Sugerencias específicas para las reglas más comunes (En Bandit todas las reglas comienzan por "B")
     tips = {
-        # Pyflakes (F)
-        "F401": "Elimina el import si no se usa.",
-        "F841": "Elimina la variable sin uso o úsala. Si es intencional, nómbrala con '_' (por ejemplo: _x).",
-        "F811": "Has redefinido un nombre (ya estaba definido). Renombra una de las variables o elimina la redefinición.",
-        "F821": "Estás usando un nombre no definido. Revisa si falta un import, una definición o hay un typo.",
-        "F823": "Variable local usada antes de asignarse. Asegúrate de asignarla antes de usarla.",
-
-        # Pycodestyle (E/W)
-        "E501": "Divide la línea o reformatea para respetar la longitud máxima.",
-        "E711": "Para comparar con None usa 'is None' o 'is not None' (no '== None').",
-        "E712": "Evita '== True/False'. Usa 'if cond:' / 'if not cond:' (o 'is True/False' si buscas identidad).",
-        "E722": "Evita 'except:' a secas. Captura una excepción concreta o usa 'except Exception:' si procede.",
-
-        # Pyupgrade (UP)
-        "UP006": "Si tu proyecto usa Python 3.9+, cambia typing.List/Dict por list[]/dict[] (PEP 585).",
-        "UP007": "Si tu proyecto usa Python 3.10+, usa 'X | Y' en vez de 'Union[X, Y]' (PEP 604).",
-
-        # isort/imports (I)
-        "I001": "Ordena los imports y mantén un orden consistente.",
+        "B101": "Evita usar 'assert' para validaciones de seguridad; ya que en producción puede estar desactivado.",
+        "B105": "Evita credenciales hardcodeadas en el código; utiliza variables de entorno o gestores de secretos.",
+        "B301": "Evita 'yaml.load' sin safe_load; usa 'yaml.safe_load' para reducir riesgos.",
+        "B307": "Evita el uso de 'eval'; puede ejecutar código arbitrario y supone un riesgo de seguridad.",
+        "B404": "El módulo 'subprocess' puede ser peligroso si se usa con entradas no controladas; revisa su uso.",
+        "B602": "Revisa el uso de 'subprocess'; ejecutar comandos construidos con entradas no confiables puede ser inseguro.",
+        "B603": "Asegúrate de validar las entradas al usar 'subprocess' y evita patrones de ejecución inseguros.",
     }
+
     if rule_code in tips:
         return tips[rule_code]
 
-    # Sugerencias genéricas según la familia/prefijo de la regla
-    prefix = rule_code[:1] if rule_code else ""
-    if prefix == "F":
-        return "Revisa variables/imports; suele indicar problemas de uso (p. ej., imports o nombres no definidos)."
-    if prefix in ("E", "W"):
-        return (
-            "Ajusta estilo/formato; revisa el mensaje y aplica la corrección sugerida."
-        )
-    if prefix == "I":
-        return "Reordena los imports y mantén un orden consistente."
-    if prefix == "N":
-        return "Revisa las convenciones de nombres (PEP 8): clases, funciones, variables, constantes."
-    if rule_code.startswith("UP"):
-        return "Moderniza la sintaxis según tu versión de Python (pyupgrade)."
-
     if message:
-        return "Revisa este aviso y ajusta el código según la recomendación."
+        return "Revisa esta alerta de seguridad y ajusta el código para evitar patrones inseguros."
 
-    return "Revisa este aviso."
+    return "Revisa esta alerta de seguridad."
 
 
 def _to_int(value: Any) -> Optional[int]:
