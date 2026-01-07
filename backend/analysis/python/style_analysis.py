@@ -17,14 +17,19 @@ def analyze_style(
     cmd = _build_ruff_command(options)
 
     with tempfile.TemporaryDirectory(prefix="static_code_analysis") as tmpdir:
-        result = subprocess.run(
-            cmd,
-            input=code,
-            text=True,
-            capture_output=True,
-            cwd=tmpdir,
-            timeout=timeout_seconds,
-        )
+        try:
+            result = subprocess.run(
+                cmd,
+                input=code,
+                text=True,
+                capture_output=True,
+                cwd=tmpdir,
+                timeout=timeout_seconds,
+            )
+        except FileNotFoundError as exc:
+            raise RuntimeError(
+                "Ruff no está instalado o no se encuentra en el PATH."
+            ) from exc
 
     # Ruff devuelve:
     # - exit code 0: sin issues
@@ -108,7 +113,9 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     severity = _severity_from_rule_code(rule_code)
 
     help_url = issue.get("url")
-
+    if not isinstance(help_url, str) or not help_url.strip():
+        help_url = None
+        
     return {
         "tool": "ruff",
         "category": "style",
