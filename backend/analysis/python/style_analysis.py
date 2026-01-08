@@ -27,7 +27,9 @@ def analyze_style(
                 timeout=timeout_seconds,
             )
         except FileNotFoundError as exc:
-            raise RuntimeError("Bandit no está instalado o no se encuentra en el PATH.") from exc
+            raise RuntimeError(
+                "Ruff no está instalado o no se encuentra en el PATH."
+            ) from exc
 
     # Ruff devuelve:
     # - exit code 0: sin issues
@@ -79,9 +81,9 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     # Opciones para filtrar reglas de Ruff
     select = options.get("select")
     ignore = options.get("ignore")
-    extend_select = options.get("extend_select") or options.get("extend-select")
+    extend_select = options.get("extend-select")
 
-    # Annadimos flags solo si las opciones son listas de strings válidas ["F401", "E501", etc]
+    # Annadimos flags solo si las opciones son listas de strings válidas (ej. ["F401", "E501"])
     if _is_str_list(select):
         cmd += ["--select", ",".join(select)]
     if _is_str_list(ignore):
@@ -111,7 +113,9 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     severity = _severity_from_rule_code(rule_code)
 
     help_url = issue.get("url")
-
+    if not isinstance(help_url, str) or not help_url.strip():
+        help_url = None
+        
     return {
         "tool": "ruff",
         "category": "style",
