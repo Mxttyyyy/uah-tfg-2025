@@ -1,6 +1,7 @@
 import json
 import subprocess
 import tempfile
+import re
 from typing import Any, Dict, List, Optional
 
 
@@ -129,10 +130,11 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         confidence = None
 
     # Enlace opcional a documentación adicional sobre la vulnerabilidad
-    help_url = issue.get("more_info")
-    if not isinstance(help_url, str) or not help_url.strip():
-        help_url = None
+    raw_help_url = issue.get("more_info")
+    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
+        raw_help_url = None
 
+    help_url = _normalize_bandit_help_url(raw_help_url)
     suggestion = _suggestion_for_bandit_rule(rule_code, message)
 
     return {
@@ -155,7 +157,7 @@ def _severity_from_bandit(bandit_severity: str) -> str:
     Mapea los niveles de severidad de Bandit (HIGH, MEDIUM, LOW) a los niveles normalizados del sistema (error, warning, info).
     """
     if bandit_severity == "HIGH":
-        return "error"
+        return "error" # Problema crítico
     if bandit_severity == "MEDIUM":
         return "warning"
 
@@ -168,7 +170,7 @@ def _suggestion_for_bandit_rule(rule_code: str, message: str) -> str:
     """
     # Sugerencias específicas para las reglas más comunes (En Bandit todas las reglas comienzan por "B")
     tips = {
-        "B101": "Evita usar 'assert' para validaciones de seguridad; ya que en producción puede estar desactivado.",
+        "B101": "Evita usar 'assert' para validaciones de seguridad; ya que pueden desactivarse cuando Python se ejecuta con optimización.",
         "B105": "Evita credenciales hardcodeadas en el código; utiliza variables de entorno o gestores de secretos.",
         "B301": "Evita 'yaml.load' sin safe_load; usa 'yaml.safe_load' para reducir riesgos.",
         "B307": "Evita el uso de 'eval'; puede ejecutar código arbitrario y supone un riesgo de seguridad.",
@@ -212,3 +214,11 @@ def _is_str_list(value: Any) -> bool:
             return False
 
     return True
+
+
+def _normalize_bandit_help_url(url: str) -> str:
+    """
+    Normaliza enlaces de documentación de Bandit para mostrar la versión 'latest',
+    evitando enlaces rotos asociados a versiones antiguas.
+    """
+    return re.sub(r"/en/[^/]+/", "/en/latest/", url)
