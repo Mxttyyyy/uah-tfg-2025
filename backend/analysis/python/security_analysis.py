@@ -4,6 +4,8 @@ import tempfile
 import re
 from typing import Any, Dict, List, Optional
 
+from analysis.utils import to_int, is_str_list
+
 
 def analyze_security(
     code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10
@@ -99,12 +101,12 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
 
     # Reglas de seguridad que se deben ignorar
     skip = options.get("skip")
-    if _is_str_list(skip):
+    if is_str_list(skip):
         cmd += ["--skip", ",".join(skip)]
 
     # Reglas de seguridad que se deben ejecutar
     tests = options.get("tests")
-    if _is_str_list(tests):
+    if is_str_list(tests):
         cmd += ["--tests", ",".join(tests)]
 
     # Leer desde stdin
@@ -120,7 +122,7 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     rule_code = str(issue.get("test_id") or "")
     message = str(issue.get("issue_text") or "").strip()
     # filename = str(issue.get("filename") or "input.py")
-    line = _to_int(issue.get("line_number"))
+    line = to_int(issue.get("line_number"))
 
     bandit_sev = str(issue.get("issue_severity") or "").upper()
     severity = _severity_from_bandit(bandit_sev)
@@ -186,34 +188,6 @@ def _suggestion_for_bandit_rule(rule_code: str, message: str) -> str:
         return "Revisa esta alerta de seguridad y ajusta el código para evitar patrones inseguros."
 
     return "Revisa esta alerta de seguridad."
-
-
-def _to_int(value: Any) -> Optional[int]:
-    """
-    Intenta convertir el valor a entero (no usamos el casteo int(), ya que necesitamos controlar posibles valores None)
-    """
-    try:
-        if value is None:
-            return None
-        return int(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _is_str_list(value: Any) -> bool:
-    """
-    Comprueba si el valor es una lista de strings
-    """
-    if not isinstance(value, list):
-        return False
-
-    for x in value:
-        if not isinstance(x, str):
-            return False
-        if x.strip() == "":  # Vacío o solo espacios
-            return False
-
-    return True
 
 
 def _normalize_bandit_help_url(url: str) -> str:

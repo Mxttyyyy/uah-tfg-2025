@@ -3,6 +3,8 @@ import subprocess
 import tempfile
 from typing import Any, Dict, List, Optional
 
+from analysis.utils import to_int, is_str_list
+
 
 def analyze_style(
     code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10
@@ -84,11 +86,11 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     extend_select = options.get("extend-select")
 
     # Annadimos flags solo si las opciones son listas de strings válidas (ej. ["F401", "E501"])
-    if _is_str_list(select):
+    if is_str_list(select):
         cmd += ["--select", ",".join(select)]
-    if _is_str_list(ignore):
+    if is_str_list(ignore):
         cmd += ["--ignore", ",".join(ignore)]
-    if _is_str_list(extend_select):
+    if is_str_list(extend_select):
         cmd += ["--extend-select", ",".join(extend_select)]
 
     # Leer desde stdin
@@ -99,15 +101,15 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
 def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normaliza el issue a un formato base.
-    Eliminamos campos que el usuario no necesita (como cell, fix, url, etc.)
+    Eliminamos campos que el usuario no necesita (como cell, fix, etc.)
     """
     rule_code = str(issue.get("code") or "")
     message = str(issue.get("message") or "").strip()
 
     # filename = str(issue.get("filename") or "input.py")
     location = issue.get("location") if isinstance(issue.get("location"), dict) else {}
-    line = _to_int(location.get("row"))
-    column = _to_int(location.get("column"))
+    line = to_int(location.get("row"))
+    column = to_int(location.get("column"))
 
     suggestion = _suggestion_for_rule_code(rule_code, message)
     severity = _severity_from_rule_code(rule_code)
@@ -206,31 +208,3 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
         return "Revisa este aviso y ajusta el código según la recomendación."
 
     return "Revisa este aviso."
-
-
-def _to_int(value: Any) -> Optional[int]:
-    """
-    Intenta convertir el valor a entero (no usamos el casteo int(), ya que necesitamos controlar posibles valores None)
-    """
-    try:
-        if value is None:
-            return None
-        return int(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _is_str_list(value: Any) -> bool:
-    """
-    Comprueba si el valor es una lista de strings
-    """
-    if not isinstance(value, list):
-        return False
-
-    for x in value:
-        if not isinstance(x, str):
-            return False
-        if x.strip() == "":  # Vacío o solo espacios
-            return False
-
-    return True
