@@ -18,7 +18,7 @@ def analyze_style(
     # Construimos el comando de Ruff para analizar el código desde stdin y obtener salida en JSON.
     cmd = _build_ruff_command(options)
 
-    with tempfile.TemporaryDirectory(prefix="static_code_analysis") as tmpdir:
+    with tempfile.TemporaryDirectory(prefix="tfg_style_") as tmpdir:
         try:
             result = subprocess.run(
                 cmd,
@@ -34,15 +34,15 @@ def analyze_style(
             ) from exc
 
     # Ruff devuelve:
-    # - exit code 0: sin issues
-    # - exit code 1: con issues
-    # - exit code 2: error de ejecución/config/CLI
+    # - return code 0: sin issues
+    # - return code 1: con issues
+    # - return code != 0 y != 1: error al ejecutar Ruff
     # - stdout: salida normal de Ruff (en nuestro caso, el JSON de las issues)
     # - stderr: mensajes de error/advertencias de Ruff
 
-    if result.returncode == 2:
+    if result.returncode not in (0, 1):
         stderr = (result.stderr or "").strip()
-        raise RuntimeError(stderr or "Ruff falló con un error (exit code 2).")
+        raise RuntimeError(stderr or f"Ruff falló con un error (exit code {result.returncode}).")
 
     raw = (result.stdout or "").strip()
     if not raw:

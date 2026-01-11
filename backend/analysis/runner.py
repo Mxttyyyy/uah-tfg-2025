@@ -2,46 +2,108 @@ from typing import Any, Dict, Optional
 import time
 from analysis.python.style_analysis import analyze_style
 from analysis.python.security_analysis import analyze_security
+from analysis.python.metrics_analysis import analyze_metrics
 
-def run_analysis(language: str, code: str, options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+
+def run_analysis(
+    language: str, code: str, options: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     """
     Coordinador del análisis.
     Valida entradas, llama a los distintos módulos y devuelve el resultado JSON.
     """
-    start = time.perf_counter() # Inicio del contador para calcular analisis_time_ms
+    start = time.perf_counter()  # Inicio del contador para calcular analisis_time_ms
     language = (language or "").strip().lower()
+
     options = options or {}
 
+    # Validamos que las opciones sean un objeto JSON (dict)
+    if not isinstance(options, dict):
+        return _error_response(
+            language=language,
+            message="El campo 'options' debe ser un objeto JSON (por ejemplo: {}).",
+            http_status=400,
+            analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
+
+    # Validamos el lenguaje
     if language != "python":
-        return build_error_response(
+        return _error_response(
             language=language,
             message="Lenguaje no soportado. Por ahora solo se admite 'python'.",
             http_status=400,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
 
-    # Validaciones de posibles opciones del usuario (mediante checkboxes en el frontend)
-    style_options = (options.get("style") if isinstance(options.get("style"), dict) else {})
-    security_options = (options.get("security") if isinstance(options.get("security"), dict) else {})
+    # Validamos que las opciones por módulo (style/security/metrics/type/dead_code) sean objetos JSON (dict)
+    for key in ("style", "security", "metrics"):
+        if key in options and not isinstance(options.get(key), dict):
+            return _error_response(
+                language=language,
+                message=f"options.{key} debe ser un objeto JSON (por ejemplo: {{}}).",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+            )
 
+    # Validamos el timeout
     timeout_seconds = options.get("timeout_seconds", 10)
-    if not isinstance(timeout_seconds, int) or timeout_seconds <= 0:
-        timeout_seconds = 10
+    if "timeout_seconds" in options and (
+        not isinstance(timeout_seconds, int) or timeout_seconds <= 0
+    ):
+        return _error_response(
+            language=language,
+            message="options.timeout_seconds debe ser un entero positivo.",
+            http_status=400,
+            analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
 
-    # Ejecutamos el análisis
+    # Una vez sabemos que son valores válidos, obtenemos las opciones
+    style_options = options.get("style", {})
+    security_options = options.get("security", {})
+    metrics_options = options.get("metrics", {})
+
+    # ---------------- Ejecutamos los análisis ----------------
     try:
-        style_issues = analyze_style(code=code, options=style_options, timeout_seconds=timeout_seconds)
-        security_issues = analyze_security(code=code, options=security_options, timeout_seconds=timeout_seconds)
+        style_issues = analyze_style(
+            code=code, options=style_options, timeout_seconds=timeout_seconds
+        )
 
     # Si ha ocurrido algún fallo en el análisis, devolvemos un mensaje de error
     except Exception as exc:
-        return build_error_response(
+        return _error_response(
             language=language,
             message=f"Error ejecutando análisis de estilo: {exc}",
             http_status=500,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
     
+    try:
+        security_issues = analyze_security(
+            code=code, options=security_options, timeout_seconds=timeout_seconds
+        )
+
+    except Exception as exc:
+        return _error_response(
+            language=language,
+            message=f"Error ejecutando análisis de seguridad: {exc}",
+            http_status=500,
+            analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
+    
+    try:
+        metrics = analyze_metrics(
+            code=code, options=metrics_options, timeout_seconds=timeout_seconds
+        )
+
+    except Exception as exc:
+        return _error_response(
+            language=language,
+            message=f"Error ejecutando análisis de métricas: {exc}",
+            http_status=500,
+            analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
+
+    # Unificamos todas las issues para generar el resumen global
     all_issues = style_issues + security_issues
     summary = _build_summary(all_issues)
 
@@ -53,7 +115,7 @@ def run_analysis(language: str, code: str, options: Optional[Dict[str, Any]] = N
         "analysis": {
             "style": style_issues,
             "security": security_issues,
-            "metrics": {},
+            "metrics": metrics,
             "dead_code": [],
             "types": [],
         },
@@ -77,7 +139,9 @@ def _build_summary(issues: list[dict]) -> dict:
     }
 
 
-def build_error_response(language: str, message: str, http_status: int, analysis_time_ms: int) -> Dict[str, Any]:
+def _error_response(
+    language: str, message: str, http_status: int, analysis_time_ms: int
+) -> Dict[str, Any]:
     """
     Genera una respuesta de error con formato estable para el frontend
     """

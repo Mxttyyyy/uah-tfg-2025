@@ -1,7 +1,7 @@
 import json
 import subprocess
 import tempfile
-import re
+import os
 from typing import Any, Dict, List, Optional
 
 from analysis.utils import to_int, is_str_list
@@ -9,112 +9,163 @@ from analysis.utils import to_int, is_str_list
 
 def analyze_metrics(
     code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10
-) -> List[Dict[str, Any]]:
+) -> Dict[str, Any]:
     """
-    Ejecuta la herramienta Bandit sobre el código del usuario 'code'.
-    Devuelve una lista de issues normalizados.
+    Calcula métricas de código con Radon.
+    Devuelve un diccionario con:
+    - cyclomatic_complexity: complejidad ciclomática por bloque (cc)
+    - maintainability_index: índice de mantenibilidad del código (mi)
+    - raw_metrics: LOC/LLOC/SLOC, comentarios, líneas en blanco... (raw)
     """
     options = options or {}
 
-    # Construimos el comando de Bandit para analizar el código desde stdin y obtener salida en JSON.
-    cmd = _build_radon_command(options)
+    # En Windows, Radon puede necesitar que fuerces el encoding a UTF-8.
+    env = os.environ.copy()
+    env.setdefault("RADONFILESENCODING", "utf-8")
 
-    with tempfile.TemporaryDirectory(prefix="static_code_analysis") as tmpdir:
-        try:
-            result = subprocess.run(
-                cmd,
-                input=code,
-                text=True,
-                capture_output=True,
-                cwd=tmpdir,
-                timeout=timeout_seconds,
-            )
-        except FileNotFoundError as exc:
-            raise RuntimeError(
-                "Radon no está instalado o no se encuentra en el PATH."
-            ) from exc
+    with tempfile.TemporaryDirectory(prefix="tfg_metrics_") as tmpdir:
+        filename = "input.py"
+        filepath = os.path.join(tmpdir, filename)
 
-    # Radon devuelve:
-    # - exit code 0: sin issues
-    # - exit code 1: con issues
-    # - exit code 2: error de ejecución/config/CLI
-    # - stdout: salida normal de Radon (en nuestro caso, el JSON de las issues)
-    # - stderr: mensajes de error/advertencias de Radon
+        # Guardamos el código del usuario en un archivo temporal (solo para que Radon lo analice).
+        with open(filepath, "w", encoding="utf-8", newline="\n") as f:
+            f.write(code)
 
-    if result.returncode == 2:
-        stderr = (result.stderr or "").strip()
-        raise RuntimeError(stderr or "Radon falló con un error (exit code 2).")
+        cc_json = _run_radon_json(
+            _build_radon_cc_command(filename, options),
+            cwd=tmpdir,
+            env=env,
+            timeout_seconds=timeout_seconds,
+        )
+        mi_json = _run_radon_json(
+            _build_radon_mi_command(filename, options),
+            cwd=tmpdir,
+            env=env,
+            timeout_seconds=timeout_seconds,
+        )
+        raw_json = _run_radon_json(
+            _build_radon_raw_command(filename),
+            cwd=tmpdir,
+            env=env,
+            timeout_seconds=timeout_seconds,
+        )
 
-    raw = (result.stdout or "").strip()
-    if not raw:
-        return []  # No hay salida procesable de Radon
-
-    # Parseamos el JSON a estructura de Python
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"No se pudo parsear JSON de Bandit: {exc}") from exc
-
-    # Verificamos que Bandit devuelve un objeto JSON (dict) y que este contiene la lista de issues en "results"
-    if not isinstance(data, dict):
-        raise RuntimeError("Formato inesperado: Bandit no devolvió una objeto JSON.")
-
-    # Validamos que exista la lista de issues
-    results = data.get("results")
-    if not isinstance(results, list):
-        return []  # No hay issues
-
-    issues: List[Dict[str, Any]] = []
-    for issue in results:
-        if isinstance(issue, dict):
-            issues.append(_normalize_radon_issue(issue))  # Annadimos a la lista cada issue normalizado
-
-    return issues
+    return {
+        "cyclomatic_complexity": cc_json,
+        "maintainability_index": mi_json,
+        "raw_metrics": raw_json
+    }
 
 
-def _build_radon_command(options: Dict[str, Any]) -> List[str]:
+# ----------------
+# Comandos de Radon
+# ----------------
+
+
+def _build_radon_cc_command(filename: str, options: Dict[str, Any]) -> List[str]:
     """
-    Construye el comando de Bandit, aplicando opciones de entrada.
-
-    Opciones permitidas:
-    - severity_level: all|low|medium|high
-    - confidence_level: all|low|medium|high
-    - skip: lista de IDs (ej. ["B101","B603"])
-    - tests: lista de IDs (ej. ["B101","B301"])
+    Construye el comando de Radon para calcular la complejidad ciclomática.
     """
     cmd = [
         "radon",  # Herramienta empleada
-        "-f","json",  # Formato de salida JSON
-        "-n",  # Número de líneas de código adyacentes al issue detectado (contexto)
-        "0",  # No se incluye ninguna línea de código, solo la referencia al problema
+        "cc",  # Métrica empleada: complejidad ciclomática
+        "-j",  # Formato de salida JSON
+        "-s",  # Incluye el valor numérico de complejidad
     ]
 
-    # Nivel mínimo de severidad que deben tener las vulnerabilidades para ser reportadas
-    severity = options.get("severity-level")
-    if isinstance(severity, str) and severity.lower() in {"all", "low", "medium", "high"}:
-        cmd.append(f"--severity-level={severity.lower()}")  # Bandit solo acepta valores en minúsculas
+    # Permite filtrar por rango (A-F). Si no se pasa la opción, Radon usa sus defaults (A-F).
+    cc_min = options.get("cc_min") or options.get("min")
+    cc_max = options.get("cc_max") or options.get("max")
 
-    # Nivel mínimo de confianza que Bandit asgina a una vulnerabilidad
-    confidence = options.get("confidence-level")
-    if isinstance(confidence, str) and confidence.lower() in {"all", "low", "medium", "high"}:
-        cmd.append(f"--confidence-level={confidence.lower()}")
+    if isinstance(cc_min, str) and cc_min.strip():
+        cmd += ["--min", cc_min.strip().upper()]
+    if isinstance(cc_max, str) and cc_max.strip():
+        cmd += ["--max", cc_max.strip().upper()]
 
-    # Reglas de seguridad que se deben ignorar
-    skip = options.get("skip")
-    if is_str_list(skip):
-        cmd += ["--skip", ",".join(skip)]
-
-    # Reglas de seguridad que se deben ejecutar
-    tests = options.get("tests")
-    if is_str_list(tests):
-        cmd += ["--tests", ",".join(tests)]
-
-    # Leer desde stdin
-    cmd.append("-")
+    cmd.append(filename)
     return cmd
 
 
-def _normalize_radon_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
+def _build_radon_mi_command(filename: str, options: Dict[str, Any]) -> List[str]:
+    """
+    Construye el comando de Radon para calcular el índice de mantenibilidad.
+    """
+    cmd = [
+        "radon",  # Herramienta empleada
+        "mi",  # Métrica empleada: índice de mantenibilidad (MI)
+        "-j",  # Formato de salida JSON
+        "-s",  # Incluye el valor numérico de MI
+    ]
+
+    # Permite filtrar por rango (A-F). Si no se pasa la opción, Radon usa sus defaults (A-C).
+    mi_min = options.get("mi_min")
+    mi_max = options.get("mi_max")
+    if isinstance(mi_min, str) and mi_min.strip():
+        cmd += ["--min", mi_min.strip().upper()]
+    if isinstance(mi_max, str) and mi_max.strip():
+        cmd += ["--max", mi_max.strip().upper()]
+
+    cmd.append(filename)
+    return cmd
+
+
+def _build_radon_raw_command(filename: str) -> List[str]:
+    """
+    Construye el comando de Radon para calcular métricas básicas,
+    como LOC/LLOC/SLOC, líneas en blanco y comentarios.
+    """
+    return [
+        "radon",  # Herramienta empleada
+        "raw",  # Métrica empleada: métricas básicas
+        "-j",  # Formato de salida JSON
+        filename,  # Archivo a analizar (en este caso, el archivo temporal "input.py")
+    ]
+
+
+def _run_radon_json(
+    cmd: list[str], cwd: str, env: Dict[str, str], timeout_seconds: int
+) -> Any:
+    """
+    Ejecuta Radon y parsea su salida JSON.
+    """
+    try:
+        result = subprocess.run(
+            cmd,
+            text=True,
+            capture_output=True,
+            cwd=cwd,
+            env=env,
+            timeout=timeout_seconds,
+        )
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            "Radon no está instalado o no se encuentra en el PATH."
+        ) from exc
+
+
+    # Radon:
+    # - return code 0: ejecución correcta (devuelve métricas por stdout en JSON)
+    # - return code != 0: error al ejecutar Radon (CLI/config/archivo)
+    # - stdout: salida normal (métricas en JSON)
+    # - stderr: mensajes de error/diagnóstico
+
+    if result.returncode != 0:
+        stderr = (result.stderr or "").strip()
+        stdout = (result.stdout or "").strip()
+        raise RuntimeError(stderr or stdout or "Radon falló al ejecutar el comando.")
+
+    raw = (result.stdout or "").strip()
+    if not raw:
+        return {} # No hay salida procesable de Radon
+
+    # Parseamos el JSON a estructura de Python
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"No se pudo parsear el JSON de Radon: {exc}") from exc
+
+
+def _normalize_cc(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normaliza el issue a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
@@ -154,45 +205,81 @@ def _normalize_radon_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _severity_from_radon(bandit_severity: str) -> str:
+def _normalize_mi(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Mapea los niveles de severidad de Bandit (HIGH, MEDIUM, LOW) a los niveles normalizados del sistema (error, warning, info).
+    Normaliza el issue a un formato base.
+    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
     """
-    if bandit_severity == "HIGH":
-        return "error" # Problema crítico
-    if bandit_severity == "MEDIUM":
-        return "warning"
+    rule_code = str(issue.get("test_id") or "")
+    message = str(issue.get("issue_text") or "").strip()
+    # filename = str(issue.get("filename") or "input.py")
+    line = to_int(issue.get("line_number"))
 
-    return "info"
+    bandit_sev = str(issue.get("issue_severity") or "").upper()
+    severity = _severity_from_bandit(bandit_sev)
 
+    confidence = str(issue.get("issue_confidence") or "").upper()
+    if confidence not in {"LOW", "MEDIUM", "HIGH"}:
+        confidence = None
 
-def _suggestion_for_radon_rule(rule_code: str, message: str) -> str:
-    """
-    Devuelve una sugerencia a partir del código de regla de Bandit.
-    """
-    # Sugerencias específicas para las reglas más comunes (En Bandit todas las reglas comienzan por "B")
-    tips = {
-        "B101": "Evita usar 'assert' para validaciones de seguridad; ya que pueden desactivarse cuando Python se ejecuta con optimización.",
-        "B105": "Evita credenciales hardcodeadas en el código; utiliza variables de entorno o gestores de secretos.",
-        "B301": "Evita 'yaml.load' sin safe_load; usa 'yaml.safe_load' para reducir riesgos.",
-        "B307": "Evita el uso de 'eval'; puede ejecutar código arbitrario y supone un riesgo de seguridad.",
-        "B404": "El módulo 'subprocess' puede ser peligroso si se usa con entradas no controladas; revisa su uso.",
-        "B602": "Revisa el uso de 'subprocess'; ejecutar comandos construidos con entradas no confiables puede ser inseguro.",
-        "B603": "Asegúrate de validar las entradas al usar 'subprocess' y evita patrones de ejecución inseguros.",
+    # Enlace opcional a documentación adicional sobre la vulnerabilidad
+    raw_help_url = issue.get("more_info")
+    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
+        raw_help_url = None
+
+    help_url = _normalize_bandit_help_url(raw_help_url)
+    suggestion = _suggestion_for_bandit_rule(rule_code, message)
+
+    return {
+        "tool": "radon",
+        "category": "security",
+        "code": rule_code,
+        "message": message,
+        "severity": severity,
+        # "path": filename,
+        "line": line,
+        "column": None,  # Bandit no proporciona información de columnas
+        "suggestion": suggestion,
+        "confidence": confidence,
+        "help_url": help_url,
     }
 
-    if rule_code in tips:
-        return tips[rule_code]
 
-    if message:
-        return "Revisa esta alerta de seguridad y ajusta el código para evitar patrones inseguros."
-
-    return "Revisa esta alerta de seguridad."
-
-
-def _normalize_radon_help_url(url: str) -> str:
+def _normalize_raw(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Normaliza enlaces de documentación de Radon para mostrar la versión 'latest',
-    evitando enlaces rotos asociados a versiones antiguas.
+    Normaliza el issue a un formato base.
+    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
     """
-    return re.sub(r"/en/[^/]+/", "/en/latest/", url)
+    rule_code = str(issue.get("test_id") or "")
+    message = str(issue.get("issue_text") or "").strip()
+    # filename = str(issue.get("filename") or "input.py")
+    line = to_int(issue.get("line_number"))
+
+    bandit_sev = str(issue.get("issue_severity") or "").upper()
+    severity = _severity_from_bandit(bandit_sev)
+
+    confidence = str(issue.get("issue_confidence") or "").upper()
+    if confidence not in {"LOW", "MEDIUM", "HIGH"}:
+        confidence = None
+
+    # Enlace opcional a documentación adicional sobre la vulnerabilidad
+    raw_help_url = issue.get("more_info")
+    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
+        raw_help_url = None
+
+    help_url = _normalize_bandit_help_url(raw_help_url)
+    suggestion = _suggestion_for_bandit_rule(rule_code, message)
+
+    return {
+        "tool": "radon",
+        "category": "security",
+        "code": rule_code,
+        "message": message,
+        "severity": severity,
+        # "path": filename,
+        "line": line,
+        "column": None,  # Bandit no proporciona información de columnas
+        "suggestion": suggestion,
+        "confidence": confidence,
+        "help_url": help_url,
+    }
