@@ -29,7 +29,7 @@ def analyze_metrics(
         filename = "input.py"
         filepath = os.path.join(tmpdir, filename)
 
-        # Guardamos el código del usuario en un archivo temporal (solo para que Radon lo analice).
+        # Guardamos el código del usuario en un archivo temporal (ya que Radon no acepta el código por stdin).
         with open(filepath, "w", encoding="utf-8", newline="\n") as file:
             file.write(code)
 
