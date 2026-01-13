@@ -17,6 +17,15 @@ def run_analysis(
 
     options = options or {}
 
+    # Validamos que el código del usuario no esté vacío
+    if not code or not code.strip():
+        return _error_response(
+            language=language,
+            message="El campo 'code' no puede estar vacío.",
+            http_status=400,
+            analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
+    
     # Validamos que las opciones sean un objeto JSON (dict)
     if not isinstance(options, dict):
         return _error_response(
@@ -30,7 +39,7 @@ def run_analysis(
     if language != "python":
         return _error_response(
             language=language,
-            message="Lenguaje no soportado. Por ahora solo se admite 'python'.",
+            message="Lenguaje no disponible. Por ahora solo se admite 'python'.",
             http_status=400,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
@@ -47,9 +56,7 @@ def run_analysis(
 
     # Validamos el timeout
     timeout_seconds = options.get("timeout_seconds", 10)
-    if "timeout_seconds" in options and (
-        not isinstance(timeout_seconds, int) or timeout_seconds <= 0
-    ):
+    if "timeout_seconds" in options and (not isinstance(timeout_seconds, int) or timeout_seconds <= 0):
         return _error_response(
             language=language,
             message="options.timeout_seconds debe ser un entero positivo.",
@@ -62,7 +69,8 @@ def run_analysis(
     security_options = options.get("security", {})
     metrics_options = options.get("metrics", {})
 
-    # ---------------- Ejecutamos los análisis ----------------
+    # -------------------- Ejecutamos los análisis --------------------
+    # STYLE
     try:
         style_issues = analyze_style(
             code=code, options=style_options, timeout_seconds=timeout_seconds
@@ -76,7 +84,7 @@ def run_analysis(
             http_status=500,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
-    
+    # SECURITY
     try:
         security_issues = analyze_security(
             code=code, options=security_options, timeout_seconds=timeout_seconds
@@ -89,7 +97,7 @@ def run_analysis(
             http_status=500,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
-    
+    # METRICS
     try:
         metrics = analyze_metrics(
             code=code, options=metrics_options, timeout_seconds=timeout_seconds

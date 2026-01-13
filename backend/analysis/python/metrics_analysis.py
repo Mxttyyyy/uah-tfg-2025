@@ -4,7 +4,7 @@ import tempfile
 import os
 from typing import Any, Dict, List, Optional
 
-from analysis.utils import to_int, is_str_list
+from analysis.utils import to_int, to_float
 
 
 def analyze_metrics(
@@ -23,14 +23,17 @@ def analyze_metrics(
     env = os.environ.copy()
     env.setdefault("RADONFILESENCODING", "utf-8")
 
+    # Ejecutamos la herramienta en un directorio temporal para aislar el análisis
+    # y evitar escribir archivos en el sistema del usuario
     with tempfile.TemporaryDirectory(prefix="tfg_metrics_") as tmpdir:
         filename = "input.py"
         filepath = os.path.join(tmpdir, filename)
 
         # Guardamos el código del usuario en un archivo temporal (solo para que Radon lo analice).
-        with open(filepath, "w", encoding="utf-8", newline="\n") as f:
-            f.write(code)
+        with open(filepath, "w", encoding="utf-8", newline="\n") as file:
+            file.write(code)
 
+        # Ejecutamos los distintos subcomandos de Radon para obtener las métricas
         cc_json = _run_radon_json(
             _build_radon_cc_command(filename, options),
             cwd=tmpdir,
@@ -51,15 +54,15 @@ def analyze_metrics(
         )
 
     return {
-        "cyclomatic_complexity": cc_json,
-        "maintainability_index": mi_json,
-        "raw_metrics": raw_json
+        "cyclomatic_complexity": _normalize_cc(cc_json, filename),
+        "maintainability_index": _normalize_mi(mi_json, filename),
+        "raw_metrics": _normalize_raw(raw_json, filename),
     }
 
 
-# ----------------
-# Comandos de Radon
-# ----------------
+# --------------------------------------
+# Comandos de Radon para cada métrica
+# --------------------------------------
 
 
 def _build_radon_cc_command(filename: str, options: Dict[str, Any]) -> List[str]:
@@ -129,6 +132,7 @@ def _run_radon_json(
     Ejecuta Radon y parsea su salida JSON.
     """
     try:
+        # Ejecutamos la herramienta externa mediante subprocess y capturamos su salida
         result = subprocess.run(
             cmd,
             text=True,
@@ -141,7 +145,6 @@ def _run_radon_json(
         raise RuntimeError(
             "Radon no está instalado o no se encuentra en el PATH."
         ) from exc
-
 
     # Radon:
     # - return code 0: ejecución correcta (devuelve métricas por stdout en JSON)
@@ -156,7 +159,7 @@ def _run_radon_json(
 
     raw = (result.stdout or "").strip()
     if not raw:
-        return {} # No hay salida procesable de Radon
+        return {}  # No hay salida procesable de Radon
 
     # Parseamos el JSON a estructura de Python
     try:
@@ -165,121 +168,105 @@ def _run_radon_json(
         raise RuntimeError(f"No se pudo parsear el JSON de Radon: {exc}") from exc
 
 
-def _normalize_cc(issue: Dict[str, Any]) -> Dict[str, Any]:
+# -----------------
+# Normalización
+# -----------------
+
+
+def _get_file_result(data: Any, filename: str) -> Any:
     """
-    Normaliza el issue a un formato base.
-    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
+    Radon normalmente devuelve un dict { "input.py": <resultado> }.
+    Aquí extraemos el resultado del archivo que nos interesa.
     """
-    rule_code = str(issue.get("test_id") or "")
-    message = str(issue.get("issue_text") or "").strip()
-    # filename = str(issue.get("filename") or "input.py")
-    line = to_int(issue.get("line_number"))
+    if isinstance(data, dict):
+        if filename in data:  # (si "input.py" es una de las claves del dict)
+            return data[filename]
 
-    bandit_sev = str(issue.get("issue_severity") or "").upper()
-    severity = _severity_from_bandit(bandit_sev)
+        # Si solo hay un elemento, lo devolvemos, aunque la clave no coincida con el nombre del archivo
+        # Así evitamos fallos si Radon usa una clave distinta para el archivo analizado
+        if len(data) == 1:
+            return next(iter(data.values()))
+    # Si en un futuro hay multiples archivos, devolvemos todo el dict completo
+    return data
 
-    confidence = str(issue.get("issue_confidence") or "").upper()
-    if confidence not in {"LOW", "MEDIUM", "HIGH"}:
-        confidence = None
 
-    # Enlace opcional a documentación adicional sobre la vulnerabilidad
-    raw_help_url = issue.get("more_info")
-    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
-        raw_help_url = None
+def _normalize_cc(data: Any, filename: str) -> Dict[str, Any]:
+    """
+    Normaliza el JSON de la métrica CC a un formato base.
+    """
+    file_result = _get_file_result(data, filename)  # Obtenemos todos los campos de la métrica
 
-    help_url = _normalize_bandit_help_url(raw_help_url)
-    suggestion = _suggestion_for_bandit_rule(rule_code, message)
+    blocks = []  # Lista para guardar cada bloque analizado (función, método, clase)
+    if isinstance(file_result, list):
+        for block in file_result:
+            if not isinstance(block, dict):
+                continue
+            blocks.append(
+                {
+                    "name": str(block.get("name") or ""),  # Nombre de la función/método/clase
+                    "type": str(block.get("type") or ""),  # Function/method/class (según Radon)
+                    "line": to_int(block.get("lineno")),  # Línea de inicio
+                    "column": to_int(block.get("col_offset")),  # Columna de inicio
+                    "complexity": to_int(block.get("complexity")),  # CC numérica
+                    "rank": str(block.get("rank") or ""),  # Letra A-F
+                }
+            )
 
     return {
-        "tool": "radon",
-        "category": "security",
-        "code": rule_code,
-        "message": message,
-        "severity": severity,
-        # "path": filename,
-        "line": line,
-        "column": None,  # Bandit no proporciona información de columnas
-        "suggestion": suggestion,
-        "confidence": confidence,
-        "help_url": help_url,
+        "file": filename,
+        "blocks": blocks,
+        "total_blocks": len(blocks),
     }
 
 
-def _normalize_mi(issue: Dict[str, Any]) -> Dict[str, Any]:
+def _normalize_mi(data: Any, filename: str) -> Dict[str, Any]:
     """
-    Normaliza el issue a un formato base.
-    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
+    Normaliza el JSON de la métrica MI a un formato base.
+    El formato puede variar según versión/opciones, así que lo hacemos tolerante.
     """
-    rule_code = str(issue.get("test_id") or "")
-    message = str(issue.get("issue_text") or "").strip()
-    # filename = str(issue.get("filename") or "input.py")
-    line = to_int(issue.get("line_number"))
+    file_result = _get_file_result(data, filename)
 
-    bandit_sev = str(issue.get("issue_severity") or "").upper()
-    severity = _severity_from_bandit(bandit_sev)
+    # Casos típicos: dict con {"rank": "...", "mi": ...} o valores simples
+    if isinstance(file_result, dict):
+        score = (file_result.get("mi") if "mi" in file_result else file_result.get("score"))  # Algunas versiones usan "mi", otras usan "score"
+        rank = file_result.get("rank")
+        return {
+            "file": filename,
+            "score": to_float(score),
+            "rank": str(rank or ""),
+        }
 
-    confidence = str(issue.get("issue_confidence") or "").upper()
-    if confidence not in {"LOW", "MEDIUM", "HIGH"}:
-        confidence = None
+    # Algunos formatos de salida pueden devolver solo el valor numérico del MI
+    if isinstance(file_result, (int, float)):
+        return {"file": filename, "score": float(file_result), "rank": ""}
 
-    # Enlace opcional a documentación adicional sobre la vulnerabilidad
-    raw_help_url = issue.get("more_info")
-    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
-        raw_help_url = None
+    # En algunos casos Radon puede devolver únicamente el rank (A, B, C)
+    if isinstance(file_result, str):
+        return {"file": filename, "score": None, "rank": file_result}
 
-    help_url = _normalize_bandit_help_url(raw_help_url)
-    suggestion = _suggestion_for_bandit_rule(rule_code, message)
+    return {"file": filename, "score": None, "rank": ""}
+
+
+def _normalize_raw(data: Any, filename: str) -> Dict[str, Any]:
+    """
+    Normaliza el JSON de las métricas básicas a un formato base.
+    """
+    file_result = _get_file_result(data, filename)
+
+    # Comprobamos que el resultado obtenido sea un dict
+    if not isinstance(file_result, dict):
+        return {"file": filename}
+
+    # Función auxiliar para normalizar valores numéricos
+    def get_int(key: str) -> Optional[int]:
+        return to_int(file_result.get(key))
 
     return {
-        "tool": "radon",
-        "category": "security",
-        "code": rule_code,
-        "message": message,
-        "severity": severity,
-        # "path": filename,
-        "line": line,
-        "column": None,  # Bandit no proporciona información de columnas
-        "suggestion": suggestion,
-        "confidence": confidence,
-        "help_url": help_url,
-    }
-
-
-def _normalize_raw(issue: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Normaliza el issue a un formato base.
-    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
-    """
-    rule_code = str(issue.get("test_id") or "")
-    message = str(issue.get("issue_text") or "").strip()
-    # filename = str(issue.get("filename") or "input.py")
-    line = to_int(issue.get("line_number"))
-
-    bandit_sev = str(issue.get("issue_severity") or "").upper()
-    severity = _severity_from_bandit(bandit_sev)
-
-    confidence = str(issue.get("issue_confidence") or "").upper()
-    if confidence not in {"LOW", "MEDIUM", "HIGH"}:
-        confidence = None
-
-    # Enlace opcional a documentación adicional sobre la vulnerabilidad
-    raw_help_url = issue.get("more_info")
-    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
-        raw_help_url = None
-
-    help_url = _normalize_bandit_help_url(raw_help_url)
-    suggestion = _suggestion_for_bandit_rule(rule_code, message)
-
-    return {
-        "tool": "radon",
-        "category": "security",
-        "code": rule_code,
-        "message": message,
-        "severity": severity,
-        # "path": filename,
-        "line": line,
-        "column": None,  # Bandit no proporciona información de columnas
-        "suggestion": suggestion,
-        "confidence": confidence,
-        "help_url": help_url,
+        "file": filename,
+        "loc": get_int("loc"),
+        "lloc": get_int("lloc"),
+        "sloc": get_int("sloc"),
+        "comments": get_int("comments"),
+        "multi": get_int("multi"),
+        "blank": get_int("blank"),
     }

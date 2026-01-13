@@ -2,12 +2,24 @@ from typing import Any, Optional
 
 def to_int(value: Any) -> Optional[int]:
     """
-    Intenta convertir el valor a entero (no usamos el casteo int(), ya que necesitamos controlar posibles valores None)
+    Intenta convertir el valor a entero (no usamos el casteo int() directamente, ya que necesitamos controlar posibles valores None)
     """
     try:
         if value is None:
             return None
         return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def to_float(value: Any) -> Optional[float]:
+    """
+    Intenta convertir el valor a float
+    """
+    try:
+        if value is None:
+            return None
+        return float(value)
     except (TypeError, ValueError):
         return None
 

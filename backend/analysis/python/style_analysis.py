@@ -18,9 +18,12 @@ def analyze_style(
     # Construimos el comando de Ruff para analizar el código desde stdin y obtener salida en JSON.
     cmd = _build_ruff_command(options)
 
+    # Ejecutamos la herramienta en un directorio temporal para aislar el análisis
+    # y evitar escribir archivos en el sistema del usuario
     with tempfile.TemporaryDirectory(prefix="tfg_style_") as tmpdir:
         try:
-            result = subprocess.run(
+            # Ejecutamos la herramienta externa mediante subprocess y capturamos su salida
+            result = subprocess.run( 
                 cmd,
                 input=code,
                 text=True,
@@ -106,7 +109,7 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     rule_code = str(issue.get("code") or "")
     message = str(issue.get("message") or "").strip()
 
-    # filename = str(issue.get("filename") or "input.py")
+    filename = str(issue.get("filename") or "input.py")
     location = issue.get("location") if isinstance(issue.get("location"), dict) else {}
     line = to_int(location.get("row"))
     column = to_int(location.get("column"))
@@ -124,7 +127,7 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        # "path": filename,
+        "path": filename,
         "line": line,
         "column": column,
         "suggestion": suggestion,
