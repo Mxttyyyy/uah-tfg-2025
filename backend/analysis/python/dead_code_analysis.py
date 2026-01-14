@@ -32,7 +32,6 @@ def analyze_dead_code(
             # Ejecutamos la herramienta externa mediante subprocess y capturamos su salida
             result = subprocess.run(
                 cmd,
-                input=code,
                 text=True,
                 capture_output=True,
                 cwd=tmpdir,
@@ -48,7 +47,8 @@ def analyze_dead_code(
     # - return code 3: dead code encontrado
     # - return code 1: error al analizar el archivo (entrada inválida, sintaxis, etc.)
     # - return code 2: argumentos inválidos de Vulture
-    # - stdout: informe de Vulture con los elementos no usados (imports, variables, funciones, clases)
+    # - stdout: informe de Vulture en texto plano (un único string multilínea).
+    #   Cada línea describe un elemento no utilizado (imports, variables, funciones o clases)
     # - stderr: mensajes de error/advertencia de Vulture
 
     if result.returncode in (1, 2):
@@ -58,10 +58,10 @@ def analyze_dead_code(
 
     raw = (result.stdout or "").strip()
     if not raw:
-        return []  # No hay issues
+        return []  # No hay issues (código muerto)
 
     issues: List[Dict[str, Any]] = []
-    for line in raw.splitlines():
+    for line in raw.splitlines(): # splitlines() divide el output (un único string con varias líneas) en una lista de líneas
         parsed = _normalize_vulture_line(line.strip())
         if parsed:
             issues.append(parsed)
@@ -71,70 +71,56 @@ def analyze_dead_code(
 
 def _build_vulture_command(filename: str, options: Dict[str, Any]) -> List[str]:
     """
-    Construye el comando de Bandit, aplicando opciones de entrada.
+    Construye el comando de Vulture, aplicando las opciones de entrada.
 
     Opciones permitidas:
-    - severity_level: all|low|medium|high
-    - confidence_level: all|low|medium|high
-    - skip: lista de IDs (ej. ["B101","B603"])
-    - tests: lista de IDs (ej. ["B101","B301"])
+    - --min-confidence N: filtra por confianza (60..100 típicamente).
+    - --ignore-names: ignora nombres por patrón.
+    - --ignore-decorators: ignora funciones decoradas por ciertos decoradores, como @app.post().
     """
-    cmd = [
-        "bandit",  # Herramienta empleada
-        "-f","json",  # Formato de salida JSON
-        "-n",  # Número de líneas de código adyacentes al issue detectado (contexto)
-        "0",  # No se incluye ninguna línea de código, solo la referencia al problema
-    ]
+    cmd = ["vulture"]
 
-    # Nivel mínimo de severidad que deben tener las vulnerabilidades para ser reportadas
-    severity = options.get("severity-level")
-    if isinstance(severity, str) and severity.lower() in {"all", "low", "medium", "high"}:
-        cmd.append(f"--severity-level={severity.lower()}")  # Bandit solo acepta valores en minúsculas
+    min_confidence = options.get("min_confidence", 60)
+    if isinstance(min_confidence, int) and 0 <= min_confidence <= 100:
+        cmd += ["--min-confidence", str(min_confidence)]
 
-    # Nivel mínimo de confianza que Bandit asgina a una vulnerabilidad
-    confidence = options.get("confidence-level")
-    if isinstance(confidence, str) and confidence.lower() in {"all", "low", "medium", "high"}:
-        cmd.append(f"--confidence-level={confidence.lower()}")
+    ignore_names = options.get("ignore_names")
+    if is_str_list(ignore_names):
+        cmd += ["--ignore-names", ",".join(ignore_names)]
 
-    # Reglas de seguridad que se deben ignorar
-    skip = options.get("skip")
-    if is_str_list(skip):
-        cmd += ["--skip", ",".join(skip)]
+    ignore_decorators = options.get("ignore_decorators")
+    if is_str_list(ignore_decorators):
+        cmd += ["--ignore-decorators", ",".join(ignore_decorators)]
 
-    # Reglas de seguridad que se deben ejecutar
-    tests = options.get("tests")
-    if is_str_list(tests):
-        cmd += ["--tests", ",".join(tests)]
-
-    # Leer desde stdin
     cmd.append(filename)
     return cmd
 
 
-def _normalize_vulture_line(issue: Dict[str, Any]) -> Dict[str, Any]:
+def _normalize_vulture_line(line: str) -> Dict[str, Any]:
     """
-    Normaliza el issue a un formato base.
+    Normaliza las líneas devueltas por Vulture a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
+    Formato de línea devuelta por Vulture:  input.py:1: unused import 'os' (90% confidence).
     """
-    rule_code = str(issue.get("test_id") or "")
-    message = str(issue.get("issue_text") or "").strip()
-    filename = str(issue.get("filename") or "input.py")
-    line = to_int(issue.get("line_number"))
+    if not line:
+        return None
 
-    bandit_sev = str(issue.get("issue_severity") or "").upper()
-    severity = _severity_from_bandit(bandit_sev)
+    # Dividimos la linea en tres partes: archivo, número de línea y mensaje
+    parts = line.split(":", 2)
+    if len(parts) != 3:
+        return None
 
-    confidence = str(issue.get("issue_confidence") or "").upper()
-    if confidence not in {"LOW", "MEDIUM", "HIGH"}:
-        confidence = None
+    # Obtenemos cada parte
+    path = parts[0].strip() or "input.py"
+    line_no = to_int(parts[1].strip())
+    raw_message = parts[2].strip()
 
-    # Enlace opcional a documentación adicional sobre la vulnerabilidad
-    raw_help_url = issue.get("more_info")
-    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
-        raw_help_url = None
+    # A partir de raw_msg se obtiene la información necesaria para clasificar el issue
+    message, confidence = _extract_confidence(raw_message)
 
-    help_url = _normalize_bandit_help_url(raw_help_url)
-    suggestion = _suggestion_for_bandit_rule(rule_code, message)
+    rule_code = _rule_code_from_message(message)
+    severity = _severity_from_confidence(confidence)
+    suggestion = _suggestion_for_rule(rule_code, message)
 
     return {
         "tool": "vulture",
@@ -142,13 +128,36 @@ def _normalize_vulture_line(issue: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        "path": filename,
-        "line": line,
-        "column": None,  # Bandit no proporciona información de columnas
+        "path": path,
+        "line": line_no,
+        "column": None, # Vulture no proporciona información de columnas
         "suggestion": suggestion,
         "confidence": confidence,
-        "help_url": help_url,
     }
+
+
+def _extract_confidence(raw_msg: str) -> tuple[str, Optional[int]]:
+    """
+    Extrae el mensaje y el porcentaje de confianza incluido en un mensaje de Vulture.
+    El formato esperado de entrada es: "<mensaje> (NN% confidence)".
+    Por ejemplo: "unused import 'os' (90% confidence)"
+    """
+    # Comprobación para descartar mensajes que no contienen confianza
+    if " (" not in raw_msg or not raw_msg.endswith(")"):
+        return raw_msg, None
+
+    # Separamos y obtenemos ambos campos
+    msg_part, tail = raw_msg.rsplit(" (", 1)   # quedaría --> msg_part: "<mensaje>", tail: "90% confidence)"
+    tail = tail[:-1].strip()               # quedaría --> tail: "90% confidence"
+
+    # Validación del formato esperado
+    if not tail.endswith("confidence") or "%" not in tail:
+        return raw_msg, None
+
+    # Obtenemos el valor numérico de la confianza
+    num_str = tail.split("%", 1)[0].strip() # tail: "90"
+
+    return msg_part.strip(), to_int(num_str)
 
 
 def _severity_from_confidence(bandit_severity: str) -> str:
