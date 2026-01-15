@@ -101,6 +101,11 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     return cmd
 
 
+# -----------------
+# Normalización
+# -----------------
+
+
 def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normaliza el issue a un formato base.

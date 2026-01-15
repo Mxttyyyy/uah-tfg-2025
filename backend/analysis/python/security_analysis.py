@@ -117,6 +117,11 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
     return cmd
 
 
+# -----------------
+# Normalización
+# -----------------
+
+
 def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normaliza el issue a un formato base.

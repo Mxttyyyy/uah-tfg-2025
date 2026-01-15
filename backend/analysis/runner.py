@@ -1,8 +1,10 @@
 from typing import Any, Dict, Optional
 import time
+
 from analysis.python.style_analysis import analyze_style
 from analysis.python.security_analysis import analyze_security
 from analysis.python.metrics_analysis import analyze_metrics
+from analysis.python.dead_code_analysis import analyze_dead_code
 
 
 def run_analysis(
@@ -45,7 +47,7 @@ def run_analysis(
         )
 
     # Validamos que las opciones por módulo (style/security/metrics/type/dead_code) sean objetos JSON (dict)
-    for key in ("style", "security", "metrics"):
+    for key in ("style", "security", "metrics", "dead_code"):
         if key in options and not isinstance(options.get(key), dict):
             return _error_response(
                 language=language,
@@ -68,8 +70,9 @@ def run_analysis(
     style_options = options.get("style", {})
     security_options = options.get("security", {})
     metrics_options = options.get("metrics", {})
+    dead_code_options = options.get("dead_code", {})
 
-    # -------------------- Ejecutamos los análisis --------------------
+    # ---------------------- Ejecutamos los análisis ----------------------
     # STYLE
     try:
         style_issues = analyze_style(
@@ -110,9 +113,23 @@ def run_analysis(
             http_status=500,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
+    # DEAD CODE
+    try:
+        dead_code_issues = analyze_dead_code(
+            code=code, options=dead_code_options, timeout_seconds=timeout_seconds
+        )
+
+    except Exception as exc:
+        return _error_response(
+            language=language,
+            message=f"Error ejecutando análisis de código muerto: {exc}",
+            http_status=500,
+            analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
+
 
     # Unificamos todas las issues para generar el resumen global
-    all_issues = style_issues + security_issues
+    all_issues = style_issues + security_issues + dead_code_issues
     summary = _build_summary(all_issues)
 
     analysis_time_ms = int((time.perf_counter() - start) * 1000)
@@ -124,7 +141,7 @@ def run_analysis(
             "style": style_issues,
             "security": security_issues,
             "metrics": metrics,
-            "dead_code": [],
+            "dead_code": dead_code_issues,
             "types": [],
         },
     }
@@ -151,7 +168,7 @@ def _error_response(
     language: str, message: str, http_status: int, analysis_time_ms: int
 ) -> Dict[str, Any]:
     """
-    Genera una respuesta de error con formato estable para el frontend
+    Genera una respuesta de error con un formato estable.
     """
     return {
         "language": language or "unknown",

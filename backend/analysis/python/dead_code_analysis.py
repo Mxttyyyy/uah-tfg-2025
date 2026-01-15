@@ -15,18 +15,18 @@ def analyze_dead_code(
     """
     options = options or {}
 
-    # Construimos el comando de Vulture para analizar el código desde stdin y obtener salida en JSON.
-    cmd = _build_vulture_command(options)
-
     # Ejecutamos la herramienta en un directorio temporal para aislar el análisis
     # y evitar escribir archivos en el sistema del usuario
     with tempfile.TemporaryDirectory(prefix="tfg_dead_code_") as tmpdir:
         filename = "input.py"
         file_path = os.path.join(tmpdir, filename)
-        
+
         # Guardamos el código del usuario en un archivo temporal (ya que Vulture no acepta el código por stdin).
         with open(file_path, "w", encoding="utf-8", newline="\n") as file:
             file.write(code)
+
+        # Construimos el comando de Vulture para analizar el código desde un archivo y obtener salida en JSON.
+        cmd = _build_vulture_command(filename, options)
         
         try:
             # Ejecutamos la herramienta externa mediante subprocess y capturamos su salida
@@ -61,7 +61,7 @@ def analyze_dead_code(
         return []  # No hay issues (código muerto)
 
     issues: List[Dict[str, Any]] = []
-    for line in raw.splitlines(): # splitlines() divide el output (un único string con varias líneas) en una lista de líneas
+    for (line) in (raw.splitlines()):  # splitlines() divide el output (un único string multilínea) en una lista de líneas
         parsed = _normalize_vulture_line(line.strip())
         if parsed:
             issues.append(parsed)
@@ -96,11 +96,17 @@ def _build_vulture_command(filename: str, options: Dict[str, Any]) -> List[str]:
     return cmd
 
 
+# -----------------
+# Normalización
+# -----------------
+
+
 def _normalize_vulture_line(line: str) -> Dict[str, Any]:
     """
     Normaliza las líneas devueltas por Vulture a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
-    Formato de línea devuelta por Vulture:  input.py:1: unused import 'os' (90% confidence).
+    Formato de línea devuelta por Vulture:  <path>: <message> (NN% confidence).
+    Por ejemplo: input.py:1: unused import 'os' (90% confidence)
     """
     if not line:
         return None
@@ -111,16 +117,16 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
         return None
 
     # Obtenemos cada parte
-    path = parts[0].strip() or "input.py"
-    line_no = to_int(parts[1].strip())
-    raw_message = parts[2].strip()
+    path = parts[0].strip() or "input.py"  # Obtenemos: "input.py"
+    line_number = to_int(parts[1].strip())  # Obtenemos: "1"
+    raw_message = parts[2].strip()  # Obtenemos: "unused import 'os' (90% confidence)"
 
     # A partir de raw_msg se obtiene la información necesaria para clasificar el issue
-    message, confidence = _extract_confidence(raw_message)
+    message, confidence = _extract_confidence(raw_message)  # Obtenemos --> "unused import 'os'", 90
 
     rule_code = _rule_code_from_message(message)
     severity = _severity_from_confidence(confidence)
-    suggestion = _suggestion_for_rule(rule_code, message)
+    suggestion = _suggestion_for_vulture_rule(rule_code, message)
 
     return {
         "tool": "vulture",
@@ -129,8 +135,8 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
         "message": message,
         "severity": severity,
         "path": path,
-        "line": line_no,
-        "column": None, # Vulture no proporciona información de columnas
+        "line": line_number,
+        "column": None,  # Vulture no proporciona información de columnas
         "suggestion": suggestion,
         "confidence": confidence,
     }
@@ -139,7 +145,7 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
 def _extract_confidence(raw_msg: str) -> tuple[str, Optional[int]]:
     """
     Extrae el mensaje y el porcentaje de confianza incluido en un mensaje de Vulture.
-    El formato esperado de entrada es: "<mensaje> (NN% confidence)".
+    Formato de entrada esperado: "<message> (NN% confidence)".
     Por ejemplo: "unused import 'os' (90% confidence)"
     """
     # Comprobación para descartar mensajes que no contienen confianza
@@ -147,26 +153,51 @@ def _extract_confidence(raw_msg: str) -> tuple[str, Optional[int]]:
         return raw_msg, None
 
     # Separamos y obtenemos ambos campos
-    msg_part, tail = raw_msg.rsplit(" (", 1)   # quedaría --> msg_part: "<mensaje>", tail: "90% confidence)"
-    tail = tail[:-1].strip()               # quedaría --> tail: "90% confidence"
+    msg_part, tail = raw_msg.rsplit(" (", 1)  # Obtenemos --> msg_part: "<unused import 'os'>", tail: "90% confidence)"
+    tail = tail[:-1].strip()  # Obtenemos --> tail: "90% confidence"
 
     # Validación del formato esperado
     if not tail.endswith("confidence") or "%" not in tail:
         return raw_msg, None
 
     # Obtenemos el valor numérico de la confianza
-    num_str = tail.split("%", 1)[0].strip() # tail: "90"
+    num_str = tail.split("%", 1)[0].strip()  # num_str: "90"
 
     return msg_part.strip(), to_int(num_str)
 
 
-def _severity_from_confidence(bandit_severity: str) -> str:
+def _rule_code_from_message(message: str) -> str:
     """
-    Mapea los niveles de severidad de Bandit (HIGH, MEDIUM, LOW) a los niveles normalizados del sistema (error, warning, info).
+    Genera un código interno sencillo a partir del mensaje de Vulture.
+    Por ejemplo:
+      "unused import 'x'" -> "unused-import"
+      "unused function 'f'" -> "unused-function"
+      "unreachable code after ..." -> "unreachable-code"
     """
-    if bandit_severity == "HIGH":
-        return "error" # Problema crítico
-    if bandit_severity == "MEDIUM":
+    msg = (message or "").strip().lower()
+
+    # Caso 1: elementos no usados ("unused import", "unused function", etc.)
+    if msg.startswith("unused "):
+        parts = msg.split(" ", 2)  # ["unused", "<tipo>", ...]
+        if len(parts) >= 2:
+            return f"unused-{parts[1]}"  # Por ejemplo: "unused-import", "unused-function", etc.
+        return "unused"
+
+    # Caso 2: código inalcanzable ("unreachable code")
+    if msg.startswith("unreachable code"):
+        return "unreachable-code"
+
+    return "dead-code"
+
+
+def _severity_from_confidence(confidence: Optional[int]) -> str:
+    """
+    Mapea los valores de confianza a los niveles de severidad del sistema (error, warning, info).
+    - >= 90: warning
+    - < 90: info
+    *El nivel de error en este caso no se usa, ya que Vulture no detecta errores de ejecución ni fallos críticos del código.*
+    """
+    if confidence is None or confidence >= 90:
         return "warning"
 
     return "info"
@@ -174,23 +205,25 @@ def _severity_from_confidence(bandit_severity: str) -> str:
 
 def _suggestion_for_vulture_rule(rule_code: str, message: str) -> str:
     """
-    Devuelve una sugerencia a partir del código de regla de Bandit.
+    Genera una sugerencia explicativa a partir del código de regla generado por una advertencia de Vulture.
     """
-    # Sugerencias específicas para las reglas más comunes (En Bandit todas las reglas comienzan por "B")
+    # Sugerencias específicas para las reglas generadas
     tips = {
-        "B101": "Evita usar 'assert' para validaciones de seguridad; ya que pueden desactivarse cuando Python se ejecuta con optimización.",
-        "B105": "Evita credenciales hardcodeadas en el código; utiliza variables de entorno o gestores de secretos.",
-        "B301": "Evita 'yaml.load' sin safe_load; usa 'yaml.safe_load' para reducir riesgos.",
-        "B307": "Evita el uso de 'eval'; puede ejecutar código arbitrario y supone un riesgo de seguridad.",
-        "B404": "El módulo 'subprocess' puede ser peligroso si se usa con entradas no controladas; revisa su uso.",
-        "B602": "Revisa el uso de 'subprocess'; ejecutar comandos construidos con entradas no confiables puede ser inseguro.",
-        "B603": "Asegúrate de validar las entradas al usar 'subprocess' y evita patrones de ejecución inseguros.",
+        "unused-import": "Elimina este import, ya que no se utiliza.",
+        "unused-import-from": "Elimina este import específico, ya que no se utiliza.",
+        "unused-variable": "Elimina esta variable si no se utiliza. Si es intencional, usa '_' al inicio.",
+        "unused-argument": "Elimina este argumento si no se utiliza o renómbralo con '_' si es obligatorio.",
+        "unused-function": "Elimina esta función si no se utiliza o añade una llamada real.",
+        "unused-method": "Elimina este método si no se utiliza o revisa si se llama de forma dinámica.",
+        "unused-class": "Elimina esta clase si no se utiliza o revisa si se instancia o se usa indirectamente.",
+        "unused-attribute": "Elimina este atributo si no se utiliza o revisa accesos dinámicos.",
+        "unused-property": "Elimina esta propiedad si no se utiliza o revisa accesos indirectos.",
+        "unreachable-code": "Elimina este código inalcanzable o reestructura el flujo (return/raise/break antes).",
     }
-
     if rule_code in tips:
         return tips[rule_code]
 
     if message:
-        return "Revisa esta alerta de seguridad y ajusta el código para evitar patrones inseguros."
+        return "Revisa este aviso: puede ser un falso positivo si hay usos dinámicos."
 
-    return "Revisa esta alerta de seguridad."
+    return "Revisa este aviso."
