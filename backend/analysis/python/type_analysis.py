@@ -60,12 +60,13 @@ def analyze_types(
     issues: List[Dict[str, Any]] = []
     last_issue_index: Optional[int] = None
 
-    for line in (raw.splitlines()):  # splitlines() divide el output (un único string multilínea) en una lista de líneas
+    # Recorremos la salida de mypy
+    for line in raw.splitlines():  # divide el output (un único string multilínea) en una lista de líneas
         line = line.strip()
         if not line:
             continue
 
-        # Quitamos líneas resumen típicas ("Found X errors..." , "Success: no issues found...", etc.)
+        # Quitamos líneas de resumen típicas ("Found X errors..." , "Success: no issues found...", etc.)
         if line.startswith("Found ") or line.startswith("Success:"):
             continue
 
@@ -75,9 +76,10 @@ def analyze_types(
         # Para estos casos, se asocia la URL al último issue detectado mediante la variable last_issue_index
         help_url = _extract_help_url_from_note(line)
         if help_url and last_issue_index is not None:
-            issues[last_issue_index]["help_url"] = help_url
+            issues[last_issue_index]["help_url"] = help_url # Asociamos el enlace de ayuda al último issue detectado
             continue
 
+        # Extraemos los campos relevantes de la línea
         fields = _extract_mypy_fields(line)
         if not fields:
             continue
@@ -96,26 +98,50 @@ def analyze_types(
 
 def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
     """
-    Construye el comando de Vulture, aplicando las opciones de entrada.
+    Construye el comando de Mypy, aplicando opciones de entrada.
 
     Opciones permitidas:
-    - --min-confidence N: filtra por confianza (60..100 típicamente).
-    - --ignore-names: ignora nombres por patrón.
-    - --ignore-decorators: ignora funciones decoradas por ciertos decoradores, como @app.post().
+    - ignore_missing_imports
+    - python_version
+    - strict
+    - enable_error_codes
+    - disable_error_codes
     """
-    cmd = ["vulture"]
+    cmd = [
+        "mypy", # Herramienta empleada
+        "--config-file=", # Ignora cualquier configuración local (mypy.ini/pyproject)
+        "--no-error-summary", # Quita la línea resumen final
+        "--no-color-output", # Desactiva el color en la salida para obtener texto plano fácil de procesar
+        "--show-error-end", # Incluye el rango completo (inicio/fin) del error para un marcado más preciso
+        "--show-error-code-links", # Agrega una nota con URL a la documentación del código
+        "--follow-imports", "skip", # Evita analizar dependencias externas no incluidas explícitamente en el código del usuario
+    ]
 
-    min_confidence = options.get("min_confidence", 60)
-    if isinstance(min_confidence, int) and 0 <= min_confidence <= 100:
-        cmd += ["--min-confidence", str(min_confidence)]
+    # En el código del usuario, los imports pueden no resolverse, por lo que Mypy los ignora por defecto
+    ignore_missing = options.get("ignore_missing_imports", True)
+    if isinstance(ignore_missing, bool) and ignore_missing:
+        cmd.append("--ignore-missing-imports")
 
-    ignore_names = options.get("ignore_names")
-    if is_str_list(ignore_names):
-        cmd += ["--ignore-names", ",".join(ignore_names)]
+    # Permite fijar versión de Python
+    py_version = options.get("python_version")
+    if isinstance(py_version, str) and py_version.strip():
+        cmd += ["--python-version", py_version.strip()]
 
-    ignore_decorators = options.get("ignore_decorators")
-    if is_str_list(ignore_decorators):
-        cmd += ["--ignore-decorators", ",".join(ignore_decorators)]
+    # Modo estricto (opcional, ya que activa muchas comprobaciones adicionales)
+    if options.get("strict") is True:
+        cmd.append("--strict")
+
+    # Activar o desactivar códigos de error concretos (listas de strings)
+    enable_codes = options.get("enable_error_codes")
+    disable_codes = options.get("disable_error_codes")
+
+    if is_str_list(enable_codes):
+        for c in enable_codes:
+            cmd += ["--enable-error-code", c]
+
+    if is_str_list(disable_codes):
+        for c in disable_codes:
+            cmd += ["--disable-error-code", c]
 
     cmd.append(filename)
     return cmd
@@ -124,6 +150,34 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
 # -----------------
 # Normalización
 # -----------------
+
+
+def _extract_help_url_from_note(line: str) -> Optional[str]:
+    """
+    Extrae la URL de ayuda incluida en una línea 'note' de Mypy.
+    Este tipo de líneas aparecen al usar la opción --show-error-code-links.
+    """
+    # Ejemplo de línea esperada:
+    # input.py:8: note: See 'https://...' for more info
+
+    marker = "See '"
+    if "note:" not in line or marker not in line:
+        return None
+
+    # Localizamos el inicio de la URL
+    start = line.find(marker)
+    if start == -1:
+        return None
+    start += len(marker)
+
+    # Localizamos el final de la URL (comilla de cierre)
+    end = line.find("'", start)
+    if end == -1:
+        return None
+
+    # Extraemos y validamos la URL
+    url = line[start:end].strip()
+    return url if url.startswith(("http://", "https://")) else None
 
 
 def _normalize_mypy_issue(line: str) -> Dict[str, Any]:
