@@ -25,7 +25,7 @@ def analyze_dead_code(
         with open(file_path, "w", encoding="utf-8", newline="\n") as file:
             file.write(code)
 
-        # Construimos el comando de Vulture para analizar el código desde un archivo y obtener salida en JSON.
+        # Construimos el comando de Vulture para analizar el código desde un archivo y obtener salida.
         cmd = _build_vulture_command(filename, options)
         
         try:
@@ -61,7 +61,7 @@ def analyze_dead_code(
         return []  # No hay issues (código muerto)
 
     issues: List[Dict[str, Any]] = []
-    for (line) in (raw.splitlines()):  # splitlines() divide el output (un único string multilínea) en una lista de líneas
+    for line in (raw.splitlines()):  # splitlines() divide el output (un único string multilínea) en una lista de líneas
         parsed = _normalize_vulture_line(line.strip())
         if parsed:
             issues.append(parsed)

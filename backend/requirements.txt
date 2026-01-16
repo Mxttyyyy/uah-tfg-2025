@@ -4,3 +4,4 @@ ruff
 bandit
 radon
 vulture
+mypy
