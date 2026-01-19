@@ -1,3 +1,4 @@
+import re
 import subprocess
 import tempfile
 import os
@@ -27,7 +28,7 @@ def analyze_types(
 
         # Construimos el comando de Mypy para analizar el código desde un archivo y obtener salida.
         cmd = _build_mypy_command(filename, options)
-        
+
         try:
             # Ejecutamos la herramienta externa mediante subprocess y capturamos su salida
             result = subprocess.run(
@@ -55,7 +56,7 @@ def analyze_types(
         raw = (result.stderr or "").strip()
 
     if not raw:
-        return [] # No hay issues
+        return []  # No hay issues
 
     issues: List[Dict[str, Any]] = []
     last_issue_index: Optional[int] = None
@@ -76,7 +77,7 @@ def analyze_types(
         # Para estos casos, se asocia la URL al último issue detectado mediante la variable last_issue_index
         help_url = _extract_help_url_from_note(line)
         if help_url and last_issue_index is not None:
-            issues[last_issue_index]["help_url"] = help_url # Asociamos el enlace de ayuda al último issue detectado
+            issues[last_issue_index]["help_url"] = help_url  # Asociamos el enlace de ayuda al último issue detectado
             continue
 
         # Extraemos los campos relevantes de la línea
@@ -91,7 +92,9 @@ def analyze_types(
     # Si no hay issues y el returncode es raro, lo tratamos como error.
     if result.returncode not in (0, 1) and not issues:
         stderr = (result.stderr or "").strip()
-        raise RuntimeError(stderr or f"Mypy falló con un error (exit code {result.returncode}).")
+        raise RuntimeError(
+            stderr or f"Mypy falló con un error (exit code {result.returncode})."
+        )
 
     return issues
 
@@ -108,13 +111,13 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
     - disable_error_codes
     """
     cmd = [
-        "mypy", # Herramienta empleada
-        "--config-file=", # Ignora cualquier configuración local (mypy.ini/pyproject)
-        "--no-error-summary", # Quita la línea resumen final
-        "--no-color-output", # Desactiva el color en la salida para obtener texto plano fácil de procesar
-        "--show-error-end", # Incluye el rango completo (inicio/fin) del error para un marcado más preciso
-        "--show-error-code-links", # Agrega una nota con URL a la documentación del código
-        "--follow-imports", "skip", # Evita analizar dependencias externas no incluidas explícitamente en el código del usuario
+        "mypy",  # Herramienta empleada
+        "--config-file=",  # Ignora cualquier configuración local (mypy.ini/pyproject)
+        "--no-error-summary",  # Quita la línea resumen final
+        "--no-color-output",  # Desactiva el color en la salida para obtener texto plano fácil de procesar
+        "--show-error-end",  # Incluye el rango completo (inicio/fin) del error para un marcado más preciso
+        "--show-error-code-links",  # Agrega una nota con URL a la documentación del código
+        "--follow-imports", "skip",  # Evita analizar dependencias externas no incluidas explícitamente en el código del usuario
     ]
 
     # En el código del usuario, los imports pueden no resolverse, por lo que Mypy los ignora por defecto
@@ -156,10 +159,9 @@ def _extract_help_url_from_note(line: str) -> Optional[str]:
     """
     Extrae la URL de ayuda incluida en una línea 'note' de Mypy.
     Este tipo de líneas aparecen al usar la opción --show-error-code-links.
+    Ejemplo de línea esperada:
+    "input.py:8: note: See 'https://...' for more info"
     """
-    # Ejemplo de línea esperada:
-    # input.py:8: note: See 'https://...' for more info
-
     marker = "See '"
     if "note:" not in line or marker not in line:
         return None
@@ -180,129 +182,143 @@ def _extract_help_url_from_note(line: str) -> Optional[str]:
     return url if url.startswith(("http://", "https://")) else None
 
 
-def _normalize_mypy_issue(line: str) -> Dict[str, Any]:
+# Expresión regular para parsear una línea de salida de Mypy.
+# Ejemplos de líneas de salida de Mypy:
+#  input.py:3: error: mensaje
+#  input.py:3:5: error: mensaje
+#  input.py:3:5:7:9: note: mensaje
+
+_MYPY_RE = re.compile(
+    r"^(?P<path>.+?):"  # Ruta del archivo (hasta el primer ':')
+    r"(?P<line>\d+)"  # Número de línea
+    r"(?::(?P<col>\d+))?"  # Columna inicial (campo opcional)
+    r"(?::(?P<end_line>\d+))?"  # Línea final del rango (campo opcional)
+    r"(?::(?P<end_col>\d+))?"  # Columna final del rango (campo opcional)
+    r":\s+(?P<kind>error|note):"  # Tipo de diagnóstico (error o note)
+    r"\s+(?P<msg>.+)$"  # Mensaje completo hasta el final de la línea
+)
+
+
+def _extract_mypy_fields(line: str) -> Optional[Dict[str, Any]]:
     """
-    Normaliza las líneas devueltas por Vulture a un formato base.
-    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
-    Formato de línea devuelta por Vulture:  <path>: <message> (NN% confidence).
-    Por ejemplo: input.py:1: unused import 'os' (90% confidence)
+    Extrae los campos relevantes de una linea de salida de Mypy.
+    Esta función aplica una expresión regular sobre una línea del output de Mypy y, si el formato coincide,
+    devuelve un diccionario con los campos extraídos.
     """
-    if not line:
-        return None
 
-    # Dividimos la linea en tres partes: archivo, número de línea y mensaje
-    parts = line.split(":", 2)
-    if len(parts) != 3:
-        return None
+    # Intentamos hacer coincidir la línea completa con el patrón de Mypy
+    m = _MYPY_RE.match(line)
+    if not m:
+        return None  # Línea no válida (falla la expresión regular)
 
-    # Obtenemos cada parte
-    path = parts[0].strip() or "input.py"  # Obtenemos: "input.py"
-    line_number = to_int(parts[1].strip())  # Obtenemos: "1"
-    raw_message = parts[2].strip()  # Obtenemos: "unused import 'os' (90% confidence)"
-
-    # A partir de raw_msg se obtiene la información necesaria para clasificar el issue
-    message, confidence = _extract_confidence(raw_message)  # Obtenemos --> "unused import 'os'", 90
-
-    rule_code = _rule_code_from_message(message)
-    severity = _severity_from_confidence(confidence)
-    suggestion = _suggestion_for_vulture_rule(rule_code, message)
-
+    # Construimos el diccionario de salida
     return {
-        "tool": "vulture",
-        "category": "dead_code",
+        "path": m.group("path"),
+        "line": to_int(m.group("line")),
+        "col": to_int(m.group("col")),
+        "end_line": to_int(m.group("end_line")),
+        "end_col": to_int(m.group("end_col")),
+        "kind": m.group("kind"),
+        "msg": m.group("msg"),
+    }
+
+
+def _normalize_mypy_issue(fields: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Normaliza un issue detectado por Mypy a un formato base.
+    Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
+    """
+    raw_msg = str(fields.get("msg") or "").strip()
+    message, error_code = _extract_error_code(raw_msg)
+
+    rule_code = error_code or ""
+
+    # Mypy no usa warnings, solo distingue entre error y info
+    severity = "error" if fields.get("kind") == "error" else "info"
+
+    # Construimos el issue en base a los campos obtenidos
+    issue: Dict[str, Any] = {
+        "tool": "mypy",
+        "category": "types",
         "code": rule_code,
         "message": message,
         "severity": severity,
-        "path": path,
-        "line": line_number,
-        "column": None,  # Vulture no proporciona información de columnas
-        "suggestion": suggestion,
-        "confidence": confidence,
+        "path": str(fields.get("path") or "input.py"),
+        "line": fields.get("line"),
+        "column": fields.get("col"),  # Campo opcional, aunque forma parte de la localización básica del issue
+        "suggestion": _suggestion_for_mypy_rule(rule_code, message),
     }
 
+    # Campos opcionales menos frecuentes
+    if fields.get("end_line") is not None:
+        issue["end_line"] = fields.get("end_line")
 
-def _extract_mypy_fields(raw_msg: str) -> tuple[str, Optional[int]]:
+    if fields.get("end_col") is not None:
+        issue["end_column"] = fields.get("end_col")
+
+    return issue
+
+
+def _extract_error_code(message: str) -> tuple[str, Optional[str]]:
     """
-    Extrae el mensaje y el porcentaje de confianza incluido en un mensaje de Vulture.
-    Formato de entrada esperado: "<message> (NN% confidence)".
-    Por ejemplo: "unused import 'os' (90% confidence)"
-    """
-    # Comprobación para descartar mensajes que no contienen confianza
-    if " (" not in raw_msg or not raw_msg.endswith(")"):
-        return raw_msg, None
+    Extrae el código de error de Mypy si el mensaje termina en '[codigo_error]'.
 
-    # Separamos y obtenemos ambos campos
-    msg_part, tail = raw_msg.rsplit(" (", 1)  # Obtenemos --> msg_part: "<unused import 'os'>", tail: "90% confidence)"
-    tail = tail[:-1].strip()  # Obtenemos --> tail: "90% confidence"
-
-    # Validación del formato esperado
-    if not tail.endswith("confidence") or "%" not in tail:
-        return raw_msg, None
-
-    # Obtenemos el valor numérico de la confianza
-    num_str = tail.split("%", 1)[0].strip()  # num_str: "90"
-
-    return msg_part.strip(), to_int(num_str)
-
-
-def _rule_code_from_message(message: str) -> str:
-    """
-    Genera un código interno sencillo a partir del mensaje de Vulture.
     Por ejemplo:
-      "unused import 'x'" -> "unused-import"
-      "unused function 'f'" -> "unused-function"
-      "unreachable code after ..." -> "unreachable-code"
+    - "Incompatible types in assignment  [assignment]"
+    Devuelve -> ("Incompatible types in assignment", "assignment")
     """
-    msg = (message or "").strip().lower()
+    message = message.strip()
 
-    # Caso 1: elementos no usados ("unused import", "unused function", etc.)
-    if msg.startswith("unused "):
-        parts = msg.split(" ", 2)  # ["unused", "<tipo>", ...]
-        if len(parts) >= 2:
-            return f"unused-{parts[1]}"  # Por ejemplo: "unused-import", "unused-function", etc.
-        return "unused"
+    # Si no termina en ']', no hay código de error
+    if not message.endswith("]"):
+        return message, None
 
-    # Caso 2: código inalcanzable ("unreachable code")
-    if msg.startswith("unreachable code"):
-        return "unreachable-code"
+    # Divide el string en 3 partes --> msg_part: "Incompatible types in assignment  ", sep: "[", code_part: "assignment]"
+    msg_part, sep, code_part = message.rpartition("[")
 
-    return "dead-code"
+    if not sep:
+        return message, None
+
+    error_code = code_part[:-1].strip()  # quitamos el último carácter ']'
+    if not error_code:
+        return message, None
+
+    clean_message = msg_part.strip()
+
+    # Devolvemos el mensaje limpio y el código de error
+    return clean_message, error_code
 
 
-def _severity_from_confidence(confidence: Optional[int]) -> str:
+def _suggestion_for_mypy_rule(rule_code: str, message: str) -> str:
     """
-    Mapea los valores de confianza a los niveles de severidad del sistema (error, warning, info).
-    - >= 90: warning
-    - < 90: info
-    *El nivel de error en este caso no se usa, ya que Vulture no detecta errores de ejecución ni fallos críticos del código.*
-    """
-    if confidence is None or confidence >= 90:
-        return "warning"
-
-    return "info"
-
-
-def _suggestion_for_vulture_rule(rule_code: str, message: str) -> str:
-    """
-    Genera una sugerencia explicativa a partir del código de regla generado por una advertencia de Vulture.
+    Genera una sugerencia explicativa a partir del código de regla emitido por Mypy.
     """
     # Sugerencias específicas para las reglas generadas
     tips = {
-        "unused-import": "Elimina este import, ya que no se utiliza.",
-        "unused-import-from": "Elimina este import específico, ya que no se utiliza.",
-        "unused-variable": "Elimina esta variable si no se utiliza. Si es intencional, usa '_' al inicio.",
-        "unused-argument": "Elimina este argumento si no se utiliza o renómbralo con '_' si es obligatorio.",
-        "unused-function": "Elimina esta función si no se utiliza o añade una llamada real.",
-        "unused-method": "Elimina este método si no se utiliza o revisa si se llama de forma dinámica.",
-        "unused-class": "Elimina esta clase si no se utiliza o revisa si se instancia o se usa indirectamente.",
-        "unused-attribute": "Elimina este atributo si no se utiliza o revisa accesos dinámicos.",
-        "unused-property": "Elimina esta propiedad si no se utiliza o revisa accesos indirectos.",
-        "unreachable-code": "Elimina este código inalcanzable o reestructura el flujo (return/raise/break antes).",
+        "arg-type": "Revisa los tipos de los argumentos: el tipo esperado y el que estás pasando no coinciden.",
+        "assignment": "Revisa la asignación: la variable y el valor tienen tipos incompatibles.",
+        "return-value": "El tipo que devuelves no coincide con el return type anotado.",
+        "attr-defined": "Estás accediendo a un atributo que Mypy cree que no existe para ese tipo.",
+        "name-defined": "Estás usando un nombre no definido (posible typo o falta de definición/import).",
+        "operator": "Estás usando un operador con tipos incompatibles (por ejemplo, sumar int con str).",
+        "call-arg": "Revisa los parámetros de la llamada (faltan args, sobran o tienen tipo incorrecto).",
+        "index": "Revisa índices/claves: puede que el tipo no soporte indexación o la clave sea incorrecta.",
+        "union-attr": "Estás accediendo a un atributo en una unión; asegúrate de acotar el tipo (if/isinstance).",
+        "return-type": "El tipo de retorno inferido no coincide con el tipo anotado de la función.",
+        "comparison-overlap": "La comparación siempre es falsa o redundante debido a tipos incompatibles.",
+        "list-item": "Los elementos de la lista no coinciden con el tipo esperado.",
+        "dict-item": "Las claves o valores del diccionario no coinciden con los tipos anotados.",
+        "has-type": "Añade anotaciones de tipo explícitas para ayudar a Mypy a inferir correctamente.",
     }
+
     if rule_code in tips:
         return tips[rule_code]
 
-    if message:
-        return "Revisa este aviso: puede ser un falso positivo si hay usos dinámicos."
+    # Si no tenemos un tip específico, devolvemos una sugerencia genérica
+    if rule_code:
+        return "Añade o ajusta anotaciones de tipo y revisa el mensaje; Mypy indica una incompatibilidad de tipos."
 
-    return "Revisa este aviso."
+    if message:
+        return "Revisa el mensaje de Mypy y ajusta las anotaciones/uso de tipos."
+
+    return "Revisa el aviso de Mypy."
