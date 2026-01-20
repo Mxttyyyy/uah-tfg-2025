@@ -46,7 +46,9 @@ def analyze_security(
 
     if result.returncode not in (0, 1):
         stderr = (result.stderr or "").strip()
-        raise RuntimeError(stderr or f"Bandit falló con un error (exit code {result.returncode}).")
+        raise RuntimeError(
+            stderr or f"Bandit falló con un error (exit code {result.returncode})."
+        )
 
     raw = (result.stdout or "").strip()
     if not raw:
@@ -70,7 +72,7 @@ def analyze_security(
     issues: List[Dict[str, Any]] = []
     for issue in results:
         if isinstance(issue, dict):
-            issues.append(_normalize_bandit_issue(issue))  # Annadimos a la lista cada issue normalizado
+            issues.append(_normalize_bandit_issue(issue))  # Agregamos a la lista cada issue normalizado
 
     return issues
 
@@ -87,7 +89,7 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
     """
     cmd = [
         "bandit",  # Herramienta empleada
-        "-f","json",  # Formato de salida JSON
+        "-f", "json",  # Formato de salida JSON
         "-n",  # Número de líneas de código adyacentes al issue detectado (contexto)
         "0",  # No se incluye ninguna línea de código, solo la referencia al problema
     ]
@@ -97,9 +99,9 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
     if isinstance(severity, str) and severity.lower() in {"all", "low", "medium", "high"}:
         cmd.append(f"--severity-level={severity.lower()}")  # Bandit solo acepta valores en minúsculas
 
-    # Nivel mínimo de confianza que Bandit asgina a una vulnerabilidad
+    # Nivel mínimo de confianza que Bandit asigna a una vulnerabilidad
     confidence = options.get("confidence-level")
-    if isinstance(confidence, str) and confidence.lower() in {"all", "low", "medium", "high"}:
+    if isinstance(confidence, str) and confidence.lower() in {"all","low","medium","high"}:
         cmd.append(f"--confidence-level={confidence.lower()}")
 
     # Reglas de seguridad que se deben ignorar
@@ -127,6 +129,7 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     Normaliza el issue a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
     """
+    # Obtenemos los campos relevantes a partir del issue sin normalizar
     rule_code = str(issue.get("test_id") or "")
     message = str(issue.get("issue_text") or "").strip()
     filename = str(issue.get("filename") or "input.py")
@@ -167,7 +170,7 @@ def _severity_from_bandit(bandit_severity: str) -> str:
     Mapea los niveles de severidad de Bandit (HIGH, MEDIUM, LOW) a los niveles normalizados del sistema (error, warning, info).
     """
     if bandit_severity == "HIGH":
-        return "error" # Problema crítico
+        return "error"  # Problema crítico
     if bandit_severity == "MEDIUM":
         return "warning"
 
