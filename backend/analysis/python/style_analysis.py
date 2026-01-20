@@ -23,7 +23,7 @@ def analyze_style(
     with tempfile.TemporaryDirectory(prefix="tfg_style_") as tmpdir:
         try:
             # Ejecutamos la herramienta externa mediante subprocess y capturamos su salida
-            result = subprocess.run( 
+            result = subprocess.run(
                 cmd,
                 input=code,
                 text=True,
@@ -45,7 +45,9 @@ def analyze_style(
 
     if result.returncode not in (0, 1):
         stderr = (result.stderr or "").strip()
-        raise RuntimeError(stderr or f"Ruff falló con un error (exit code {result.returncode}).")
+        raise RuntimeError(
+            stderr or f"Ruff falló con un error (exit code {result.returncode})."
+        )
 
     raw = (result.stdout or "").strip()
     if not raw:
@@ -63,7 +65,7 @@ def analyze_style(
     issues: List[Dict[str, Any]] = []
     for issue in data:
         if isinstance(issue, dict):
-            issues.append(_normalize_ruff_issue(issue))  # Annadimos a la lista cada issue normalizado
+            issues.append(_normalize_ruff_issue(issue))  # Agregamos a la lista cada issue normalizado
 
     return issues
 
@@ -76,11 +78,9 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
         "ruff",  # Herramienta empleada
         "check",  # Modo lint
         "--isolated",  # Ignora cualquier config externa
-        "--no-cache",  # Evita cache (para que el análisis depende solo del código actual)
-        "--output-format",
-        "json",  # Formato de salida JSON
-        "--stdin-filename",
-        "input.py",  # Archivo ficticio para tratar el código como .py
+        "--no-cache",  # Evita cache (para que el análisis dependa solo del código actual)
+        "--output-format", "json",  # Formato de salida JSON
+        "--stdin-filename", "input.py",  # Archivo ficticio para tratar el código como un .py
     ]
 
     # Opciones para filtrar reglas de Ruff
@@ -88,7 +88,7 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     ignore = options.get("ignore")
     extend_select = options.get("extend-select")
 
-    # Annadimos flags solo si las opciones son listas de strings válidas (ej. ["F401", "E501"])
+    # Agregamos flags solo si las opciones son listas de strings válidas (ej. ["F401", "E501"])
     if is_str_list(select):
         cmd += ["--select", ",".join(select)]
     if is_str_list(ignore):
@@ -111,6 +111,7 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     Normaliza el issue a un formato base.
     Eliminamos campos que el usuario no necesita (como cell, fix, etc.)
     """
+    # Obtenemos los campos relevantes a partir del issue sin normalizar
     rule_code = str(issue.get("code") or "")
     message = str(issue.get("message") or "").strip()
 
@@ -125,7 +126,8 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     help_url = issue.get("url")
     if not isinstance(help_url, str) or not help_url.strip():
         help_url = None
-        
+
+    # Construimos el issue normalizado en base a los campos obtenidos
     return {
         "tool": "ruff",
         "category": "style",
@@ -150,7 +152,7 @@ def _severity_from_rule_code(rule_code: str) -> str:
     if not rule_code:
         return "warning"
 
-    # Reglas que suelen indicar fallo real (en runtime o por sintaxis) (ampliable)
+    # Reglas que suelen indicar fallo real (en runtime o por sintaxis)
     error_codes = {
         "E999",  # syntax-error
         "F821",  # undefined-name -> NameError
@@ -182,29 +184,28 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
         "F811": "Has redefinido un nombre (ya estaba definido). Renombra una de las variables o elimina la redefinición.",
         "F821": "Estás usando un nombre no definido. Revisa si falta un import, una definición o hay un typo.",
         "F823": "Variable local usada antes de asignarse. Asegúrate de asignarla antes de usarla.",
-
         # Pycodestyle (E/W)
         "E501": "Divide la línea o reformatea para respetar la longitud máxima.",
         "E711": "Para comparar con None usa 'is None' o 'is not None' (no '== None').",
         "E712": "Evita '== True/False'. Usa 'if cond:' / 'if not cond:' (o 'is True/False' si buscas identidad).",
         "E722": "Evita 'except:' a secas. Captura una excepción concreta o usa 'except Exception:' si procede.",
-
         # Pyupgrade (UP)
         "UP006": "Si tu proyecto usa Python 3.9+, cambia typing.List/Dict por list[]/dict[] (PEP 585).",
         "UP007": "Si tu proyecto usa Python 3.10+, usa 'X | Y' en vez de 'Union[X, Y]' (PEP 604).",
-
         # isort/imports (I)
         "I001": "Ordena los imports y mantén un orden consistente.",
     }
+
     if rule_code in tips:
         return tips[rule_code]
 
     # Sugerencias genéricas según la familia/prefijo de la regla
     prefix = rule_code[:1] if rule_code else ""
+
     if prefix == "F":
         return "Revisa variables/imports; suele indicar problemas de uso (p. ej., imports o nombres no definidos)."
     if prefix in ("E", "W"):
-        return "Ajusta estilo/formato; revisa el mensaje y aplica la corrección sugerida."
+        return ("Ajusta estilo/formato; revisa el mensaje y aplica la corrección sugerida.")
     if prefix == "I":
         return "Reordena los imports y mantén un orden consistente."
     if prefix == "N":
