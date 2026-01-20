@@ -27,7 +27,7 @@ def analyze_dead_code(
 
         # Construimos el comando de Vulture para analizar el código desde un archivo y obtener salida.
         cmd = _build_vulture_command(filename, options)
-        
+
         try:
             # Ejecutamos la herramienta externa mediante subprocess y capturamos su salida
             result = subprocess.run(
@@ -105,8 +105,8 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
     """
     Normaliza las líneas devueltas por Vulture a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
-    Formato de línea devuelta por Vulture:  <path>: <message> (NN% confidence).
-    Por ejemplo: input.py:1: unused import 'os' (90% confidence)
+    - Formato de línea devuelta por Vulture:  <path>: <message> (NN% confidence).
+    - Por ejemplo: input.py:1: unused import 'os' (90% confidence)
     """
     if not line:
         return None
@@ -145,8 +145,8 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
 def _extract_confidence(raw_msg: str) -> tuple[str, Optional[int]]:
     """
     Extrae el mensaje y el porcentaje de confianza incluido en un mensaje de Vulture.
-    Formato de entrada esperado: "<message> (NN% confidence)".
-    Por ejemplo: "unused import 'os' (90% confidence)"
+    - Formato de entrada esperado: "<message> (NN% confidence)".
+    - Por ejemplo: "unused import 'os' (90% confidence)"
     """
     # Comprobación para descartar mensajes que no contienen confianza
     if " (" not in raw_msg or not raw_msg.endswith(")"):
@@ -178,7 +178,7 @@ def _rule_code_from_message(message: str) -> str:
 
     # Caso 1: elementos no usados ("unused import", "unused function", etc.)
     if msg.startswith("unused "):
-        parts = msg.split(" ", 2)  # ["unused", "<tipo>", ...]
+        parts = msg.split(" ", 2)  # Obtenemos: ["unused", "<tipo>", ...]
         if len(parts) >= 2:
             return f"unused-{parts[1]}"  # Por ejemplo: "unused-import", "unused-function", etc.
         return "unused"
@@ -220,6 +220,7 @@ def _suggestion_for_vulture_rule(rule_code: str, message: str) -> str:
         "unused-property": "Elimina esta propiedad si no se utiliza o revisa accesos indirectos.",
         "unreachable-code": "Elimina este código inalcanzable o reestructura el flujo (return/raise/break antes).",
     }
+    
     if rule_code in tips:
         return tips[rule_code]
 
