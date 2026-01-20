@@ -5,6 +5,7 @@ from analysis.python.style_analysis import analyze_style
 from analysis.python.security_analysis import analyze_security
 from analysis.python.metrics_analysis import analyze_metrics
 from analysis.python.dead_code_analysis import analyze_dead_code
+from analysis.python.type_analysis import analyze_types
 
 
 def run_analysis(
@@ -47,7 +48,7 @@ def run_analysis(
         )
 
     # Validamos que las opciones por módulo (style/security/metrics/type/dead_code) sean objetos JSON (dict)
-    for key in ("style", "security", "metrics", "dead_code"):
+    for key in ("style", "security", "metrics", "dead_code", "types"):
         if key in options and not isinstance(options.get(key), dict):
             return _error_response(
                 language=language,
@@ -71,6 +72,7 @@ def run_analysis(
     security_options = options.get("security", {})
     metrics_options = options.get("metrics", {})
     dead_code_options = options.get("dead_code", {})
+    types_options = options.get("types", {})
 
     # ---------------------- Ejecutamos los análisis ----------------------
     # STYLE
@@ -126,10 +128,22 @@ def run_analysis(
             http_status=500,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
+    # TYPES
+    try:
+        types_issues = analyze_types(
+            code=code, options=types_options, timeout_seconds=timeout_seconds
+        )
 
+    except Exception as exc:
+        return _error_response(
+            language=language,
+            message=f"Error ejecutando análisis de tipos: {exc}",
+            http_status=500,
+            analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
 
     # Unificamos todas las issues para generar el resumen global
-    all_issues = style_issues + security_issues + dead_code_issues
+    all_issues = style_issues + security_issues + dead_code_issues + types_issues
     summary = _build_summary(all_issues)
 
     analysis_time_ms = int((time.perf_counter() - start) * 1000)
@@ -142,7 +156,7 @@ def run_analysis(
             "security": security_issues,
             "metrics": metrics,
             "dead_code": dead_code_issues,
-            "types": [],
+            "types": types_issues,
         },
     }
 

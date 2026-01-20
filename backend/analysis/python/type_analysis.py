@@ -76,15 +76,24 @@ def analyze_types(
         # input.py:3: note: See 'https://...' for more info
         # Para estos casos, se asocia la URL al último issue detectado mediante la variable last_issue_index
         help_url = _extract_help_url_from_note(line)
+        
         if help_url and last_issue_index is not None:
             issues[last_issue_index]["help_url"] = help_url  # Asociamos el enlace de ayuda al último issue detectado
             continue
-
+        
         # Extraemos los campos relevantes de la línea
         fields = _extract_mypy_fields(line)
         if not fields:
             continue
-
+        
+        # Si es note pero no es URL, no la tratamos como issue separado:
+        # la guardamos como "nota" dentro del último issue.
+        if fields.get("kind") == "note":
+            if last_issue_index is not None:
+                issues[last_issue_index].setdefault("notes", []).append(str(fields.get("msg") or "").strip())
+                continue
+        
+        # Si es ERROR, lo normalizamos y lo annadimos como issue
         issues.append(_normalize_mypy_issue(fields))
         last_issue_index = len(issues) - 1
 
@@ -107,6 +116,7 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
     - ignore_missing_imports
     - python_version
     - strict
+    - show_error_code_links
     - enable_error_codes
     - disable_error_codes
     """
@@ -116,7 +126,6 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
         "--no-error-summary",  # Quita la línea resumen final
         "--no-color-output",  # Desactiva el color en la salida para obtener texto plano fácil de procesar
         "--show-error-end",  # Incluye el rango completo (inicio/fin) del error para un marcado más preciso
-        "--show-error-code-links",  # Agrega una nota con URL a la documentación del código
         "--follow-imports", "skip",  # Evita analizar dependencias externas no incluidas explícitamente en el código del usuario
     ]
 
@@ -133,6 +142,11 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
     # Modo estricto (opcional, ya que activa muchas comprobaciones adicionales)
     if options.get("strict") is True:
         cmd.append("--strict")
+
+    # Agrega una nota con URL a la documentación del código
+    show_error_code_links = options.get("show_error_code_links", False)
+    if isinstance(show_error_code_links, bool) and show_error_code_links:
+        cmd.append("--show-error-code-links")
 
     # Activar o desactivar códigos de error concretos (listas de strings)
     enable_codes = options.get("enable_error_codes")
@@ -158,28 +172,22 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
 def _extract_help_url_from_note(line: str) -> Optional[str]:
     """
     Extrae la URL de ayuda incluida en una línea 'note' de Mypy.
-    Este tipo de líneas aparecen al usar la opción --show-error-code-links.
+    Este tipo de líneas aparecen al usar la opción --show-error-code-links en el comando de ejecución de Mypy
+    y no representan un issue nuevo, sino información adicional asociada al error previo.
+
     Ejemplo de línea esperada:
-    "input.py:8: note: See 'https://...' for more info"
+    - input.py:8: note: See https://... for more info
     """
-    marker = "See '"
-    if "note:" not in line or marker not in line:
-        return None
 
-    # Localizamos el inicio de la URL
-    start = line.find(marker)
-    if start == -1:
+    if "note:" not in line:
         return None
-    start += len(marker)
+ 
+    # Buscamos directamente una URL dentro de la línea
+    for token in line.split():
+        if token.startswith(("http://", "https://")):
+            return token.strip()
 
-    # Localizamos el final de la URL (comilla de cierre)
-    end = line.find("'", start)
-    if end == -1:
-        return None
-
-    # Extraemos y validamos la URL
-    url = line[start:end].strip()
-    return url if url.startswith(("http://", "https://")) else None
+    return None
 
 
 # Expresión regular para parsear una línea de salida de Mypy.
@@ -297,7 +305,7 @@ def _suggestion_for_mypy_rule(rule_code: str, message: str) -> str:
     tips = {
         "arg-type": "Revisa los tipos de los argumentos: el tipo esperado y el que estás pasando no coinciden.",
         "assignment": "Revisa la asignación: la variable y el valor tienen tipos incompatibles.",
-        "return-value": "El tipo que devuelves no coincide con el return type anotado.",
+        "return-value": "El tipo del valor que devuelves no coincide con el return type anotado.",
         "attr-defined": "Estás accediendo a un atributo que Mypy cree que no existe para ese tipo.",
         "name-defined": "Estás usando un nombre no definido (posible typo o falta de definición/import).",
         "operator": "Estás usando un operador con tipos incompatibles (por ejemplo, sumar int con str).",
@@ -309,6 +317,7 @@ def _suggestion_for_mypy_rule(rule_code: str, message: str) -> str:
         "list-item": "Los elementos de la lista no coinciden con el tipo esperado.",
         "dict-item": "Las claves o valores del diccionario no coinciden con los tipos anotados.",
         "has-type": "Añade anotaciones de tipo explícitas para ayudar a Mypy a inferir correctamente.",
+        "call-overload": "La llamada no coincide con ninguna sobrecarga (@overload). Ajusta el tipo del argumento o añade una variante @overload que acepte ese tipo."
     }
 
     if rule_code in tips:
