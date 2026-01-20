@@ -17,14 +17,14 @@ def analyze_metrics(
       *Valores altos indican lógica compleja y código más dificil de mantener.
 
     - maintainability_index: índice de mantenibilidad del código (mi).
-      *Cuanto mayor es el valor, mejor es la mantibilidad global.
+      *Cuanto mayor es el valor, mejor es la mantenibilidad global.
 
     - raw_metrics: métricas básicas de tamanno y estructura del código,
       como LOC/LLOC/SLOC, comentarios, líneas en blanco, etc. (raw)
     """
     options = options or {}
 
-    # En Windows, Radon puede necesitar que fuerces el encoding a UTF-8.
+    # En Windows, Radon puede necesitar que se fuerce el encoding a UTF-8.
     env = os.environ.copy()
     env.setdefault("RADONFILESENCODING", "utf-8")
 
@@ -183,7 +183,6 @@ def _get_file_result(data: Any, filename: str) -> Any:
     """
     Radon devuelve los resultados agrupados por nombre de archivo, normalmente en un dict { "input.py": <resultado> },
     donde <resultado> contiene todos los campos de una métrica concreta (CC, MI o RAW).
-    obtenemos los campos de cada métrica.
 
     Esta función extrae y devuelve el conjunto completo de campos asociado al archivo indicado.
     """
@@ -195,7 +194,7 @@ def _get_file_result(data: Any, filename: str) -> Any:
         # Así evitamos fallos si Radon usa una clave distinta para el archivo analizado
         if len(data) == 1:
             return next(iter(data.values()))
-        
+
     # Si en un futuro hay multiples archivos, devolvemos todo el dict completo
     return data
 
@@ -205,7 +204,8 @@ def _normalize_cc(data: Any, filename: str) -> Dict[str, Any]:
     Normaliza el JSON de la métrica CC a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
     """
-    file_result = _get_file_result(data, filename) # file_result = "name": ".....", "type": "function", "lineno": 10, etc.
+    # Obtenemos los campos asociados al archivo analizado 
+    file_result = _get_file_result(data, filename)  # file_result = "name": ".....", "type": "function", "lineno": 10, etc.
 
     blocks = []  # Lista para guardar cada bloque analizado (función, método, clase)
     if isinstance(file_result, list):
@@ -235,11 +235,12 @@ def _normalize_mi(data: Any, filename: str) -> Dict[str, Any]:
     Normaliza el JSON de la métrica MI a un formato base.
     El formato puede variar según versión/opciones, así que lo hacemos tolerante.
     """
-    file_result = _get_file_result(data, filename) # file_result = "mi": "76.1", "rank": "B"
+    # Obtenemos los campos asociados al archivo analizado 
+    file_result = _get_file_result(data, filename)  # file_result = "mi": "76.1", "rank": "B"
 
-    # Casos típicos: dict con {"rank": "...", "mi": ...}
+    # Caso típico: dict con {"rank": "...", "mi": ...}
     if isinstance(file_result, dict):
-        score = (file_result.get("mi") if "mi" in file_result else file_result.get("score"))  # Algunas versiones usan "mi", otras usan "score"
+        score = file_result.get("mi") if "mi" in file_result else file_result.get("score")  # Algunas versiones usan "mi", otras usan "score"
         rank = file_result.get("rank")
         return {
             "file": filename,
@@ -263,7 +264,8 @@ def _normalize_raw(data: Any, filename: str) -> Dict[str, Any]:
     Normaliza el JSON de las métricas básicas a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
     """
-    file_result = _get_file_result(data, filename) # file_result = "loc": 10, "lloc": 5, "comments": 5, etc.
+    # Obtenemos los campos asociados al archivo analizado 
+    file_result = _get_file_result(data, filename)  # file_result = "loc": 10, "lloc": 5, "comments": 5, etc.
 
     # Comprobamos que el resultado obtenido sea un dict
     if not isinstance(file_result, dict):
