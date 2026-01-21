@@ -31,6 +31,7 @@ def analyze_security(
                 capture_output=True,
                 cwd=tmpdir,
                 timeout=timeout_seconds,
+                encoding="utf-8",
             )
         except FileNotFoundError as exc:
             raise RuntimeError(
@@ -95,12 +96,12 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
     ]
 
     # Nivel mínimo de severidad que deben tener las vulnerabilidades para ser reportadas
-    severity = options.get("severity-level")
+    severity = options.get("severity_level")
     if isinstance(severity, str) and severity.lower() in {"all", "low", "medium", "high"}:
         cmd.append(f"--severity-level={severity.lower()}")  # Bandit solo acepta valores en minúsculas
 
     # Nivel mínimo de confianza que Bandit asigna a una vulnerabilidad
-    confidence = options.get("confidence-level")
+    confidence = options.get("confidence_level")
     if isinstance(confidence, str) and confidence.lower() in {"all","low","medium","high"}:
         cmd.append(f"--confidence-level={confidence.lower()}")
 

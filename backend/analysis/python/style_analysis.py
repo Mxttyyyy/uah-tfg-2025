@@ -30,6 +30,7 @@ def analyze_style(
                 capture_output=True,
                 cwd=tmpdir,
                 timeout=timeout_seconds,
+                encoding="utf-8",
             )
         except FileNotFoundError as exc:
             raise RuntimeError(
@@ -86,7 +87,7 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     # Opciones para filtrar reglas de Ruff
     select = options.get("select")
     ignore = options.get("ignore")
-    extend_select = options.get("extend-select")
+    extend_select = options.get("extend_select")
 
     # Agregamos flags solo si las opciones son listas de strings válidas (ej. ["F401", "E501"])
     if is_str_list(select):
