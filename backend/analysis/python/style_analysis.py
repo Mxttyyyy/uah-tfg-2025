@@ -120,7 +120,7 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     line = to_int(location.get("row"))
     column = to_int(location.get("column"))
 
-    suggestion = _suggestion_for_rule_code(rule_code, message)
+    suggestion = _suggestion_for_rule_code(rule_code)
     severity = _severity_from_rule_code(rule_code)
 
     help_url = issue.get("url")
@@ -172,7 +172,7 @@ def _severity_from_rule_code(rule_code: str) -> str:
     return "info"
 
 
-def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
+def _suggestion_for_rule_code(rule_code: str) -> str:
     """
     Devuelve una sugerencia a partir del código de regla de Ruff.
     """
@@ -213,7 +213,4 @@ def _suggestion_for_rule_code(rule_code: str, message: str) -> str:
     if rule_code.startswith("UP"):
         return "Moderniza la sintaxis según tu versión de Python (pyupgrade)."
 
-    if message:
-        return "Revisa este aviso y ajusta el código según la recomendación."
-
-    return "Revisa este aviso."
+    return "Revisa este aviso y ajusta el código según la recomendación."

@@ -126,7 +126,7 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
 
     rule_code = _rule_code_from_message(message)
     severity = _severity_from_confidence(confidence)
-    suggestion = _suggestion_for_vulture_rule(rule_code, message)
+    suggestion = _suggestion_for_vulture_rule(rule_code)
 
     return {
         "tool": "vulture",
@@ -203,7 +203,7 @@ def _severity_from_confidence(confidence: Optional[int]) -> str:
     return "info"
 
 
-def _suggestion_for_vulture_rule(rule_code: str, message: str) -> str:
+def _suggestion_for_vulture_rule(rule_code: str) -> str:
     """
     Genera una sugerencia explicativa a partir del código de regla generado por una advertencia de Vulture.
     """
@@ -224,7 +224,4 @@ def _suggestion_for_vulture_rule(rule_code: str, message: str) -> str:
     if rule_code in tips:
         return tips[rule_code]
 
-    if message:
-        return "Revisa este aviso: puede ser un falso positivo si hay usos dinámicos."
-
-    return "Revisa este aviso."
+    return "Revisa este aviso: puede ser un falso positivo si hay usos dinámicos."

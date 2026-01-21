@@ -148,7 +148,7 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         raw_help_url = None
 
     help_url = _normalize_bandit_help_url(raw_help_url)
-    suggestion = _suggestion_for_bandit_rule(rule_code, message)
+    suggestion = _suggestion_for_bandit_rule(rule_code)
 
     return {
         "tool": "bandit",
@@ -177,7 +177,7 @@ def _severity_from_bandit(bandit_severity: str) -> str:
     return "info"
 
 
-def _suggestion_for_bandit_rule(rule_code: str, message: str) -> str:
+def _suggestion_for_bandit_rule(rule_code: str) -> str:
     """
     Devuelve una sugerencia a partir del código de regla de Bandit.
     """
@@ -195,10 +195,7 @@ def _suggestion_for_bandit_rule(rule_code: str, message: str) -> str:
     if rule_code in tips:
         return tips[rule_code]
 
-    if message:
-        return "Revisa esta alerta de seguridad y ajusta el código para evitar patrones inseguros."
-
-    return "Revisa esta alerta de seguridad."
+    return "Revisa esta alerta de seguridad y ajusta el código para evitar patrones inseguros."
 
 
 def _normalize_bandit_help_url(url: str) -> str:
