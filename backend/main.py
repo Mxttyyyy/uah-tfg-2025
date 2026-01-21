@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import logging
 
-from analysis.runner import run_analysis  ### runner.py
+from analysis.runner import run_analysis
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class AnalyzeRequest(BaseModel):
     options: Optional[Dict[str, Any]] = None  # Campo para flags del analizador
 
 
-######### CORS (o proxy en vite)
+######### CORS (o proxy en vite) ¿?
 
 # ----------------------------ENDPOINTS----------------------------
 
@@ -34,6 +34,7 @@ class AnalyzeRequest(BaseModel):
 @app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
+
 
 # Endpoint para analizar el código
 @app.post("/analyze")
