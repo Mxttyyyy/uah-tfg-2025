@@ -76,24 +76,24 @@ def analyze_types(
         # input.py:3: note: See 'https://...' for more info
         # Para estos casos, se asocia la URL al último issue detectado mediante la variable last_issue_index
         help_url = _extract_help_url_from_note(line)
-        
+
         if help_url and last_issue_index is not None:
             issues[last_issue_index]["help_url"] = help_url  # Asociamos el enlace de ayuda al último issue detectado
             continue
-        
+
         # Extraemos los campos relevantes de la línea
         fields = _extract_mypy_fields(line)
         if not fields:
             continue
-        
+
         # Si es note pero no es URL, no la tratamos como issue separado:
         # la guardamos como "nota" dentro del último issue.
         if fields.get("kind") == "note":
             if last_issue_index is not None:
                 issues[last_issue_index].setdefault("notes", []).append(str(fields.get("msg") or "").strip())
                 continue
-        
-        # Si es ERROR, lo normalizamos y lo annadimos como issue
+
+        # Si es ERROR, lo normalizamos y lo agregamos como issue
         issues.append(_normalize_mypy_issue(fields))
         last_issue_index = len(issues) - 1
 
@@ -123,7 +123,7 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
     cmd = [
         "mypy",  # Herramienta empleada
         "--config-file=",  # Ignora cualquier configuración local (mypy.ini/pyproject)
-        "--no-error-summary",  # Quita la línea resumen final
+        "--no-error-summary",  # Quita la línea de resumen final
         "--no-color-output",  # Desactiva el color en la salida para obtener texto plano fácil de procesar
         "--show-error-end",  # Incluye el rango completo (inicio/fin) del error para un marcado más preciso
         "--follow-imports", "skip",  # Evita analizar dependencias externas no incluidas explícitamente en el código del usuario
@@ -181,7 +181,7 @@ def _extract_help_url_from_note(line: str) -> Optional[str]:
 
     if "note:" not in line:
         return None
- 
+
     # Buscamos directamente una URL dentro de la línea
     for token in line.split():
         if token.startswith(("http://", "https://")):
@@ -191,7 +191,7 @@ def _extract_help_url_from_note(line: str) -> Optional[str]:
 
 
 # Expresión regular para parsear una línea de salida de Mypy.
-# Ejemplos de líneas de salida de Mypy:
+# Ejemplos de líneas de salida de Mypy (entre otras):
 #  input.py:3: error: mensaje
 #  input.py:3:5: error: mensaje
 #  input.py:3:5:7:9: note: mensaje
@@ -254,7 +254,7 @@ def _normalize_mypy_issue(fields: Dict[str, Any]) -> Dict[str, Any]:
         "path": str(fields.get("path") or "input.py"),
         "line": fields.get("line"),
         "column": fields.get("col"),  # Campo opcional, aunque forma parte de la localización básica del issue
-        "suggestion": _suggestion_for_mypy_rule(rule_code, message),
+        "suggestion": _suggestion_for_mypy_rule(rule_code),
     }
 
     # Campos opcionales menos frecuentes
@@ -297,7 +297,7 @@ def _extract_error_code(message: str) -> tuple[str, Optional[str]]:
     return clean_message, error_code
 
 
-def _suggestion_for_mypy_rule(rule_code: str, message: str) -> str:
+def _suggestion_for_mypy_rule(rule_code: str) -> str:
     """
     Genera una sugerencia explicativa a partir del código de regla emitido por Mypy.
     """
@@ -317,7 +317,7 @@ def _suggestion_for_mypy_rule(rule_code: str, message: str) -> str:
         "list-item": "Los elementos de la lista no coinciden con el tipo esperado.",
         "dict-item": "Las claves o valores del diccionario no coinciden con los tipos anotados.",
         "has-type": "Añade anotaciones de tipo explícitas para ayudar a Mypy a inferir correctamente.",
-        "call-overload": "La llamada no coincide con ninguna sobrecarga (@overload). Ajusta el tipo del argumento o añade una variante @overload que acepte ese tipo."
+        "call-overload": "La llamada no coincide con ninguna sobrecarga (@overload). Ajusta el tipo del argumento o añade una variante @overload que acepte ese tipo.",
     }
 
     if rule_code in tips:
@@ -325,9 +325,6 @@ def _suggestion_for_mypy_rule(rule_code: str, message: str) -> str:
 
     # Si no tenemos un tip específico, devolvemos una sugerencia genérica
     if rule_code:
-        return "Añade o ajusta anotaciones de tipo y revisa el mensaje; Mypy indica una incompatibilidad de tipos."
-
-    if message:
-        return "Revisa el mensaje de Mypy y ajusta las anotaciones/uso de tipos."
+        return "Añade o ajusta anotaciones de tipo y revisa el mensaje de Mypy."
 
     return "Revisa el aviso de Mypy."
