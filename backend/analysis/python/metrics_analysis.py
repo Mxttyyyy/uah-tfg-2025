@@ -82,14 +82,25 @@ def _build_radon_cc_command(filename: str, options: Dict[str, Any]) -> List[str]
         "-s",  # Incluye el valor numérico de complejidad
     ]
 
+    # Validamos el rango
+    cc_allowed = {"A", "B", "C", "D", "E", "F"}
+
     # Permite filtrar por rango (A-F). Si no se pasa la opción, Radon usa sus defaults (A-F).
     cc_min = options.get("cc_min") or options.get("min")
     cc_max = options.get("cc_max") or options.get("max")
-
+    
+    # Validamos los campos
     if isinstance(cc_min, str) and cc_min.strip():
-        cmd += ["--min", cc_min.strip().upper()]
+        cc_min = cc_min.strip().upper()
+        if cc_min not in cc_allowed:
+            raise ValueError("options.metrics.cc_min debe ser una letra entre A y F.")
+        cmd += ["--min", cc_min]
+
     if isinstance(cc_max, str) and cc_max.strip():
-        cmd += ["--max", cc_max.strip().upper()]
+        cc_max = cc_max.strip().upper()
+        if cc_max not in cc_allowed:
+            raise ValueError("options.metrics.cc_max debe ser una letra entre A y F.")
+        cmd += ["--max", cc_max]
 
     cmd.append(filename)
     return cmd
@@ -106,13 +117,25 @@ def _build_radon_mi_command(filename: str, options: Dict[str, Any]) -> List[str]
         "-s",  # Incluye el valor numérico de MI
     ]
 
+    # Validamos el rango
+    mi_allowed = {"A", "B", "C"}
+
     # Permite filtrar por rango (A-F). Si no se pasa la opción, Radon usa sus defaults (A-C).
     mi_min = options.get("mi_min")
     mi_max = options.get("mi_max")
+
+    # Validamos los campos
     if isinstance(mi_min, str) and mi_min.strip():
-        cmd += ["--min", mi_min.strip().upper()]
+        mi_min = mi_min.strip().upper()
+        if mi_min not in mi_allowed:
+            raise ValueError("options.metrics.mi_min debe ser 'A', 'B' o 'C'.")
+        cmd += ["--min", mi_min]
+
     if isinstance(mi_max, str) and mi_max.strip():
-        cmd += ["--max", mi_max.strip().upper()]
+        mi_max = mi_max.strip().upper()
+        if mi_max not in mi_allowed:
+            raise ValueError("options.metrics.mi_max debe ser 'A', 'B' o 'C'.")
+        cmd += ["--max", mi_max]
 
     cmd.append(filename)
     return cmd

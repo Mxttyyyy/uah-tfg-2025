@@ -46,6 +46,10 @@ def analyze_style(
 
     if result.returncode not in (0, 1):
         stderr = (result.stderr or "").strip()
+        if options:
+            raise ValueError(
+                stderr or "Opciones inválidas para Ruff."
+            )
         raise RuntimeError(
             stderr or f"Ruff falló con un error (exit code {result.returncode})."
         )
@@ -90,12 +94,13 @@ def _build_ruff_command(options: Dict[str, Any]) -> List[str]:
     extend_select = options.get("extend_select")
 
     # Agregamos flags solo si las opciones son listas de strings válidas (ej. ["F401", "E501"])
+    # Normalizamos los códigos de regla: eliminamos espacios y usamos mayúsculas
     if is_str_list(select):
-        cmd += ["--select", ",".join(select)]
+        cmd += ["--select", ",".join(s.strip().upper() for s in select)]
     if is_str_list(ignore):
-        cmd += ["--ignore", ",".join(ignore)]
+        cmd += ["--ignore", ",".join(i.strip().upper() for i in ignore)]
     if is_str_list(extend_select):
-        cmd += ["--extend-select", ",".join(extend_select)]
+        cmd += ["--extend-select", ",".join(es.strip().upper() for es in extend_select)]
 
     # Leer desde stdin
     cmd.append("-")

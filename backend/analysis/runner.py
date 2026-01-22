@@ -109,6 +109,14 @@ def run_analysis(
             )
 
         # Si ha ocurrido algún fallo en el análisis, devolvemos un mensaje de error
+        except ValueError as exc:
+            return _error_response(
+                language=language,
+                message=f"Opciones inválidas: {exc}",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+            )
+        
         except Exception as exc:
             return _error_response(
                 language=language,
@@ -123,6 +131,14 @@ def run_analysis(
                 code=code, options=security_options, timeout_seconds=timeout_seconds
             )
 
+        except ValueError as exc:
+            return _error_response(
+                language=language,
+                message=f"Opciones inválidas: {exc}",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+            )
+        
         except Exception as exc:
             return _error_response(
                 language=language,
@@ -135,6 +151,14 @@ def run_analysis(
         try:
             metrics = analyze_metrics(
                 code=code, options=metrics_options, timeout_seconds=timeout_seconds
+            )
+        
+        except ValueError as exc:
+            return _error_response(
+                language=language,
+                message=f"Opciones inválidas: {exc}",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
 
         except Exception as exc:
@@ -149,6 +173,14 @@ def run_analysis(
         try:
             dead_code_issues = analyze_dead_code(
                 code=code, options=dead_code_options, timeout_seconds=timeout_seconds
+            )
+
+        except ValueError as exc:
+            return _error_response(
+                language=language,
+                message=f"Opciones inválidas: {exc}",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
 
         except Exception as exc:

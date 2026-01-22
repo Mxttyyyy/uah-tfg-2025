@@ -137,7 +137,13 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
     # Permite fijar versión de Python
     py_version = options.get("python_version")
     if isinstance(py_version, str) and py_version.strip():
-        cmd += ["--python-version", py_version.strip()]
+        pv = py_version.strip()
+        # Validamos para que tenga el formato 'X.Y'
+        if pv.count(".") == 1 and all(part.isdigit() for part in pv.split(".")):
+             cmd += ["--python-version", pv]
+        else:
+            raise ValueError(f"options.tpes.python_version debe tener formato 'X.Y' (por ejemplo, '3.10').")
+       
 
     # Modo estricto (opcional, ya que activa muchas comprobaciones adicionales)
     if options.get("strict") is True:

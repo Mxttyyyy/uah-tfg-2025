@@ -47,6 +47,10 @@ def analyze_security(
 
     if result.returncode not in (0, 1):
         stderr = (result.stderr or "").strip()
+        if options:
+            raise ValueError(
+                stderr or f"Opciones inválidas para Bandit."
+            )
         raise RuntimeError(
             stderr or f"Bandit falló con un error (exit code {result.returncode})."
         )
@@ -108,12 +112,12 @@ def _build_bandit_command(options: Dict[str, Any]) -> List[str]:
     # Reglas de seguridad que se deben ignorar
     skip = options.get("skip")
     if is_str_list(skip):
-        cmd += ["--skip", ",".join(skip)]
+        cmd += ["--skip", ",".join(s.strip().upper() for s in skip)]
 
     # Reglas de seguridad que se deben ejecutar
     tests = options.get("tests")
     if is_str_list(tests):
-        cmd += ["--tests", ",".join(tests)]
+        cmd += ["--tests", ",".join(t.strip().upper() for t in tests)]
 
     # Leer desde stdin
     cmd.append("-")

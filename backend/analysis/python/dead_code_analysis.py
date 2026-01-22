@@ -54,7 +54,13 @@ def analyze_dead_code(
     if result.returncode in (1, 2):
         stderr = (result.stderr or "").strip()
         stdout = (result.stdout or "").strip()
-        raise RuntimeError(stderr or stdout or f"Vulture falló con un error (exit code {result.returncode}).")
+        if options:
+            raise ValueError(
+                stderr or stdout or "Opciones inválidas para Vulture."
+            )
+        raise RuntimeError(
+            stderr or stdout or f"Vulture falló con un error (exit code {result.returncode})."
+            )
 
     raw = (result.stdout or "").strip()
     if not raw:
@@ -80,17 +86,18 @@ def _build_vulture_command(filename: str, options: Dict[str, Any]) -> List[str]:
     """
     cmd = ["vulture"]
 
+    # Validamos los campos
     min_confidence = options.get("min_confidence", 60)
     if isinstance(min_confidence, int) and 0 <= min_confidence <= 100:
         cmd += ["--min-confidence", str(min_confidence)]
 
     ignore_names = options.get("ignore_names")
     if is_str_list(ignore_names):
-        cmd += ["--ignore-names", ",".join(ignore_names)]
+        cmd += ["--ignore-names", ",".join(i_n.strip().upper() for i_n in ignore_names)]
 
     ignore_decorators = options.get("ignore_decorators")
     if is_str_list(ignore_decorators):
-        cmd += ["--ignore-decorators", ",".join(ignore_decorators)]
+        cmd += ["--ignore-decorators", ",".join(i_d.strip().upper() for i_d in ignore_decorators)]
 
     cmd.append(filename)
     return cmd
