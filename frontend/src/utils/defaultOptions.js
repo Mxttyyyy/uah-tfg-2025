@@ -11,7 +11,7 @@ export const DEFAULT_TIMEOUT_SECONDS = 10;
  */
 export function createDefaultAnalyzeOptions() {
   return {
-    // Por defecto, ejecutamos todos los análisis
+    // Por defecto, activamos todos los análisis
     enabled: [...ANALYSIS_KEYS],
 
     // Timeout global que el backend aplica al ejecutar sus herramientas de análisis
@@ -66,7 +66,7 @@ export function createDefaultAnalyzeOptions() {
 }
 
 /**
- * Crea el cuerpo base de la petición POST /analyze
+ * Crea la plantilla de la petición POST /analyze
  * El código lo rellenará el usuario en la UI.
  */
 export function createDefaultAnalyzeRequest() {
