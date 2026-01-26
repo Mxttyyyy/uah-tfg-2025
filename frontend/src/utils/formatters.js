@@ -65,7 +65,7 @@ export function sortIssuesByLocation(issues) {
 
   // Copiamos la lista para no modificar la original
   const issuesCopy = [...issues];
-  
+
   /* Ordenamos la copia con un comparador, internamente sucede lo siguiente:
   - devuelve < 0 si a va antes que b
   - devuelve > 0 si b va antes que a

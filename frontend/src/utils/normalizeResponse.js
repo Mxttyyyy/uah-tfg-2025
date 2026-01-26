@@ -3,7 +3,7 @@
 /** 
  * Plantilla con valores por defecto para la UI
  * para garantizar claves y tipos aunque falten datos del backend
- */  
+ */
 function createEmptyResponse() {
   return {
     language: "unknown",
