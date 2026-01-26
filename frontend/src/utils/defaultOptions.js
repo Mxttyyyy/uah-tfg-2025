@@ -1,3 +1,4 @@
+// Define opciones por defecto y construye la petición base para /analyze.
 
 // Tipos de análisis permitidos por el backend (options.enabled)
 export const ANALYSIS_KEYS = ["style", "security", "metrics", "dead_code", "types"];

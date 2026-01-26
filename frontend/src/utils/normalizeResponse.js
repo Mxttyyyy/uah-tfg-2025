@@ -1,7 +1,9 @@
-// Normaliza la respuesta de /analyze para que la UI siempre reciba un objeto válido
+// Normaliza la respuesta de /analyze para que la UI siempre reciba un objeto válido.
 
-// Plantilla con valores por defecto para la UI 
-// para garantizar claves y tipos aunque falten datos del backend
+/** 
+ * Plantilla con valores por defecto para la UI
+ * para garantizar claves y tipos aunque falten datos del backend
+ */  
 function createEmptyResponse() {
   return {
     language: "unknown",
@@ -21,25 +23,32 @@ function createEmptyResponse() {
   };
 }
 
-
 // ------ Funciones para validar y normalizar valores ------
 
-// True si es un objeto JSON "normal" (no null y no array)
+/**
+ * DevuelveTrue si es un objeto JSON "normal" (no null y no array)
+ */
 function isPlainObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-// Devuelve un número finito o el valor por defecto
+/**
+ * Devuelve un número finito o el valor por defecto
+ */
 function asNumber(value, fallback) {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
-// Devuelve un string o el valor por defecto
+/**
+ * Devuelve un string o el valor por defecto
+ */
 function asString(value, fallback) {
   return typeof value === "string" ? value : fallback;
 }
 
-// Devuelve un array o [] si no lo es
+/**
+ * Devuelve un array o [] si no lo es
+ */
 function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
