@@ -51,7 +51,7 @@ export async function postJson(path, body, options) {
     } catch (e) {
         // Timeout/aborto explícito del fetch
         if (e?.name === "AbortError") {
-            const err = new Error(`Timeout de ${timeoutMs} ms`);
+            const err = new Error(`Tiempo de espera agotado: ${timeoutMs} ms.`);
             err.status = 0; // 0 --> "sin respuesta HTTP"
             err.data = null;
             throw err;
