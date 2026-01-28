@@ -13,22 +13,30 @@ import ErrorIcon from "./icons/ErrorIcon";
  * - onClose: function (opcional) -> si se pasa, muestra botón de cerrar
  */
 export default function Alert({ variant = "info", title, children, onClose }) {
+
+  // Estilos según el tipo de alerta
   const styles = getVariantStyles(variant);
 
   return (
     <div className={`rounded-lg border p-4 ${styles.container}`} role="alert">
       <div className="flex items-start gap-3  ">
+
+        {/* Icono */}
         <span className={`mt-0.5 ${styles.icon}`} aria-hidden="true">
           {getVariantIcon(variant)}
         </span>
 
+        {/* Contenido (título + mensaje) */}
         <div className="min-w-0 flex-1">
           {title ? (
-            <div className={`font-semibold ${styles.title} pb-1.5`}>{title}</div>
+            <div className={`font-semibold ${styles.title} pb-1.5`}>
+              {title}
+            </div>
           ) : null}
           <div className={`text-sm ${styles.text}`}>{children}</div>
         </div>
 
+        {/* Botón de cierre */}
         {typeof onClose === "function" ? (
           <button
             type="button"

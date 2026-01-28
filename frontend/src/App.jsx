@@ -6,7 +6,7 @@ export default function App() {
     <div className="mx-auto max-w-3xl space-y-4flex flex-col p-6 gap-10">
       <Spinner size="md" label="Cargando análisis..." />
       <Alert variant="success" title="Success" onClose={() => {}}>
-        dsjkdsaks lsdkjdkl jhfdskjf fjdhnf jfds fjdsfdj fdjsfdsf jf fdsk f dsjmsd sna
+        Ha ocurrido un error en uno de los módulos de análisis. Vuelva a ejecutar el análisis.
       </Alert>
     </div>
   );
