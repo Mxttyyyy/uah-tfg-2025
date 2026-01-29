@@ -30,7 +30,7 @@ export async function analyzeCode(payload) {
     const timeoutMs = (backendTimeoutSeconds + 5) * 1000;
 
     try {
-        const data = await postJson("/analyze", payload, { timeoutMs });
+        const data = await postJson("/api/analyze", payload, { timeoutMs });
 
         // Aseguramos un formato estable para la UI
         return normalizeAnalyzeResponse(data);
