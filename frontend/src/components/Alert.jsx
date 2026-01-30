@@ -19,7 +19,7 @@ export default function Alert({ variant = "info", title, children, onClose }) {
 
   return (
     <div className={`rounded-lg border p-4 ${styles.container}`} role="alert">
-      <div className="flex items-start gap-3  ">
+      <div className="flex items-start gap-3">
 
         {/* Icono */}
         <span className={`mt-0.5 ${styles.icon}`} aria-hidden="true">
