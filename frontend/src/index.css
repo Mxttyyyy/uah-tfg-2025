@@ -26,9 +26,9 @@ code, pre, textarea {
     rgba(33, 88, 207, 0.15) 55%,
     rgba(255, 255, 255, 0) 75%
   );
-  filter: blur(5px);
+  filter: blur(8px);
   transform: translateY(8px);
-  animation: headerGlowPulse 1s ease-in-out infinite;
+  animation: headerGlowPulse s ease-in-out infinite;
 }
 
 @keyframes headerGlowPulse {
