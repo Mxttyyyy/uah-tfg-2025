@@ -1,4 +1,4 @@
-import ActionBar from "./ActionBar";
+import ActionBar from "./CodeActions";
 /**
  * Área de entrada de código.
  *
