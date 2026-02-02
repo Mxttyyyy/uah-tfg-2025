@@ -41,7 +41,7 @@ export default function CodeInput({
         className={[
           "w-full overflow-auto scrollbar-modern resize-y rounded-lg border border-gray-200 bg-gray-50 focus:bg-white ",
           "px-3 py-3 text-sm text-gray-900 transition",
-          "min-h-[320px] md:min-h-[380px] lg:min-h-[440px] xl:min-h-[520px] max-h-[60vh]",
+          "min-h-[220px] max-h-[clamp(320px,45vh,560px)]",
           "outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 focus:shadow-md",
           "disabled:cursor-not-allowed disabled:bg-gray-50",
         ].join(" ")}

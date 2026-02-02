@@ -23,6 +23,7 @@ import { isPlainObject } from "../utils/uiUtils";
  * - onChange: (nextOptions) => void
  */
 export default function OptionsPanel({ options, onChange }) {
+
   // Opciones normalizadas para garantizar una estructura válida
   const normalizedOptions = isPlainObject(options) ? options : {};
 
@@ -35,21 +36,11 @@ export default function OptionsPanel({ options, onChange }) {
       : 10;
 
   // Sub-objetos por módulo (siempre deben ser dicts para el backend)
-  const style = isPlainObject(normalizedOptions.style)
-    ? normalizedOptions.style
-    : {};
-  const security = isPlainObject(normalizedOptions.security)
-    ? normalizedOptions.security
-    : {};
-  const metrics = isPlainObject(normalizedOptions.metrics)
-    ? normalizedOptions.metrics
-    : {};
-  const deadCode = isPlainObject(normalizedOptions.dead_code)
-    ? normalizedOptions.dead_code
-    : {};
-  const types = isPlainObject(normalizedOptions.types)
-    ? normalizedOptions.types
-    : {};
+  const style = isPlainObject(normalizedOptions.style) ? normalizedOptions.style : {};
+  const security = isPlainObject(normalizedOptions.security) ? normalizedOptions.security : {};
+  const metrics = isPlainObject(normalizedOptions.metrics) ? normalizedOptions.metrics : {};
+  const deadCode = isPlainObject(normalizedOptions.dead_code) ? normalizedOptions.dead_code : {};
+  const types = isPlainObject(normalizedOptions.types) ? normalizedOptions.types : {};
 
   const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code", "types"];
 
@@ -81,7 +72,7 @@ export default function OptionsPanel({ options, onChange }) {
    * manteniendo un orden estable para preservar la coherencia visual.
    */
   function toggleEnabled(moduleName) {
-    let nextEnabled = enabled.slice(); // Creamos copia de enabled
+    let nextEnabled = enabled.slice();
 
     if (nextEnabled.includes(moduleName)) {
       nextEnabled = nextEnabled.filter((name) => name !== moduleName);
@@ -103,16 +94,27 @@ export default function OptionsPanel({ options, onChange }) {
       Number.isFinite(parsedValue) && parsedValue > 0
         ? Math.floor(parsedValue)
         : 10;
+
     updateGlobalOptions({ timeout_seconds: nextTimeout });
   }
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-4 pb-6 shadow-sm w-150 hover:shadow-md hover:-translate-y-[2px] transition">
+    <section
+      className={[
+        "rounded-xl border border-gray-200 bg-white p-4 shadow-sm",
+        "transition hover:shadow-md hover:-translate-y-[1px]",
+        // Altura estable 
+        "max-h-[clamp(420px,75vh,820px)]",
+        // Para que el scroll interno funcione bien
+        "w-full flex flex-col min-h-0",
+        // Evita doble scrollbar
+        "overflow-hidden",
+      ].join(" ")}
+    >
       <div className="mb-4">
         <h2 className="text-base font-semibold text-gray-900">Opciones</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se
-          ejecutarán todos.
+        <p className="mt-1 text-sm text-gray-600">
+          Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se ejecutarán todos.
         </p>
       </div>
 
@@ -151,7 +153,7 @@ export default function OptionsPanel({ options, onChange }) {
       </div>
 
       {/* Timeout */}
-      <div className="mt-5 rounded-lg border border-gray-200 bg-gray-50 p-3 hover:bg-blue-50/70 hover:border-blue-200">
+      <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3 transition hover:bg-blue-50/70 hover:border-blue-200">
         <label
           htmlFor="opt-timeout"
           className="block text-sm font-medium text-gray-900"
@@ -160,41 +162,47 @@ export default function OptionsPanel({ options, onChange }) {
         </label>
 
         <div className="mt-2 flex items-center gap-3">
-          <input
-            id="opt-timeout"
-            name="timeout_seconds"
-            type="number"
-            min={1}
-            step={1}
-            value={timeoutSeconds}
-            onChange={(e) => setTimeoutSeconds(e.target.value)}
-            className="w-20  rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-600 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              id="opt-timeout"
+              name="timeout_seconds"
+              type="number"
+              min={1}
+              step={1}
+              value={timeoutSeconds}
+              onChange={(e) => setTimeoutSeconds(e.target.value)}
+              className="w-24 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+            <span className="text-sm text-gray-500">s</span>
+          </div>
+
           <p className="text-sm text-gray-600">
             Tiempo máximo de ejecución por herramienta.
           </p>
         </div>
       </div>
 
-      <div className="my-6 mb-1 flex items-center gap-3" aria-hidden="true">
-        <div className="h-px flex-1 bg-gray-400" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+      {/* Separador */}
+      <div className="my-5 flex items-center gap-3" aria-hidden="true">
+        <div className="h-px flex-1 bg-gray-200" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
           Opciones avanzadas
         </span>
-        <div className="h-px flex-1 bg-gray-400" />
+        <div className="h-px flex-1 bg-gray-200" />
       </div>
 
       {/* Opciones por herramienta */}
-      <div className="mt-5 space-y-3 max-h-[55vh] overflow-auto scrollbar-modern pr-1">
-        <p className="text-sm mb-5 text-gray-600">
-          Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture,
-          Mypy).
+      <div className="mt-1 flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
+        <p className="text-sm text-gray-600">
+          Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture, Mypy).
         </p>
-        <details className="rounded-lg bg-gray-50 border border-gray-200 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="cursor-pointer list-item p-3 flex w-full select-none text-sm font-semibold text-gray-900 hover:text-blue-700">
-            Ruff (Estilo)
+
+        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
+          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+            <span>Ruff (Estilo)</span>
+            <span className="text-gray-500" aria-hidden="true">▾</span>
           </summary>
-          <div className="mt-4 ml-3 mr-3 mb-3">
+          <div className="px-3 pb-3 pt-2">
             <StyleOptions
               options={style}
               onChange={(v) => updateModuleOptions("style", v)}
@@ -202,11 +210,12 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg bg-gray-50 border border-gray-200 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="cursor-pointer list-item p-3 flex w-full select-none text-sm font-semibold text-gray-900 hover:text-blue-700">
-            Bandit (Seguridad)
+        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
+          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+            <span>Bandit (Seguridad)</span>
+            <span className="text-gray-500" aria-hidden="true">▾</span>
           </summary>
-          <div className="mt-4 ml-3 mr-3 mb-3">
+          <div className="px-3 pb-3 pt-2">
             <SecurityOptions
               options={security}
               onChange={(v) => updateModuleOptions("security", v)}
@@ -214,11 +223,12 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg bg-gray-50 border border-gray-200 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="cursor-pointer list-item p-3 flex w-full select-none text-sm font-semibold text-gray-900 hover:text-blue-700">
-            Radon (Métricas)
+        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
+          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+            <span>Radon (Métricas)</span>
+            <span className="text-gray-500" aria-hidden="true">▾</span>
           </summary>
-          <div className="mt-4 ml-3 mr-3 mb-3">
+          <div className="px-3 pb-3 pt-2">
             <MetricsOptions
               options={metrics}
               onChange={(v) => updateModuleOptions("metrics", v)}
@@ -226,11 +236,12 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg bg-gray-50 border border-gray-200 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="cursor-pointer list-item p-3 flex w-full select-none text-sm font-semibold text-gray-900 hover:text-blue-700">
-            Vulture (Código Muerto)
+        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
+          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+            <span>Vulture (Código Muerto)</span>
+            <span className="text-gray-500" aria-hidden="true">▾</span>
           </summary>
-          <div className="mt-4 ml-3 mr-3 mb-3">
+          <div className="px-3 pb-3 pt-2">
             <DeadCodeOptions
               options={deadCode}
               onChange={(v) => updateModuleOptions("dead_code", v)}
@@ -238,11 +249,12 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg bg-gray-50 border border-gray-200 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="cursor-pointer list-item p-3 flex w-full select-none text-sm font-semibold text-gray-900 hover:text-blue-700">
-            Mypy (Tipos)
+        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
+          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+            <span>Mypy (Tipos)</span>
+            <span className="text-gray-500" aria-hidden="true">▾</span>
           </summary>
-          <div className="mt-4 ml-3 mr-3 mb-3">
+          <div className="px-3 pb-3 pt-2">
             <TypesOptions
               options={types}
               onChange={(v) => updateModuleOptions("types", v)}
@@ -270,12 +282,10 @@ function CheckboxRow({ id, label, checked, onChange }) {
         onChange={onChange}
         className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200"
       />
-      <label
-        htmlFor={id}
-        className=" flex items-center gap-2 text-sm font-medium text-gray-900"
-      >
+      <label htmlFor={id} className="text-sm font-medium text-gray-900">
         {label}
       </label>
     </div>
   );
 }
+

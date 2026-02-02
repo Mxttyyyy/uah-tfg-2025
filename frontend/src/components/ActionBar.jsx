@@ -32,7 +32,7 @@ export default function ActionBar({
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         {/* Info izquierda */}
         <div className="text-sm text-gray-600">
           {isLoading ? (
@@ -52,7 +52,7 @@ export default function ActionBar({
               onClick={onExample}
               disabled={exampleDisabled}
               className={[
-                "rounded-lg border px-3 py-2 text-sm font-medium transition",
+                "rounded-lg border px-3 py-2 text-sm font-medium transition cursor-pointer",
                 "border-gray-300 bg-white text-gray-900 hover:bg-gray-50",
                 "disabled:cursor-not-allowed disabled:opacity-50",
               ].join(" ")}
@@ -66,7 +66,7 @@ export default function ActionBar({
             onClick={onClear}
             disabled={clearDisabled}
             className={[
-              "rounded-lg border px-3 py-2 text-sm font-medium transition",
+              "rounded-lg border px-3 py-2 text-sm font-medium transition cursor-pointer",
               "border-gray-300 bg-white text-gray-900 hover:bg-gray-50",
               "disabled:cursor-not-allowed disabled:opacity-50",
             ].join(" ")}
@@ -80,7 +80,7 @@ export default function ActionBar({
             disabled={analyzeDisabled}
             className={[
               "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition",
-              "bg-blue-600 text-white hover:bg-blue-700",
+              "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer",
               "disabled:cursor-not-allowed disabled:opacity-50",
             ].join(" ")}
           >
