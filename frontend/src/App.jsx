@@ -50,19 +50,8 @@ export default function App() {
       <Header />
       <main className="mx-auto max-w-7xl xl:max-w-8xl 2xl:max-w-7xl p-4">
         <div className="grid gap-6 lg:grid-cols-2">
-        <CodeInput value={code} onChange={setCode} />
+        <CodeInput value={code} onChange={setCode} onAnalyze={handleAnalyze} onClear={handleClear} isLoading={isLoading} /> {/* Si queremos botón de código de ejemplo, annadimos prop onExample */}
         <OptionsPanel options={options} onChange={setOptions} />
-        </div>
-
-        {/* ActionBar justo debajo */}
-        <div className="mt-6">
-          <ActionBar
-            code={code}
-            isLoading={isLoading}
-            onAnalyze={handleAnalyze}
-            onClear={handleClear}
-            onExample={handleExample}
-          />
         </div>
 
         {/* Debug: para ver cómo cambian options */}

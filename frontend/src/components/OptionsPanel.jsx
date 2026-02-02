@@ -104,7 +104,7 @@ export default function OptionsPanel({ options, onChange }) {
         "rounded-xl border border-gray-200 bg-white p-4 shadow-sm",
         "transition hover:shadow-md hover:-translate-y-[1px]",
         // Altura estable 
-        "max-h-[clamp(420px,75vh,820px)]",
+        "max-h-[clamp(420px,60vh,820px)]",
         // Para que el scroll interno funcione bien
         "w-full flex flex-col min-h-0",
         // Evita doble scrollbar
@@ -119,7 +119,7 @@ export default function OptionsPanel({ options, onChange }) {
       </div>
 
       {/* Selección de análisis (enabled) */}
-      <div className="space-y-2">
+      <div className="space-y-2 grid grid-cols-2">
         <CheckboxRow
           id="opt-style"
           label="Estilo y buenas prácticas (Ruff)"
@@ -171,7 +171,7 @@ export default function OptionsPanel({ options, onChange }) {
               step={1}
               value={timeoutSeconds}
               onChange={(e) => setTimeoutSeconds(e.target.value)}
-              className="w-24 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-20 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
             <span className="text-sm text-gray-500">s</span>
           </div>
@@ -192,7 +192,7 @@ export default function OptionsPanel({ options, onChange }) {
       </div>
 
       {/* Opciones por herramienta */}
-      <div className="mt-1 flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
+      <div className="flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
         <p className="text-sm text-gray-600">
           Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture, Mypy).
         </p>

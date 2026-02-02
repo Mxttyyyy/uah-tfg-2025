@@ -1,3 +1,4 @@
+import ActionBar from "./ActionBar";
 /**
  * Área de entrada de código.
  *
@@ -12,6 +13,10 @@ export default function CodeInput({
   onChange,
   placeholder = "Pega aquí tu código...",
   disabled = false,
+  isLoading,
+  onAnalyze,
+  onClear,
+  onExample,
 }) {
   // Número de líneas del código
   const lines = countLines(value);
@@ -41,7 +46,9 @@ export default function CodeInput({
         className={[
           "w-full overflow-auto scrollbar-modern resize-y rounded-lg border border-gray-200 bg-gray-50 focus:bg-white ",
           "px-3 py-3 text-sm text-gray-900 transition",
-          "min-h-[220px] max-h-[clamp(320px,45vh,560px)]",
+          "min-h-[clamp(250px,35vh,360px)]",
+          "h-[clamp(320px,45vh,640px)]",
+          "max-h-[clamp(320px,45vh,640px)]",
           "outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 focus:shadow-md",
           "disabled:cursor-not-allowed disabled:bg-gray-50",
         ].join(" ")}
@@ -51,6 +58,18 @@ export default function CodeInput({
       <p className="mt-2 text-xs text-gray-500">
         Nota: se recomienda pegar el archivo completo.
       </p>
+
+       {/* Footer: ActionBar integrada */}
+      <div className="mt-5 border-t border-gray-200 pt-4">
+        <ActionBar
+          code={value}
+          isLoading={!!isLoading}
+          onAnalyze={onAnalyze} 
+          onClear={onClear}
+          onExample={onExample}
+        />
+      </div>
+
     </section>
   );
 }

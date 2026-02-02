@@ -23,6 +23,7 @@ export default function ActionBar({
   onAnalyze,
   onClear,
   onExample,
+  embedded = false,
 }) {
   const hasCode = typeof code === "string" && code.trim().length > 0;
 
@@ -31,10 +32,10 @@ export default function ActionBar({
   const exampleDisabled = isLoading;
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
-      <div className="flex flex-wrap items-center justify-end gap-2">
+   
+      <div className="flex flex-wrap items-center justify-between">
         {/* Info izquierda */}
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 font-semibold ">
           {isLoading ? (
             <span>Analizando…</span>
           ) : hasCode ? (
@@ -89,6 +90,6 @@ export default function ActionBar({
           </button>
         </div>
       </div>
-    </div>
+    
   );
 }
