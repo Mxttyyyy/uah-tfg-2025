@@ -1,4 +1,4 @@
-import { isPlainObject, listToCsv, csvToList } from "../../utils/formatters";
+import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
 
 /**
  * Opciones de Ruff (style).

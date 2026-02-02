@@ -4,7 +4,7 @@ import MetricsOptions from "./options/MetricsOptions";
 import DeadCodeOptions from "./options/DeadCodeOptions";
 import TypesOptions from "./options/TypesOptions";
 
-import { isPlainObject } from "../../utils/formatters";
+import { isPlainObject } from "../utils/uiUtils";
 
 /**
  * Panel de opciones.

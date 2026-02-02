@@ -1,4 +1,4 @@
-import {isPlainObject, listToCsv, csvToList, normalizeIntInRange } from "../../utils/formatters";
+import {isPlainObject, listToCsv, csvToList, normalizeIntInRange } from "../../utils/uiUtils";
 
 /**
  * Opciones de Vulture (dead_code).
@@ -72,7 +72,7 @@ export default function DeadCodeOptions({ options, onChange }) {
         onChange={(text) =>
           updateDeadCodeOptions({ ignore_decorators: csvToList(text) })
         }
-        hint="Decoradores a ignorar (útil para FastAPI, etc.)."
+        hint="Decoradores a ignorar (útil en frameworks basados en decoradores)."
       />
 
       <p className="text-xs text-gray-600">

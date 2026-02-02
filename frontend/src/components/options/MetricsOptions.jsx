@@ -1,4 +1,4 @@
-import { isPlainObject, pickOrEmpty } from "../../utils/formatters";
+import { isPlainObject, pickOrEmpty } from "../../utils/uiUtils";
 
 /**
  * Opciones de Radon (metrics).
@@ -76,8 +76,7 @@ export default function MetricsOptions({ options, onChange }) {
       </div>
 
       <p className="text-xs text-gray-600">
-        Si dejas un campo en <span className="font-mono">(por defecto)</span>,
-        se usarán los valores predeterminados.
+        <span className="font-mono">(por defecto)</span> usa los valores predeterminados.
       </p>
     </div>
   );
