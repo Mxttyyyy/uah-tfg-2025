@@ -12,7 +12,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="relative bg-white shadow-sm ">
+    <header className="relative bg-white/70 shadow-sm ">
       {/* Glow azul animado bajo el header */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-6 header-glow"
@@ -35,7 +35,7 @@ export default function Header() {
                 <li key={l.label}>
                   <a
                     href={l.href}
-                    className="text-gray-600 transition hover:text-gray-900 text-lg font-semibold"
+                    className="text-gray-700 transition hover:text-blue-700 text-lg font-semibold"
                   >
                     {l.label}
                   </a>

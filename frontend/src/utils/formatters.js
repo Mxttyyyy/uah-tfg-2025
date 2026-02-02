@@ -1,4 +1,4 @@
-// Utilidades de formato para la UI: formatea tiempos/severidad/localización y ordena issues.
+// Utilidades de formato para la UI
 
 /**
  * Convierte milisegundos a un string legible:
@@ -90,16 +90,44 @@ export function sortIssuesByLocation(issues) {
 }
 
 /**
- * Convierte un string tipo "E501, F401  ,W293" a ["E501","F401","W293"].
- * Si el resultado queda vacío, devuelve null (para NO mandar [] al backend).
+ * Comprueba si un valor es un objeto plano válido (no nulo ni array).
  */
-export function parseCommaList(text) {
-  if (typeof text !== "string") return null;
+export function isPlainObject(v) {
+  return !!v && typeof v === "object" && !Array.isArray(v);
+}
 
-  const parts = text
-    .split(",") // Convierte el string en un array separado por comas, por ejemplo: text = "E501, F401  , ,W293" --> ["E501"," F401 "," ","W293"]
-    .map((x) => x.trim()) // Recorre el array y quita espacios de cada elemento --> ["E501","F401","","W293"]
-    .filter((x) => x.length > 0); // Se queda solo con los elementos que cumplan la condición --> ["E501","F401","W293"]
+/**
+ * Convierte una lista de strings en una representación CSV para mostrar en la UI.
+ */
+export function listToCsv(v) {
+  return Array.isArray(v) ? v.join(", ") : "";
+}
 
-  return parts.length > 0 ? parts : null;
+/**
+ * Convierte una cadena CSV en una lista de strings normalizados en mayúsculas.
+ */
+export function csvToList(text) {
+  if (typeof text !== "string") return [];
+  return text
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((s) => s.toUpperCase());
+}
+
+/**
+ * Devuelve el valor si es una cadena válida; en caso contrario, retorna una cadena vacía.
+ * Útil para normalizar valores de entrada en la UI.
+ */
+export function pickOrEmpty(v) {
+  return typeof v === "string" ? v : "";
+}
+
+/**
+ * Convierte un valor en un entero dentro de un rango determinado.
+ * Si el valor no es válido, aplica el mínimo como valor por defecto.
+ */
+export function normalizeIntInRange(n, min, max) {
+  const x = Number.isFinite(n) ? Math.floor(n) : min;
+  return Math.max(min, Math.min(max, x));
 }

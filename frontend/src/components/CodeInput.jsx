@@ -18,7 +18,7 @@ export default function CodeInput({
 
   return (
     
-    <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+    <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6 w-150 hover:shadow-md hover:-translate-y-[2px] transition">
 
       {/* Título del área y contador de líneas */}
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -39,7 +39,7 @@ export default function CodeInput({
         disabled={disabled}
         spellCheck={false} 
         className={[
-          "w-full overflow-auto resize-y rounded-lg border border-gray-200 bg-gray-50 focus:bg-white ",
+          "w-full overflow-auto scrollbar-modern resize-y rounded-lg border border-gray-200 bg-gray-50 focus:bg-white ",
           "px-3 py-3 text-sm text-gray-900 transition",
           "min-h-[320px] md:min-h-[380px] lg:min-h-[440px] xl:min-h-[520px] max-h-[60vh]",
           "outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 focus:shadow-md",

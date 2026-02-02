@@ -7,7 +7,7 @@ body,
 }
 
 body {
-  background: #f2f2f2; /* equivalente a bg-gray-50 */
+  background: rgb(224, 224, 224); /* equivalente a bg-gray-50 */
   color: #111827;      /* equivalente a text-gray-900 */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -41,4 +41,32 @@ code, pre, textarea {
   100% {
     opacity: 0.60;
   }
+}
+
+/* Scrollbar moderna (Chrome/Edge/Safari) */
+.scrollbar-modern::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbar-modern::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-modern::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.35); /* azul suave */
+  border-radius: 999px;
+  border: 3px solid transparent; /* hace el "thumb" más fino */
+  background-clip: content-box;
+}
+
+.scrollbar-modern::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.55);
+  background-clip: content-box;
+}
+
+/* Firefox (más limitado) */
+.scrollbar-modern {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.45) transparent;
 }
