@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "./components/Header";
 import CodeInput from "./components/CodeInput";
 import OptionsPanel from "./components/OptionsPanel";
+import ActionBar from "./components/actionBar";
 
 import { createDefaultAnalyzeOptions } from "./utils/defaultOptions";
 
