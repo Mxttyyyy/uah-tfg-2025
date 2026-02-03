@@ -15,7 +15,8 @@ export function formatAnalysisTime(ms) {
  * Normaliza severidad a los 3 valores esperados por el sistema:
  * info | warning | error
  */
-export function normalizeSeverity(sev) {
+export function normalizeSeverity(value) {
+  const sev = String(value || "").toLowerCase().trim();
   if (sev === "info" || sev === "warning" || sev === "error") return sev;
   return "warning";
 }
@@ -35,23 +36,15 @@ export function severityLabel(sev) {
  * Ejemplo: "input.py · línea 12, col 5"
  */
 export function formatIssueLocation(issue) {
+  const path = typeof issue?.path === "string" ? issue.path : "";
+  const line = toInt(issue?.line);
+  const column = toInt(issue?.column);
 
-  // Si no hay objeto válido, no mostramos nada
-  if (!issue || typeof issue !== "object") return "";
+  if (!path && line === null && column === null) return "";
+  if (line === null) return path || "";
 
-  // Si el path no viene, usamos un nombre ficticio para el código pegado en la UI
-  const path = typeof issue.path === "string" && issue.path.trim() ? issue.path.trim() : "input.py";
-
-  // line/col: si no son número finitos, los tratamos como no disponibles
-  const line = typeof issue.line === "number" && Number.isFinite(issue.line) ? issue.line : null;
-  const col = typeof issue.column === "number" && Number.isFinite(issue.column) ? issue.column : null;
-
-  // Construimos el texto según los campos disponibles
-  if (line == null && col == null) return path;
-  if (line != null && col == null) return `${path} · línea ${line}`;
-  if (line == null && col != null) return `${path} · col ${col}`;
-
-  return `${path} · línea ${line}, col ${col}`;
+  if (column !== null) return `${path || "input.py"}:${line}:${column}`;
+  return `${path || "input.py"}:${line}`;
 }
 
 /**
