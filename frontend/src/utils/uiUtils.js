@@ -131,3 +131,13 @@ export function normalizeIntInRange(n, min, max) {
   const x = Number.isFinite(n) ? Math.floor(n) : min;
   return Math.max(min, Math.min(max, x));
 }
+
+/**
+ * Convierte un valor a entero seguro.
+ * Devuelve null si no puede convertirse a un número finito.
+ */
+export function toInt(value) {
+  if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.trunc(n) : null;
+}
