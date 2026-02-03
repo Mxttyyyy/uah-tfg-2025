@@ -55,9 +55,9 @@ export default function App() {
         </div>
 
         {/* Debug: para ver cómo cambian options */}
-        <pre className="mt-6 overflow-auto rounded-xl border border-gray-200 bg-white p-4 text-xs text-gray-900 shadow-sm">
+        {/*<pre className="mt-6 overflow-auto rounded-xl border border-gray-200 bg-white p-4 text-xs text-gray-900 shadow-sm">
           {JSON.stringify({ options }, null, 2)}
-        </pre>
+        </pre>*/}
 
       </main>
     </div>
