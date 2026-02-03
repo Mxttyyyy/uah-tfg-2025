@@ -1,4 +1,4 @@
-import ActionBar from "./CodeActions";
+import CodeActions from "./CodeActions";
 /**
  * Área de entrada de código.
  *
@@ -46,9 +46,9 @@ export default function CodeInput({
         className={[
           "w-full overflow-auto scrollbar-modern resize-y rounded-lg border border-gray-200 bg-gray-50 focus:bg-white ",
           "px-3 py-3 text-sm text-gray-900 transition",
-          "min-h-[clamp(250px,35vh,360px)]",
-          "h-[clamp(320px,45vh,640px)]",
-          "max-h-[clamp(320px,45vh,640px)]",
+          "min-h-[clamp(340px,45vh,440px)]",
+          "h-[clamp(440px,60vh,740px)]",
+          "max-h-[clamp(440px,60vh,740px)]",
           "outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 focus:shadow-md",
           "disabled:cursor-not-allowed disabled:bg-gray-50",
         ].join(" ")}
@@ -59,9 +59,9 @@ export default function CodeInput({
         Nota: se recomienda pegar el archivo completo.
       </p>
 
-       {/* Footer: ActionBar integrada */}
+       {/* CodeActions integrada */}
       <div className="mt-5 border-t border-gray-200 pt-4">
-        <ActionBar
+        <CodeActions
           code={value}
           isLoading={!!isLoading}
           onAnalyze={onAnalyze} 

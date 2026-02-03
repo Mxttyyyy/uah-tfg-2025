@@ -1,4 +1,3 @@
-
 import Spinner from "./Spinner";
 
 /**
@@ -6,7 +5,7 @@ import Spinner from "./Spinner";
  *
  * Función:
  * - Contiene los botones que disparan acciones globales:
- *   - Analizar (llama a la API desde App.jsx)
+ *   - Analizar (llama a la API)
  *   - Limpiar (vacía el textarea)
  *   - Ejemplo (opcional: pega un snippet de ejemplo)
  *
@@ -17,13 +16,12 @@ import Spinner from "./Spinner";
  * - onClear: () => void
  * - onExample: () => void (opcional)
  */
-export default function ActionBar({
+export default function CodeActions({
   code,
   isLoading,
   onAnalyze,
   onClear,
   onExample,
-  embedded = false,
 }) {
   const hasCode = typeof code === "string" && code.trim().length > 0;
 
@@ -37,7 +35,7 @@ export default function ActionBar({
         {/* Info izquierda */}
         <div className="text-sm text-gray-600 font-semibold ">
           {isLoading ? (
-            <span>Analizando…</span>
+            <span>Analizando...</span>
           ) : hasCode ? (
             <span>Listo para analizar.</span>
           ) : (

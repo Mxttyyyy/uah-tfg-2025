@@ -104,7 +104,7 @@ export default function OptionsPanel({ options, onChange }) {
         "rounded-xl border border-gray-200 bg-white p-4 shadow-sm",
         "transition hover:shadow-md hover:-translate-y-[1px]",
         // Altura estable 
-        "max-h-[clamp(420px,60vh,820px)]",
+        "max-h-[clamp(650px,70vh,890px)]",
         // Para que el scroll interno funcione bien
         "w-full flex flex-col min-h-0",
         // Evita doble scrollbar
