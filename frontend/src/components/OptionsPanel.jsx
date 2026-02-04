@@ -23,7 +23,7 @@ import { isPlainObject } from "../utils/uiUtils";
  * - onChange: (nextOptions) => void
  */
 export default function OptionsPanel({ options, onChange }) {
-
+  
   // Opciones normalizadas para garantizar una estructura válida
   const normalizedOptions = isPlainObject(options) ? options : {};
 
@@ -36,11 +36,21 @@ export default function OptionsPanel({ options, onChange }) {
       : 10;
 
   // Sub-objetos por módulo (siempre deben ser dicts para el backend)
-  const style = isPlainObject(normalizedOptions.style) ? normalizedOptions.style : {};
-  const security = isPlainObject(normalizedOptions.security) ? normalizedOptions.security : {};
-  const metrics = isPlainObject(normalizedOptions.metrics) ? normalizedOptions.metrics : {};
-  const deadCode = isPlainObject(normalizedOptions.dead_code) ? normalizedOptions.dead_code : {};
-  const types = isPlainObject(normalizedOptions.types) ? normalizedOptions.types : {};
+  const style = isPlainObject(normalizedOptions.style)
+    ? normalizedOptions.style
+    : {};
+  const security = isPlainObject(normalizedOptions.security)
+    ? normalizedOptions.security
+    : {};
+  const metrics = isPlainObject(normalizedOptions.metrics)
+    ? normalizedOptions.metrics
+    : {};
+  const deadCode = isPlainObject(normalizedOptions.dead_code)
+    ? normalizedOptions.dead_code
+    : {};
+  const types = isPlainObject(normalizedOptions.types)
+    ? normalizedOptions.types
+    : {};
 
   const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code", "types"];
 
@@ -103,7 +113,7 @@ export default function OptionsPanel({ options, onChange }) {
       className={[
         "rounded-xl border border-gray-200 bg-white p-4 shadow-sm",
         "transition hover:shadow-md hover:-translate-y-[1px]",
-        // Altura estable 
+        // Altura estable
         "max-h-[clamp(650px,70vh,890px)]",
         // Para que el scroll interno funcione bien
         "w-full flex flex-col min-h-0",
@@ -114,7 +124,8 @@ export default function OptionsPanel({ options, onChange }) {
       <div className="mb-4">
         <h2 className="text-base font-semibold text-gray-900">Opciones</h2>
         <p className="mt-1 text-sm text-gray-600">
-          Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se ejecutarán todos.
+          Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se
+          ejecutarán todos.
         </p>
       </div>
 
@@ -153,7 +164,12 @@ export default function OptionsPanel({ options, onChange }) {
       </div>
 
       {/* Timeout */}
-      <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3 transition hover:bg-blue-50/70 hover:border-blue-200">
+      <div
+        className={`
+          mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3
+          transition hover:bg-blue-50/70 hover:border-blue-200
+        `}
+      >
         <label
           htmlFor="opt-timeout"
           className="block text-sm font-medium text-gray-900"
@@ -171,7 +187,10 @@ export default function OptionsPanel({ options, onChange }) {
               step={1}
               value={timeoutSeconds}
               onChange={(e) => setTimeoutSeconds(e.target.value)}
-              className="w-20 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className={`
+                w-20 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+                outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+              `}
             />
             <span className="text-sm text-gray-500">s</span>
           </div>
@@ -194,13 +213,26 @@ export default function OptionsPanel({ options, onChange }) {
       {/* Opciones por herramienta */}
       <div className="flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
         <p className="text-sm text-gray-600">
-          Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture, Mypy).
+          Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture,
+          Mypy).
         </p>
 
-        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+        <details
+          className={`
+            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            hover:bg-blue-50/70 border-l-cyan-300 border-l-4 hover:border-l-cyan-300
+          `}
+        >
+          <summary
+            className={`
+              flex w-full cursor-pointer select-none items-center justify-between
+              px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+            `}
+          >
             <span>Ruff (Estilo)</span>
-            <span className="text-gray-500" aria-hidden="true">▾</span>
+            <span className="text-gray-500" aria-hidden="true">
+              ▾
+            </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
             <StyleOptions
@@ -210,10 +242,22 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+        <details
+          className={`
+            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            hover:bg-blue-50/70 border-l-purple-300 border-l-4 hover:border-l-purple-300
+          `}
+        >
+          <summary
+            className={`
+              flex w-full cursor-pointer select-none items-center justify-between
+              px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+            `}
+          >
             <span>Bandit (Seguridad)</span>
-            <span className="text-gray-500" aria-hidden="true">▾</span>
+            <span className="text-gray-500" aria-hidden="true">
+              ▾
+            </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
             <SecurityOptions
@@ -223,10 +267,22 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+        <details
+          className={`
+            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            hover:bg-blue-50/70 border-l-amber-300 border-l-4 hover:border-l-amber-300
+          `}
+        >
+          <summary
+            className={`
+              flex w-full cursor-pointer select-none items-center justify-between
+              px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+            `}
+          >
             <span>Radon (Métricas)</span>
-            <span className="text-gray-500" aria-hidden="true">▾</span>
+            <span className="text-gray-500" aria-hidden="true">
+              ▾
+            </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
             <MetricsOptions
@@ -236,10 +292,22 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+        <details
+          className={`
+            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            hover:bg-blue-50/70 border-l-emerald-300 border-l-4 hover:border-l-emerald-300
+            `}
+        >
+          <summary
+            className={`
+              flex w-full cursor-pointer select-none items-center justify-between
+              px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+            `}
+          >
             <span>Vulture (Código Muerto)</span>
-            <span className="text-gray-500" aria-hidden="true">▾</span>
+            <span className="text-gray-500" aria-hidden="true">
+              ▾
+            </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
             <DeadCodeOptions
@@ -249,10 +317,22 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details className="rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 hover:bg-blue-50/70">
-          <summary className="flex w-full cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+        <details
+          className={`
+            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 
+            hover:bg-blue-50/70 border-l-orange-400 border-l-4 hover:border-l-orange-400
+            `}
+        >
+          <summary
+            className={`
+              flex w-full cursor-pointer select-none items-center justify-between
+              px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+            `}
+          >
             <span>Mypy (Tipos)</span>
-            <span className="text-gray-500" aria-hidden="true">▾</span>
+            <span className="text-gray-500" aria-hidden="true">
+              ▾
+            </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
             <TypesOptions
@@ -288,4 +368,3 @@ function CheckboxRow({ id, label, checked, onChange }) {
     </div>
   );
 }
-

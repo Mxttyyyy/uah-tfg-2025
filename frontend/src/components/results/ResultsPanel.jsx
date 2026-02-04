@@ -163,7 +163,7 @@ export default function ResultsPanel({
       </div>
 
       {/* Secciones */}
-      <div className="mt-6 space-y-3">
+      <div className="mt-6 space-y-5">
         <IssueList
           title="Estilo y buenas prácticas (Ruff)"
           subtitle="Problemas de estilo, convenciones y reglas de lint."
@@ -171,6 +171,7 @@ export default function ResultsPanel({
           emptyText="Sin issues de estilo."
           onIssueSelect={onIssueSelect}
           prioritySeverity={prioritySeverity}
+          leftBorderClass="border-l-cyan-300 border-l-4 hover:border-l-cyan-300"
         />
 
         <IssueList
@@ -180,9 +181,13 @@ export default function ResultsPanel({
           emptyText="Sin issues de seguridad."
           onIssueSelect={onIssueSelect}
           prioritySeverity={prioritySeverity}
+          leftBorderClass="border-l-purple-300 border-l-4 hover:border-l-purple-300"
         />
 
-        <MetricsSection metrics={metrics} />
+        <MetricsSection
+          metrics={metrics}
+          leftBorderClass="border-l-amber-300 border-l-4 hover:border-l-amber-300"
+        />
 
         <IssueList
           title="Código muerto (Vulture)"
@@ -191,6 +196,7 @@ export default function ResultsPanel({
           emptyText="Sin avisos de código muerto."
           onIssueSelect={onIssueSelect}
           prioritySeverity={prioritySeverity}
+          leftBorderClass="border-l-emerald-300 border-l-4 hover:border-l-emerald-300"
         />
 
         <IssueList
@@ -200,6 +206,7 @@ export default function ResultsPanel({
           emptyText="Sin issues de tipado."
           onIssueSelect={onIssueSelect}
           prioritySeverity={prioritySeverity}
+          leftBorderClass="border-l-orange-400 border-l-4 hover:border-l-orange-400"
         />
       </div>
     </section>
@@ -208,7 +215,7 @@ export default function ResultsPanel({
 
 /* --------------------------- Metrics (Radon) --------------------------- */
 
-function MetricsSection({ metrics }) {
+function MetricsSection({ metrics, leftBorderClass }) {
   const hasMetrics = isPlainObject(metrics) && Object.keys(metrics).length > 0;
 
   const tool = typeof metrics?.tool === "string" ? metrics.tool : "radon";
@@ -230,9 +237,17 @@ function MetricsSection({ metrics }) {
   return (
     <details
       open={hasMetrics}
-      className="rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200 hover:bg-blue-100/60 transition"
+      className={`
+        rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
+        hover:bg-blue-100/60 transition ${leftBorderClass}
+      `}
     >
-      <summary className="flex cursor-pointer list-item items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+      <summary
+        className={`
+          flex cursor-pointer list-item items-center justify-between
+          gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+        `}
+      >
         <span className="flex items-center gap-2">
           Métricas ({tool})
           <span className="text-xs font-semibold text-gray-600">
@@ -344,7 +359,12 @@ function MetricItem({ label, value }) {
 
 function IssueLabel({ label }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-semibold text-gray-700">
+    <span
+      className={`
+        inline-flex items-center rounded-full border 
+        border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-semibold text-gray-700
+    `}
+    >
       {label}
     </span>
   );

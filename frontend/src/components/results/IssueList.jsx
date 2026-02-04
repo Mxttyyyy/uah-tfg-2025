@@ -19,6 +19,7 @@ export default function IssueList({
   emptyText = "Sin incidencias.",
   onIssueSelect, // opcional para futuro: saltar a línea en textarea
   prioritySeverity = null,
+  leftBorderClass = "border-l-blue-500",
 }) {
   const issues = Array.isArray(rawIssues) ? rawIssues : [];
   const sortedIssues = applySeverityPriority(issues, prioritySeverity);
@@ -27,9 +28,17 @@ export default function IssueList({
   return (
     <details
       open={issueCount > 0}
-      className="rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200 hover:bg-blue-100/60 transition"
+      className={`
+        rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
+        hover:bg-blue-100/50 transition ${leftBorderClass}
+      `}
     >
-      <summary className="flex cursor-pointer list-item items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
+      <summary
+        className={`
+          flex cursor-pointer list-item items-center justify-between
+          gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+        `}
+      >
         <span className="flex items-center gap-2">
           {title}
           <span className="text-xs font-semibold text-gray-600">
@@ -110,7 +119,10 @@ function IssueCard({ issue: raw_issue, onSelect }) {
             <button
               type="button"
               onClick={() => onSelect(issue)}
-              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-800 hover:bg-gray-50"
+              className={`
+                rounded-md border border-gray-300 bg-white px-3 py-1.5
+                text-xs font-semibold text-gray-800 hover:bg-gray-50
+              `}
             >
               Ir a línea
             </button>
@@ -159,7 +171,12 @@ function IssueCard({ issue: raw_issue, onSelect }) {
  */
 function IssueLabel({ label }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-semibold text-gray-700">
+    <span
+      className={`
+        inline-flex items-center rounded-full border border-gray-200
+        bg-gray-50 px-2 py-0.5 text-xs font-semibold text-gray-700
+      `}
+    >
       {label}
     </span>
   );
