@@ -140,7 +140,7 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        "path": filename,
+        #"path": filename,
         "line": line,
         "column": column,
         "suggestion": suggestion,

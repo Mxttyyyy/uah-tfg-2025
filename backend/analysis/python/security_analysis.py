@@ -161,7 +161,7 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        "path": filename,
+        #"path": filename,
         "line": line,
         "column": None,  # Bandit no proporciona información de columnas
         "suggestion": suggestion,

@@ -141,7 +141,7 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        "path": path,
+        #"path": path,
         "line": line_number,
         "column": None,  # Vulture no proporciona información de columnas
         "suggestion": suggestion,
