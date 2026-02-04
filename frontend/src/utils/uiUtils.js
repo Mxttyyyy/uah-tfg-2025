@@ -32,6 +32,40 @@ export function severityLabel(sev) {
 }
 
 /**
+ * Cuenta el número de incidencias por severidad (info, warning, error).
+ */
+export function buildSeverityCounts(issues) {
+  const counts = { info: 0, warning: 0, error: 0 };
+  for (const it of issues || []) {
+    const sev = normalizeSeverity(it?.severity);
+    counts[sev] += 1;
+  }
+  return counts;
+}
+
+/**
+ * Aplica una prioridad de severidad a la lista de incidencias,
+ * mostrando primero las de mayor interés y ordenando por ubicación.
+ */
+export function applySeverityPriority(issues, prioritySeverity) {
+  // Orden normal: por ubicación
+  if (!prioritySeverity || prioritySeverity === "none") return sortIssuesByLocation(issues);
+
+  // Separamos los que tienen la severidad priorizada
+  const prioritized = [];
+  const rest = [];
+
+  for (const it of issues) {
+    const sev = normalizeSeverity(it?.severity);
+    if (sev === prioritySeverity) prioritized.push(it);
+    else rest.push(it);
+  }
+
+  // Ordenamos cada bloque por ubicación y concatenamos
+  return [...sortIssuesByLocation(prioritized), ...sortIssuesByLocation(rest)];
+}
+
+/**
  * Construye un texto corto con la localización del issue.
  * Ejemplo: "input.py · línea 12, col 5"
  */
@@ -42,6 +76,12 @@ export function formatIssueLocation(issue) {
 
   if (!path && line === null && column === null) return "";
   if (line === null) return path || "";
+  
+  // Si no hay path, no mostramos el archivo temporal "input.py"
+  if (!path) {
+    if (column !== null) return `línea ${line}, col ${column}`;
+    return `línea ${line}`;
+  }
 
   if (column !== null) return `${path || "input.py"}:${line}:${column}`;
   return `${path || "input.py"}:${line}`;

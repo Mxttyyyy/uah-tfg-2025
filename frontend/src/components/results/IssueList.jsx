@@ -1,4 +1,10 @@
-import { isPlainObject, formatIssueLocation, sortIssuesByLocation, normalizeSeverity,} from "../../utils/uiUtils";
+import {
+  isPlainObject,
+  formatIssueLocation,
+  applySeverityPriority,
+  normalizeSeverity,
+  toInt,
+} from "../../utils/uiUtils";
 
 /**
  * Lista desplegable de issues detectadas por el análisis.
@@ -12,20 +18,23 @@ export default function IssueList({
   items: rawIssues,
   emptyText = "Sin incidencias.",
   onIssueSelect, // opcional para futuro: saltar a línea en textarea
+  prioritySeverity = null,
 }) {
   const issues = Array.isArray(rawIssues) ? rawIssues : [];
-  const sortedIssues = sortIssuesByLocation(issues);
+  const sortedIssues = applySeverityPriority(issues, prioritySeverity);
   const issueCount = sortedIssues.length;
 
   return (
     <details
       open={issueCount > 0}
-      className="rounded-lg border border-gray-200 bg-gray-50/60"
+      className="rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200 hover:bg-blue-100/60 transition"
     >
       <summary className="flex cursor-pointer list-item items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700">
         <span className="flex items-center gap-2">
           {title}
-          <span className="text-xs font-semibold text-gray-600">({issueCount})</span>
+          <span className="text-xs font-semibold text-gray-600">
+            ({issueCount})
+          </span>
         </span>
       </summary>
 
@@ -57,18 +66,18 @@ export default function IssueList({
  * mensaje, localización y sugerencias asociadas.
  */
 function IssueCard({ issue: raw_issue, onSelect }) {
-
   // Normalizamos y ordenamos la lista de issues para garantizar
   // un render consistente aunque los datos sean incompletos.
   const issue = isPlainObject(raw_issue) ? raw_issue : {};
   const severity = normalizeSeverity(issue.severity);
 
   const message = String(issue.message || "Issue");
-  const code = typeof issue.code === "string" ? issue.code : "";
+  const rule_code = typeof issue.code === "string" ? issue.code : "";
   const tool = typeof issue.tool === "string" ? issue.tool : "";
   const category = typeof issue.category === "string" ? issue.category : "";
 
-  const suggestion = typeof issue.suggestion === "string" ? issue.suggestion : "";
+  const suggestion =
+    typeof issue.suggestion === "string" ? issue.suggestion : "";
   const helpUrl = typeof issue.help_url === "string" ? issue.help_url : "";
   const notes = Array.isArray(issue.notes) ? issue.notes : [];
 
@@ -80,9 +89,9 @@ function IssueCard({ issue: raw_issue, onSelect }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <SeverityLabel severity={severity} />
-            {tool ? <IssueTag label={tool} /> : null}
-            {category ? <IssueTag label={category} /> : null}
-            {code ? <IssueTag label={code} /> : null}
+            {tool ? <IssueLabel label={tool} /> : null}
+            {category ? <IssueLabel label={category} /> : null}
+            {rule_code ? <IssueLabel label={rule_code} /> : null}
           </div>
 
           <p className="mt-2 text-sm font-medium text-gray-900 break-words">
@@ -148,7 +157,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
 /**
  * Label para metadatos del issue (herramienta, código, categoría).
  */
-function IssueTag({ label }) {
+function IssueLabel({ label }) {
   return (
     <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-semibold text-gray-700">
       {label}
