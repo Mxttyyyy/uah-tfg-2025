@@ -24,8 +24,8 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
 
           {/* Logo */}
-          <a href="#" aria-label="Homepage" className="flex items-center">
-            <img src="/analyth_logo.png" alt="Logo" className="h-14 w-auto" />
+          <a href="#" aria-label="Homepage" className="flex items-center transition-transform duration-300 hover:scale-110">
+            <img src="/analyth.png" alt="Logo" className="h-25 mt-2.5 w-auto " />
           </a>
 
           {/* Links del lado derecho */}

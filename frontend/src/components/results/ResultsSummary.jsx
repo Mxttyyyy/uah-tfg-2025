@@ -88,10 +88,10 @@ function SummaryCard({
   onClick,
 }) {
   const severityStyles = {
-    neutral: "border-gray-300 bg-white",
-    info: "border-blue-300 bg-blue-50/80",
-    warning: "border-amber-300 bg-amber-50/80",
-    error: "border-red-300 bg-red-50/80",
+    neutral: "border-gray-300 bg-gray-50/80",
+    info: "border-blue-300 bg-blue-100/50",
+    warning: "border-amber-300 bg-amber-100/50",
+    error: "border-red-300 bg-red-100/50",
   };
 
   return (
@@ -104,7 +104,7 @@ function SummaryCard({
         "rounded-lg border p-3 text-left transition",
         severityStyles[tone] || severityStyles.neutral,
         onClick ? "cursor-pointer hover:shadow-md" : "cursor-default",
-        selected ? "-translate-y-[8px] shadow-md" : "",
+        selected ? "-translate-y-[10px] shadow-md border-2" : "",
         !onClick ? "opacity-100" : "",
       ].join(" ")}
     >

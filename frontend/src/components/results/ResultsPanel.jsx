@@ -273,7 +273,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
                   <IssueLabel label={`Rank: ${mi.rank || "—"}`} />
                 </div>
                 <p className="mt-2 text-xs text-gray-600">
-                  Cuanto mayor el MI, mejor mantenibilidad global.
+                  Cuanto mayor es el MI, mejor mantenibilidad global.
                 </p>
               </div>
 
@@ -317,7 +317,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
                       {topBlocks.map((b, idx) => (
                         <tr
                           key={`${b.name || "block"}-${idx}`}
-                          className="border-t border-gray-100"
+                          className="border-t border-gray-200"
                         >
                           <td className="py-2 pr-3 font-medium">
                             {String(b.name || "—")}
@@ -350,7 +350,7 @@ function MetricItem({ label, value }) {
   return (
     <div className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
       <p className="text-xs font-semibold text-gray-600">{label}</p>
-      <p className="text-sm font-medium text-gray-900">{value ?? "—"}</p>
+      <p className="text-sm font-medium text-gray-900">{value ?? "-"}</p>
     </div>
   );
 }

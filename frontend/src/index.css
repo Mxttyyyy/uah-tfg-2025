@@ -60,6 +60,7 @@ code, pre, textarea {
   background-clip: content-box;
 }
 
+
 .scrollbar-modern::-webkit-scrollbar-thumb:hover {
   background: rgba(59, 130, 246, 0.55);
   background-clip: content-box;

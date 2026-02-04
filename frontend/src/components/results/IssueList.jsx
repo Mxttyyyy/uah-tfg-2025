@@ -30,7 +30,7 @@ export default function IssueList({
       open={issueCount > 0}
       className={`
         rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
-        hover:bg-blue-100/50 transition ${leftBorderClass}
+        hover:bg-blue-50/80 transition ${leftBorderClass}
       `}
     >
       <summary

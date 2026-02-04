@@ -4,8 +4,9 @@ import { useState } from "react";
 import Header from "./components/Header";
 import CodeInput from "./components/CodeInput";
 import OptionsPanel from "./components/OptionsPanel";
-import ActionBar from "./components/CodeActions";
+import CodeActions from "./components/CodeActions";
 import ResultsPanel from "./components/results/ResultsPanel";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 
 import { createDefaultAnalyzeOptions } from "./utils/defaultOptions";
 
@@ -33,7 +34,6 @@ export default function App() {
             code: "F401",
             severity: "warning",
             message: "Imported but unused: 'os'",
-            path: "input.py",
             line: 1,
             column: 1,
             suggestion: "Elimina el import si no se usa.",
@@ -46,7 +46,6 @@ export default function App() {
             code: "F408",
             severity: "error",
             message: "Imported but unused: 'os'",
-            path: "input.py",
             line: 1,
             column: 1,
             suggestion: "Elimina el import si no se usa.",
@@ -61,7 +60,6 @@ export default function App() {
             code: "B105",
             severity: "error",
             message: "Hardcoded password string",
-            path: "input.py",
             line: 10,
             column: 5,
             suggestion:
@@ -75,7 +73,6 @@ export default function App() {
             code: "B106",
             severity: "warning",
             message: "Hardcoded password string",
-            path: "input.py",
             line: 10,
             column: 5,
             suggestion:
@@ -89,7 +86,6 @@ export default function App() {
             code: "B105",
             severity: "error",
             message: "Hardcoded password string",
-            path: "input.py",
             line: 10,
             column: 5,
             suggestion:
@@ -103,7 +99,6 @@ export default function App() {
             code: "B105",
             severity: "info",
             message: "Hardcoded password string",
-            path: "input.py",
             line: 10,
             column: 5,
             suggestion:
@@ -120,7 +115,6 @@ export default function App() {
             code: "unused-function",
             severity: "info",
             message: "Unused function 'helper'",
-            path: "input.py",
             line: 25,
             column: 1,
             suggestion: "Elimina o utiliza la función.",
@@ -135,7 +129,6 @@ export default function App() {
             code: "arg-type",
             severity: "warning",
             message: "Argument 1 has incompatible type",
-            path: "input.py",
             line: 30,
             column: 12,
             suggestion: "Revisa los tipos esperados y los argumentos.",
@@ -148,7 +141,6 @@ export default function App() {
             code: "arg-type",
             severity: "error",
             message: "Argument 1 has incompatible type",
-            path: "input.py",
             line: 30,
             column: 12,
             suggestion: "Revisa los tipos esperados y los argumentos.",
@@ -270,7 +262,7 @@ export default function App() {
         Ha ocurrido un error en uno de los módulos de análisis. Vuelva a ejecutar el análisis.
       </Alert>
     </div>*/
-    <div className="min-h-screen ">
+    <div id="top" className="min-h-screen ">
       <Header />
       <main className="mx-auto max-w-7xl xl:max-w-8xl 2xl:max-w-7xl p-4">
         <div className="grid gap-6 lg:grid-cols-2">
@@ -317,6 +309,7 @@ export default function App() {
           <ResultsPanel result={result} autoScroll />
         </div>
       </main>
+      <ScrollToTopButton anchorId="top" showAfterPx={550} />
     </div>
   );
 }
