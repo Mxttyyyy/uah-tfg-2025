@@ -17,13 +17,15 @@ export default function CodeInput({
   onAnalyze,
   onClear,
   onExample,
+  textareaRef,
+  sectionRef,
 }) {
   // Número de líneas del código
   const lines = countLines(value);
 
   return (
     
-    <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6 w-150 hover:shadow-md hover:-translate-y-[2px] transition">
+    <section id="code_section" ref={sectionRef} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6 w-150 hover:shadow-md hover:-translate-y-[2px] transition">
 
       {/* Título del área y contador de líneas */}
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -38,8 +40,10 @@ export default function CodeInput({
       <textarea
         id="code"
         name="code"
+        ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        wrap="off"
         placeholder={placeholder}
         disabled={disabled}
         spellCheck={false} 

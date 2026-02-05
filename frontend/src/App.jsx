@@ -1,6 +1,6 @@
 import Alert from "./components/Alert";
 import Spinner from "./components/Spinner";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Header from "./components/Header";
 import CodeInput from "./components/CodeInput";
 import OptionsPanel from "./components/OptionsPanel";
@@ -17,6 +17,67 @@ export default function App() {
 
   // Simulamos lo que devuelve el backend
   const [result, setResult] = useState(null);
+
+const codeSectionRef = useRef(null);
+const textareaRef = useRef(null);
+
+function handleIssueSelect(issue) {
+  const line = Number(issue?.line);
+  if (!Number.isFinite(line) || line <= 0) return;
+
+  // 1) subimos al panel de código
+  if (codeSectionRef.current) {
+    codeSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    // fallback por si usas ancla
+    const el = document.getElementById("code_section");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // 2) cuando ya hemos subido, marcamos la línea en el textarea
+  setTimeout(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+
+    const text = ta.value || "";
+    const start = getLineStartIndex(text, line);
+    const end = getLineEndIndex(text, start);
+
+    ta.focus();
+    ta.setSelectionRange(start, end); // marca línea completa
+
+    // hacer scroll interno del textarea para que se vea esa línea
+    const lineHeight = getTextareaLineHeight(ta);
+    ta.scrollTop = Math.max(0, (line - 1) * lineHeight - 3 * lineHeight);
+  }, 250);
+}
+
+function getLineStartIndex(text, lineNumber) {
+  let idx = 0;
+  let currentLine = 1;
+
+  while (currentLine < lineNumber && idx < text.length) {
+    const nl = text.indexOf("\n", idx);
+    if (nl === -1) return text.length;
+    idx = nl + 1;
+    currentLine += 1;
+  }
+  return idx;
+}
+
+function getLineEndIndex(text, lineStartIndex) {
+  const nl = text.indexOf("\n", lineStartIndex);
+  return nl === -1 ? text.length : nl;
+}
+
+function getTextareaLineHeight(textareaEl) {
+  const cs = window.getComputedStyle(textareaEl);
+  const lh = parseFloat(cs.lineHeight);
+  if (Number.isFinite(lh)) return lh;
+
+  const fs = parseFloat(cs.fontSize);
+  return Number.isFinite(fs) ? fs * 1.4 : 20;
+}
 
   function fakeOk() {
     setResult({
@@ -269,6 +330,8 @@ export default function App() {
           <CodeInput
             value={code}
             onChange={setCode}
+            sectionRef={codeSectionRef}
+            textareaRef={textareaRef}
             onAnalyze={onAnalyzeFake}
             onClear={handleClear}
             isLoading={isLoading}
@@ -306,7 +369,7 @@ export default function App() {
 
         {/* Resultados */}
         <div className="mt-6">
-          <ResultsPanel result={result} autoScroll />
+          <ResultsPanel result={result} onIssueSelect={handleIssueSelect} autoScroll />
         </div>
       </main>
       <ScrollToTopButton anchorId="top" showAfterPx={550} />

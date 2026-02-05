@@ -17,7 +17,7 @@ export default function IssueList({
   subtitle,
   items: rawIssues,
   emptyText = "Sin incidencias.",
-  onIssueSelect, // opcional para futuro: saltar a línea en textarea
+  onIssueSelect,
   prioritySeverity = null,
   leftBorderClass = "border-l-blue-500",
 }) {
@@ -109,25 +109,16 @@ function IssueCard({ issue: raw_issue, onSelect }) {
 
           {location ? (
             <p className="mt-1 text-xs text-gray-600">
-              Ubicación: <span className="font-medium">{location}</span>
+              Ubicación:{" "}
+              <span
+                onClick={() => onSelect(issue)}
+                className="font-medium cursor-pointer text-blue-700 hover:text-blue-800 hover:underline"
+              >
+                {location}
+              </span>
             </p>
           ) : null}
         </div>
-
-        {typeof onSelect === "function" ? (
-          <div className="shrink-0">
-            <button
-              type="button"
-              onClick={() => onSelect(issue)}
-              className={`
-                rounded-md border border-gray-300 bg-white px-3 py-1.5
-                text-xs font-semibold text-gray-800 hover:bg-gray-50
-              `}
-            >
-              Ir a línea
-            </button>
-          </div>
-        ) : null}
       </div>
 
       {suggestion ? (
