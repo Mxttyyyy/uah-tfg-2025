@@ -4,46 +4,47 @@ import ResultsSummary from "./ResultsSummary";
 import IssueList from "./IssueList";
 import { buildSeverityCounts, isPlainObject, toInt } from "../../utils/uiUtils";
 
+/**
+ * Panel principal de resultados del análisis.
+ *
+ * Recibe la respuesta completa del backend y coordina la visualización
+ * del resumen, listas de incidencias y métricas.
+ *
+ * Props:
+ * - result: object | null (resultado devuelto por el backend)
+ * - autoScroll: boolean (indica si se realiza scroll automático a resultados)
+ * - onIssueSelect: function (callback al seleccionar un issue)
+ */
 export default function ResultsPanel({
   result,
   autoScroll = true,
-  anchorId = "results",
-  onIssueSelect, // opcional: para futuro salto/selección en textarea
+  onIssueSelect,
 }) {
-  const sectionRef = useRef(null);
-  // Estado para ordenar issues por severidad
-  const [prioritySeverity, setPrioritySeverity] = useState("none"); // "error" | "warning" | "info" | null
 
-  // Obtenemos los campos del issue y validamos
+  // Referencia al <section> del panel de resultados (usada para hacer auto-scroll)
+  const sectionRef = useRef(null);
+
+  // Estado para ordenar issues por severidad
+  const [severitySelected, setSeveritySelected] = useState("none"); // "error" | "warning" | "info" | null
+
+  // Normalizamos la respuesta del backend
   const safeResult = isPlainObject(result) ? result : null;
 
-  const error =
-    safeResult?.error && isPlainObject(safeResult.error)
-      ? safeResult.error
-      : null;
-
-  const analysis = isPlainObject(safeResult?.analysis)
-    ? safeResult.analysis
-    : {};
+  // Obtenemos los campos del resultado del análisis y normalizamos
+  const error = safeResult?.error && isPlainObject(safeResult.error) ? safeResult.error : null;
+  const analysis = isPlainObject(safeResult?.analysis) ? safeResult.analysis : {};
   const summary = isPlainObject(safeResult?.summary) ? safeResult.summary : {};
+  const language = typeof safeResult?.language === "string" ? safeResult.language : "";
+  const analysisTimeMs = typeof safeResult?.analysis_time_ms === "number" ? safeResult.analysis_time_ms : null;
 
-  const language =
-    typeof safeResult?.language === "string" ? safeResult.language : "";
-  const analysisTimeMs =
-    typeof safeResult?.analysis_time_ms === "number"
-      ? safeResult.analysis_time_ms
-      : null;
-
+  // Listas de issues por tipo de análisis
   const styleIssues = Array.isArray(analysis.style) ? analysis.style : [];
-  const securityIssues = Array.isArray(analysis.security)
-    ? analysis.security
-    : [];
-  const deadCodeIssues = Array.isArray(analysis.dead_code)
-    ? analysis.dead_code
-    : [];
+  const securityIssues = Array.isArray(analysis.security) ? analysis.security : [];
+  const deadCodeIssues = Array.isArray(analysis.dead_code) ? analysis.dead_code : [];
   const typesIssues = Array.isArray(analysis.types) ? analysis.types : [];
   const metrics = isPlainObject(analysis.metrics) ? analysis.metrics : {};
 
+  // Número total de issues
   const totalIssues = useMemo(() => {
     if (typeof summary.total_issues === "number") return summary.total_issues;
     return (
@@ -60,7 +61,8 @@ export default function ResultsPanel({
     typesIssues.length,
   ]);
 
-  const bySeverity = useMemo(() => {
+  // Conteo de issues por severidad
+  const issuesBySeverity = useMemo(() => {
     if (isPlainObject(summary.by_severity)) return summary.by_severity;
     return buildSeverityCounts([
       ...styleIssues,
@@ -76,32 +78,31 @@ export default function ResultsPanel({
     typesIssues,
   ]);
 
-  // Auto-scroll cuando llegan resultados (o error)
+  // Auto-scroll al panel de resultados cuando hay contenido relevante que mostrar
   useEffect(() => {
     if (!autoScroll) return;
     if (!safeResult) return;
 
-    const hasSomething =
+    const hasContent =
       !!error ||
       totalIssues > 0 ||
       Object.keys(metrics).length > 0 ||
       analysisTimeMs !== null;
 
-    if (hasSomething && sectionRef.current) {
+    if (hasContent && sectionRef.current) {
       sectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [autoScroll, safeResult, error, totalIssues, metrics, analysisTimeMs]);
 
+  // Al recibir un nuevo resultado, reseteamos la selección de severidad
   useEffect(() => {
-    // Al recibir un nuevo resultado, volvemos al orden normal
-    if (safeResult) setPrioritySeverity("none");
+    if (safeResult) setSeveritySelected("none");
   }, [safeResult]);
 
-  // Placeholder cuando todavía no hay resultado
+  // Render inicial mientras no hay resultados del análisis
   if (!safeResult) {
     return (
       <section
-        id={anchorId}
         ref={sectionRef}
         className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
       >
@@ -115,11 +116,10 @@ export default function ResultsPanel({
 
   return (
     <section
-      id={anchorId}
       ref={sectionRef}
       className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
     >
-      {/* Cabecera */}
+      {/* Cabecera del panel */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-base font-semibold text-gray-900">Resultados</h2>
@@ -128,16 +128,15 @@ export default function ResultsPanel({
           </p>
         </div>
 
+        {/* Etiquetas del análisis - lenguaje, tiempo, issues */}
         <div className="flex flex-wrap items-center gap-2">
           {language ? <IssueLabel label={`Lenguaje: ${language}`} /> : null}
-          {analysisTimeMs !== null ? (
-            <IssueLabel label={`Tiempo: ${analysisTimeMs} ms`} />
-          ) : null}
+          {analysisTimeMs !== null ? <IssueLabel label={`Tiempo: ${analysisTimeMs} ms`}/> : null}
           <IssueLabel label={`Issues: ${totalIssues}`} />
         </div>
       </div>
 
-      {/* Error global */}
+      {/* Error en el análisis */}
       {error ? (
         <div className="mt-4">
           <Alert
@@ -152,35 +151,35 @@ export default function ResultsPanel({
         </div>
       ) : null}
 
-      {/* Resumen */}
+      {/* Resumen global de issues y selector de severidad */}
       <div className="mt-5">
         <ResultsSummary
           total={totalIssues}
-          bySeverity={bySeverity}
-          prioritySeverity={prioritySeverity}
-          onPriorityChange={setPrioritySeverity}
+          issuesBySeverity={issuesBySeverity}
+          severitySelected={severitySelected}
+          onSeverityChange={setSeveritySelected}
         />
       </div>
 
-      {/* Secciones */}
+      {/* Secciones de cada tipo de análisis */}
       <div className="mt-6 space-y-5">
         <IssueList
           title="Estilo y buenas prácticas (Ruff)"
           subtitle="Problemas de estilo, convenciones y reglas de lint."
-          items={styleIssues}
+          issues={styleIssues}
           emptyText="Sin issues de estilo."
           onIssueSelect={onIssueSelect}
-          prioritySeverity={prioritySeverity}
+          severitySelected={severitySelected}
           leftBorderClass="border-l-cyan-300 border-l-4 hover:border-l-cyan-300"
         />
 
         <IssueList
           title="Seguridad básica (Bandit)"
           subtitle="Posibles patrones inseguros o riesgos comunes."
-          items={securityIssues}
+          issues={securityIssues}
           emptyText="Sin issues de seguridad."
           onIssueSelect={onIssueSelect}
-          prioritySeverity={prioritySeverity}
+          severitySelected={severitySelected}
           leftBorderClass="border-l-purple-300 border-l-4 hover:border-l-purple-300"
         />
 
@@ -192,20 +191,20 @@ export default function ResultsPanel({
         <IssueList
           title="Código muerto (Vulture)"
           subtitle="Código potencialmente sin uso (variables, imports, funciones…)."
-          items={deadCodeIssues}
+          issues={deadCodeIssues}
           emptyText="Sin avisos de código muerto."
           onIssueSelect={onIssueSelect}
-          prioritySeverity={prioritySeverity}
+          severitySelected={severitySelected}
           leftBorderClass="border-l-emerald-300 border-l-4 hover:border-l-emerald-300"
         />
 
         <IssueList
           title="Tipado (Mypy)"
           subtitle="Problemas de tipado estático y compatibilidad de tipos."
-          items={typesIssues}
+          issues={typesIssues}
           emptyText="Sin issues de tipado."
           onIssueSelect={onIssueSelect}
-          prioritySeverity={prioritySeverity}
+          severitySelected={severitySelected}
           leftBorderClass="border-l-orange-400 border-l-4 hover:border-l-orange-400"
         />
       </div>
@@ -215,20 +214,26 @@ export default function ResultsPanel({
 
 /* --------------------------- Metrics (Radon) --------------------------- */
 
+/**
+ * Sección de métricas estáticas del código (Radon).
+ *
+ * Muestra índices de mantenibilidad, métricas básicas de código
+ * y los bloques con mayor complejidad ciclomática.
+ */
 function MetricsSection({ metrics, leftBorderClass }) {
+
   const hasMetrics = isPlainObject(metrics) && Object.keys(metrics).length > 0;
 
+  // Obtenemos los campos relevantes y normalizamos
   const tool = typeof metrics?.tool === "string" ? metrics.tool : "radon";
-
-  const cc = isPlainObject(metrics?.cyclomatic_complexity)
-    ? metrics.cyclomatic_complexity
-    : {};
-  const mi = isPlainObject(metrics?.maintainability_index)
-    ? metrics.maintainability_index
-    : {};
+  const cc = isPlainObject(metrics?.cyclomatic_complexity) ? metrics.cyclomatic_complexity : {};
+  const mi = isPlainObject(metrics?.maintainability_index) ? metrics.maintainability_index : {};
   const raw = isPlainObject(metrics?.raw_metrics) ? metrics.raw_metrics : {};
 
   const blocks = Array.isArray(cc.blocks) ? cc.blocks : [];
+
+  // Selección de los bloques con mayor complejidad ciclomática (orden descendente)
+  // En este caso nos quedamos con los 6 mayores
   const topBlocks = [...blocks]
     .filter((b) => isPlainObject(b))
     .sort((a, b) => (toInt(b.complexity) || 0) - (toInt(a.complexity) || 0))
@@ -242,6 +247,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
         hover:bg-blue-100/60 transition ${leftBorderClass}
       `}
     >
+      {/* Cabecera del panel */}
       <summary
         className={`
           flex cursor-pointer list-item items-center justify-between
@@ -264,6 +270,8 @@ function MetricsSection({ metrics, leftBorderClass }) {
         ) : (
           <div className="space-y-3">
             <div className="grid gap-3 lg:grid-cols-2">
+
+              {/* Panel de índice de mantenibilidad global del código */}
               <div className="rounded-md border border-gray-200 bg-white p-3">
                 <h4 className="text-sm font-semibold text-gray-900">
                   Maintainability Index (MI)
@@ -277,6 +285,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
                 </p>
               </div>
 
+              {/* Panel/Tabla de métricas básicas */}
               <div className="rounded-md border border-gray-200 bg-white p-3">
                 <h4 className="text-sm font-semibold text-gray-900">
                   Raw metrics
@@ -292,6 +301,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
               </div>
             </div>
 
+            {/* Panel/Tabla de complejidad ciclomática */}
             <div className="rounded-md border border-gray-200 bg-white p-3">
               <h4 className="text-sm font-semibold text-gray-900">
                 Complejidad ciclomática (top bloques)
@@ -346,6 +356,11 @@ function MetricsSection({ metrics, leftBorderClass }) {
   );
 }
 
+/* ------------------------------ Componentes auxiliares ------------------------------ */
+
+/**
+ * Elemento visual para mostrar una métrica simple (label + valor).
+ */
 function MetricItem({ label, value }) {
   return (
     <div className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
@@ -355,8 +370,9 @@ function MetricItem({ label, value }) {
   );
 }
 
-/* ------------------------------ helpers ------------------------------ */
-
+/**
+ * Label para mostrar valores informativos.
+ */
 function IssueLabel({ label }) {
   return (
     <span

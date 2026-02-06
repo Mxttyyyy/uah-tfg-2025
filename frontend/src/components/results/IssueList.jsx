@@ -7,30 +7,42 @@ import {
 } from "../../utils/uiUtils";
 
 /**
- * Lista desplegable de issues detectadas por el análisis.
+ * Lista desplegable de issues detectados por el análisis.
  *
- * Ordena los issues por ubicación en el código y muestra
- * su información detallada de forma estructurada.
+ * Muestra las incidencias de forma estructurada, ordenadas por
+ * ubicación en el código fuente y priorizadas visualmente según
+ * la severidad seleccionada.
+ *
+ * Props:
+ * - title: string (título del bloque de issues)
+ * - subtitle: string | null (texto descriptivo opcional)
+ * - issues: array (lista de issues devueltos por el análisis)
+ * - emptyText: string (mensaje mostrado cuando no hay issues)
+ * - onIssueSelect: function (callback al seleccionar un issue)
+ * - severitySelected: string | null (severidad priorizada)
+ * - leftBorderClass: string (clase tailwind para el borde lateral)
  */
 export default function IssueList({
   title,
   subtitle,
-  items: rawIssues,
+  issues: rawIssues,
   emptyText = "Sin incidencias.",
   onIssueSelect,
-  prioritySeverity = null,
+  severitySelected = null,
   leftBorderClass = "border-l-blue-500",
 }) {
   const issues = Array.isArray(rawIssues) ? rawIssues : [];
-  const sortedIssues = applySeverityPriority(issues, prioritySeverity);
+
+  // Ordenamos los issues por severidad y ubicación
+  const sortedIssues = applySeverityPriority(issues, severitySelected);
   const issueCount = sortedIssues.length;
 
   return (
     <details
       open={issueCount > 0}
       className={`
-        rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
-        hover:bg-blue-50/80 transition ${leftBorderClass}
+        rounded-lg border border-gray-200 hover:border-blue-200
+        bg-gray-50/60 hover:bg-blue-50/80 transition ${leftBorderClass}
       `}
     >
       <summary
@@ -39,6 +51,7 @@ export default function IssueList({
           gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
         `}
       >
+        {/* Título del issue y contador */}
         <span className="flex items-center gap-2">
           {title}
           <span className="text-xs font-semibold text-gray-600">
@@ -47,19 +60,20 @@ export default function IssueList({
         </span>
       </summary>
 
+      {/* Descripción */}
       <div className="px-3 pb-3">
         {subtitle ? (
           <p className="mb-3 text-sm text-gray-600">{subtitle}</p>
         ) : null}
-
+        {/* Lista de issues */}
         {issueCount === 0 ? (
           <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700">
             {emptyText}
           </div>
         ) : (
           <ul className="space-y-2">
-            {sortedIssues.map((issue, idx) => (
-              <li key={issueKey(issue, idx)}>
+            {sortedIssues.map((issue, index) => (
+              <li key={issueKey(issue, index)}>
                 <IssueCard issue={issue} onSelect={onIssueSelect} />
               </li>
             ))}
@@ -75,8 +89,7 @@ export default function IssueList({
  * mensaje, localización y sugerencias asociadas.
  */
 function IssueCard({ issue: raw_issue, onSelect }) {
-  // Normalizamos y ordenamos la lista de issues para garantizar
-  // un render consistente aunque los datos sean incompletos.
+  // Obtenemos todos los campos del issue y los normalizamos para evitar errores
   const issue = isPlainObject(raw_issue) ? raw_issue : {};
   const severity = normalizeSeverity(issue.severity);
 
@@ -96,6 +109,8 @@ function IssueCard({ issue: raw_issue, onSelect }) {
     <div className="rounded-md border border-gray-200 bg-white p-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
+          
+          {/* Labels informativos */}
           <div className="flex flex-wrap items-center gap-2">
             <SeverityLabel severity={severity} />
             {tool ? <IssueLabel label={tool} /> : null}
@@ -103,13 +118,15 @@ function IssueCard({ issue: raw_issue, onSelect }) {
             {rule_code ? <IssueLabel label={rule_code} /> : null}
           </div>
 
+          {/* Mensaje del issue */}
           <p className="mt-2 text-sm font-medium text-gray-900 break-words">
             {message}
           </p>
 
+          {/* Ubicación del issue */}
           {location ? (
             <p className="mt-1 text-xs text-gray-600">
-              Ubicación:{" "}
+              Ubicación: {/* Link a la ubicación del issue en el código */}
               <span
                 onClick={() => onSelect(issue)}
                 className="font-medium cursor-pointer text-blue-700 hover:text-blue-800 hover:underline"
@@ -121,6 +138,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
         </div>
       </div>
 
+      {/* Sugerencia */}
       {suggestion ? (
         <div className="mt-3 rounded-md border border-blue-100 bg-blue-50/50 px-3 py-2">
           <p className="text-xs font-semibold text-blue-900">Sugerencia</p>
@@ -128,6 +146,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
         </div>
       ) : null}
 
+      {/* Posibles notas */}
       {notes.length > 0 ? (
         <div className="mt-3">
           <p className="text-xs font-semibold text-gray-700">Notas</p>
@@ -139,6 +158,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
         </div>
       ) : null}
 
+      {/* Posible enlace de ayuda */}
       {helpUrl ? (
         <div className="mt-3">
           <a
@@ -189,24 +209,29 @@ function SeverityLabel({ severity }) {
       : severity === "warning"
         ? "WARNING"
         : "INFO";
-  const cls = map[severity] || map.warning;
+  const severityClass = map[severity] || map.warning;
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold ${cls}`}
+      className={`
+        inline-flex items-center rounded-full border
+        px-2 py-0.5 text-xs font-bold ${severityClass}
+      `}
     >
       {label}
     </span>
   );
 }
 
+/* ----------------------------- Funciones auxiliares ---------------------------- */
+
 /**
  * Genera una clave única para usar como 'key' en listas renderizadas con '.map()'.
  */
-function issueKey(issue, idx) {
+function issueKey(issue, index) {
   const tool = typeof issue?.tool === "string" ? issue.tool : "tool";
   const code = typeof issue?.code === "string" ? issue.code : "";
   const line = toInt(issue?.line);
   const col = toInt(issue?.column);
-  return `${tool}-${code}-${line ?? "x"}-${col ?? "x"}-${idx}`;
+  return `${tool}-${code}-${line ?? "x"}-${col ?? "x"}-${index}`;
 }

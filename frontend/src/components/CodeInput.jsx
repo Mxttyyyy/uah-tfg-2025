@@ -24,10 +24,15 @@ export default function CodeInput({
   const lines = countLines(value);
 
   return (
-    
-    <section id="code_section" ref={sectionRef} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6 w-150 hover:shadow-md hover:-translate-y-[2px] transition">
-
-      {/* Título del área y contador de líneas */}
+    <section
+      id="code_section"
+      ref={sectionRef}
+      className={`
+        rounded-xl border border-gray-200 bg-white p-4 shadow-sm
+        sm:p-6 w-150 hover:shadow-md hover:-translate-y-[2px] transition
+      `}
+    >
+      {/* Título del contenedor y contador de líneas */}
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-gray-900">Código</h2>
         <span className="text-sm text-gray-600">
@@ -46,9 +51,10 @@ export default function CodeInput({
         wrap="off"
         placeholder={placeholder}
         disabled={disabled}
-        spellCheck={false} 
+        spellCheck={false}
         className={[
-          "w-full overflow-auto scrollbar-modern resize-y rounded-lg border border-gray-200 bg-gray-50 focus:bg-white ",
+          "w-full overflow-auto scrollbar-modern resize-y rounded-lg",
+          "border border-gray-200 bg-gray-50 focus:bg-white",
           "px-3 py-3 text-sm text-gray-900 transition",
           "min-h-[clamp(340px,45vh,440px)]",
           "h-[clamp(440px,60vh,740px)]",
@@ -63,20 +69,21 @@ export default function CodeInput({
         Nota: se recomienda pegar el archivo completo.
       </p>
 
-       {/* CodeActions integrada */}
+      {/* CodeActions integrada */}
       <div className="mt-5 border-t border-gray-200 pt-4">
         <CodeActions
           code={value}
           isLoading={!!isLoading}
-          onAnalyze={onAnalyze} 
+          onAnalyze={onAnalyze}
           onClear={onClear}
           onExample={onExample}
         />
       </div>
-
     </section>
   );
 }
+
+/* ----------------------------- Funciones auxiliares ---------------------------- */
 
 // Contar el número de líneas del texto introducido
 function countLines(text) {

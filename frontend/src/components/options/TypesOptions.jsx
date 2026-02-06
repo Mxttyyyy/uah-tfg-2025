@@ -12,21 +12,20 @@ import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
  * - disable_error_codes: string[]
  *
  * UI:
- * - booleans como checkboxes
- * - python_version como input
- * - enable/disable_error_codes como CSV (separado por comas)
+ * - booleans --> checkboxes
+ * - python_version --> input
+ * - enable/disable_error_codes --> CSV (separado por comas)
  *
  * Props:
  * - options: objeto con opciones actuales de types
  * - onChange: (nextValue) => void
  */
 export default function TypesOptions({ options, onChange }) {
-  
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
 
-  // Validamos las opciones y aplicamos valores por defecto para la UI.
+  // Validamos las opciones y aplicamos valores por defecto
   const ignoreMissing = normalizedOptions.ignore_missing_imports !== false; // default: true
   const strict = normalizedOptions.strict === true;
   const showLinks = normalizedOptions.show_error_code_links === true;
@@ -152,7 +151,10 @@ function TextInput({ id, label, value, onChange, placeholder, hint }) {
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        className={`
+          mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+          outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+        `}
       />
 
       {hint ? <p className="mt-1 text-xs text-gray-600">{hint}</p> : null}

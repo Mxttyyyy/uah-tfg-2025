@@ -1,3 +1,4 @@
+/* ICONO SPINNER */
 export default function SpinnerIcon({ className = "", ...props }) {
   return (
     <svg

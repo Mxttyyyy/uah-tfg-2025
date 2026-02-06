@@ -23,7 +23,7 @@ export default function SecurityOptions({ options, onChange }) {
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
 
-  // Validamos las opciones y aplicamos valores por defecto para la UI.
+  // Validamos las opciones y aplicamos valores por defecto.
   const severity =
     typeof normalizedOptions.severity_level === "string"
       ? normalizedOptions.severity_level
@@ -123,7 +123,10 @@ function TextInput({ id, label, value, onChange, placeholder, hint }) {
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        className={`
+          mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+          outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+        `}
       />
 
       {hint ? <p className="mt-1 text-xs text-gray-600">{hint}</p> : null}
@@ -146,7 +149,10 @@ function SelectInput({ id, label, value, onChange, options, hint }) {
         name={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 cursor-pointer"
+        className={`
+          mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+          outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 cursor-pointer
+        `}
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

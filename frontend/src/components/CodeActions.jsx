@@ -7,14 +7,14 @@ import Spinner from "./Spinner";
  * - Contiene los botones que disparan acciones globales:
  *   - Analizar (llama a la API)
  *   - Limpiar (vacía el textarea)
- *   - Ejemplo (opcional: pega un snippet de ejemplo)
+ *   - Ejemplo (pega un snippet de ejemplo) ----¿?----
  *
  * Props:
  * - code: string (contenido actual del textarea)
  * - isLoading: boolean (true mientras estás esperando la respuesta del análisis)
  * - onAnalyze: () => void
  * - onClear: () => void
- * - onExample: () => void (opcional)
+ * - onExample: () => void (¿?)
  */
 export default function CodeActions({
   code,
@@ -23,14 +23,16 @@ export default function CodeActions({
   onClear,
   onExample,
 }) {
-  const hasCode = typeof code === "string" && code.trim().length > 0;
 
+  // Obtenemos campos dependiendo del estado del análisis
+  const hasCode = typeof code === "string" && code.trim().length > 0;
   const analyzeDisabled = !hasCode || isLoading;
   const clearDisabled = !hasCode || isLoading;
   const exampleDisabled = isLoading;
 
   return (
     <div className="flex flex-wrap items-center justify-between">
+
       {/* Info izquierda */}
       <div className="text-sm text-gray-600 font-semibold ">
         {isLoading ? (
@@ -44,6 +46,8 @@ export default function CodeActions({
 
       {/* Botones derecha */}
       <div className="flex flex-wrap items-center gap-2">
+
+        {/* Botón para mostrar ejemplo de código -----------------¿¿¿???--------------- */}
         {typeof onExample === "function" ? (
           <button
             type="button"
@@ -59,6 +63,7 @@ export default function CodeActions({
           </button>
         ) : null}
 
+        {/* Botón para limpiar el textarea */}
         <button
           type="button"
           onClick={onClear}
@@ -72,12 +77,14 @@ export default function CodeActions({
           Limpiar
         </button>
 
+        {/* Botón para analizar */}
         <button
           type="button"
           onClick={onAnalyze}
           disabled={analyzeDisabled}
           className={[
-            "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition",
+            "inline-flex items-center justify-center gap-2", 
+            "rounded-lg px-4 py-2 text-sm font-semibold transition",
             "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer",
             "disabled:cursor-not-allowed disabled:opacity-50",
           ].join(" ")}

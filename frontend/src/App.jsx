@@ -29,7 +29,7 @@ function handleIssueSelect(issue) {
   if (codeSectionRef.current) {
     codeSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   } else {
-    // fallback por si usas ancla
+    // fallback por si se usa ancla
     const el = document.getElementById("code_section");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -43,7 +43,7 @@ function handleIssueSelect(issue) {
     const start = getLineStartIndex(text, line);
     const end = getLineEndIndex(text, start);
 
-    ta.focus();
+    ta.focus(); // marcamos la línea
     ta.setSelectionRange(start, end); // marca línea completa
 
     // hacer scroll interno del textarea para que se vea esa línea
@@ -290,30 +290,8 @@ function getTextareaLineHeight(textareaEl) {
     fakeOk();
   }
 
-  function handleAnalyze() {
-    // Simulación de llamada a API
-    setIsLoading(true);
-    window.setTimeout(() => {
-      setIsLoading(false);
-      // Por ahora solo para ver que "hace algo"
-      alert("Aquí iría la llamada a /api/analyze");
-    }, 800);
-  }
-
   function handleClear() {
     setCode("");
-  }
-
-  function handleExample() {
-    setCode(
-      [
-        "def greet(name):",
-        "    return f'Hola, {name}!'",
-        "",
-        "print(greet('mundo'))",
-        "",
-      ].join("\n"),
-    );
   }
 
   return (

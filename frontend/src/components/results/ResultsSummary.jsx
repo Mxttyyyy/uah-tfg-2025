@@ -5,28 +5,40 @@ import { toInt } from "../../utils/uiUtils";
  *
  * Muestra el número total de issues y su distribución por severidad
  * (error, warning e info).
+ * 
+ * Este componente no aplica el filtrado por severidad directamente;
+ * únicamente notifica cambios de severidad al padre (ResultsPanel)
+ * 
+ *  Props:
+ * - total: int (número total de issues)
+ * - issuesBySeverity de issues por severidad)
+ * - severitySelected: string (severidad seleccionada)
+ * - onSeverityChange: (severity: string) => void
  */
 export default function ResultsSummary({
   total,
-  bySeverity,
-  prioritySeverity,
-  onPriorityChange,
+  issuesBySeverity,
+  severitySelected,
+  onSeverityChange,
 }) {
+
   // Normalizamos los contadores por severidad para garantizar valores numéricos seguros,
   // aún incluso si faltan datos o llegan valores inválidos desde el backend.
-  const info = toInt(bySeverity?.info) ?? 0;
-  const warning = toInt(bySeverity?.warning) ?? 0;
-  const error = toInt(bySeverity?.error) ?? 0;
+  const info = toInt(issuesBySeverity?.info) ?? 0;
+  const warning = toInt(issuesBySeverity?.warning) ?? 0;
+  const error = toInt(issuesBySeverity?.error) ?? 0;
 
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
+      { /*SummaryCard para "total" y para cada tipo de severidad */}
       <SummaryCard
         title="Total"
         value={toInt(total) ?? 0}
-        selected={false}
+        selected={false} 
         onClick={
-          typeof onPriorityChange === "function"
-            ? () => onPriorityChange("none")
+          typeof onSeverityChange === "function"
+            ? () => onSeverityChange("none") 
             : undefined
         }
       />
@@ -34,12 +46,12 @@ export default function ResultsSummary({
         title="Errores"
         value={error}
         tone="error"
-        selected={prioritySeverity === "error"}
+        selected={severitySelected === "error"}
         onClick={
-          typeof onPriorityChange === "function"
+          typeof onSeverityChange === "function"
             ? () =>
-                onPriorityChange(
-                  prioritySeverity === "error" ? "none" : "error",
+                onSeverityChange(
+                  severitySelected === "error" ? "none" : "error",
                 )
             : undefined
         }
@@ -48,12 +60,12 @@ export default function ResultsSummary({
         title="Warnings"
         value={warning}
         tone="warning"
-        selected={prioritySeverity === "warning"}
+        selected={severitySelected === "warning"}
         onClick={
-          typeof onPriorityChange === "function"
+          typeof onSeverityChange === "function"
             ? () =>
-                onPriorityChange(
-                  prioritySeverity === "warning" ? "none" : "warning",
+                onSeverityChange(
+                  severitySelected === "warning" ? "none" : "warning",
                 )
             : undefined
         }
@@ -62,11 +74,11 @@ export default function ResultsSummary({
         title="Info"
         value={info}
         tone="info"
-        selected={prioritySeverity === "info"}
+        selected={severitySelected === "info"}
         onClick={
-          typeof onPriorityChange === "function"
+          typeof onSeverityChange === "function"
             ? () =>
-                onPriorityChange(prioritySeverity === "info" ? "none" : "info")
+                onSeverityChange(severitySelected === "info" ? "none" : "info")
             : undefined
         }
       />
@@ -74,11 +86,13 @@ export default function ResultsSummary({
   );
 }
 
+/* ----------------------------- Componentes auxiliares ---------------------------- */
+
 /**
  * Tarjeta de resumen individual.
  *
- * Muestra un valor numérico destacado con un estilo visual
- * asociado a su severidad.
+ * Muestra el número de issues asociados a una severidad concreta
+ * y aplica el estilo visual correspondiente.
  */
 function SummaryCard({
   title,
@@ -104,8 +118,7 @@ function SummaryCard({
         "rounded-lg border p-3 text-left transition",
         severityStyles[tone] || severityStyles.neutral,
         onClick ? "cursor-pointer hover:shadow-md" : "cursor-default",
-        selected ? "-translate-y-[10px] shadow-md border-2" : "",
-        !onClick ? "opacity-100" : "",
+        selected ? "-translate-y-[10px] shadow-md border-2" : ""
       ].join(" ")}
     >
       <p className="text-xs font-semibold uppercase tracking-wide text-gray-600">

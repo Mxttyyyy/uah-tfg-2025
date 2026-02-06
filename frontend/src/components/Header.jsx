@@ -22,10 +22,17 @@ export default function Header() {
       {/* Contenedor más estrecho => logo y links */}
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:max-w-5xl">
         <div className="flex h-16 items-center justify-between">
-
           {/* Logo */}
-          <a href="#" aria-label="Homepage" className="flex items-center transition-transform duration-300 hover:scale-110">
-            <img src="/analyth.png" alt="Logo" className="h-25 mt-2.5 w-auto " />
+          <a
+            href="#"
+            aria-label="Homepage"
+            className="flex items-center transition-transform duration-300 hover:scale-110"
+          >
+            <img
+              src="/analyth.png"
+              alt="Logo"
+              className="h-25 mt-2.5 w-auto "
+            />
           </a>
 
           {/* Links del lado derecho */}
@@ -47,7 +54,12 @@ export default function Header() {
       </div>
 
       {/* Separador azul */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-blue-700 via-sky-400 to-blue-700 opacity-80" />
+      <div
+        className={`
+          h-[2px] w-full bg-gradient-to-r from-blue-700
+          via-sky-400 to-blue-700 opacity-80
+        `}
+      />
     </header>
   );
 }

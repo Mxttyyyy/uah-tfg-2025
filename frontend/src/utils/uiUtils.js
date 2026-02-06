@@ -1,4 +1,3 @@
-// Utilidades de formato para la UI
 
 /**
  * Convierte milisegundos a un string legible:
@@ -22,17 +21,7 @@ export function normalizeSeverity(value) {
 }
 
 /**
- * Etiqueta de severidad para mostrar en la UI.
- */
-export function severityLabel(sev) {
-  const s = normalizeSeverity(sev);
-  if (s === "error") return "Error";
-  if (s === "warning") return "Warning";
-  return "Info";
-}
-
-/**
- * Cuenta el número de incidencias por severidad (info, warning, error).
+ * Cuenta el número de issues por severidad (info, warning, error).
  */
 export function buildSeverityCounts(issues) {
   const counts = { info: 0, warning: 0, error: 0 };
@@ -44,32 +33,34 @@ export function buildSeverityCounts(issues) {
 }
 
 /**
- * Aplica una prioridad de severidad a la lista de incidencias,
+ * Aplica una prioridad de severidad a la lista de issues,
  * mostrando primero las de mayor interés y ordenando por ubicación.
  */
-export function applySeverityPriority(issues, prioritySeverity) {
+export function applySeverityPriority(issues, severitySelected) {
+
   // Orden normal: por ubicación
-  if (!prioritySeverity || prioritySeverity === "none") return sortIssuesByLocation(issues);
+  if (!severitySelected || severitySelected === "none") return sortIssuesByLocation(issues);
 
   // Separamos los que tienen la severidad priorizada
-  const prioritized = [];
-  const rest = [];
-
-  for (const it of issues) {
-    const sev = normalizeSeverity(it?.severity);
-    if (sev === prioritySeverity) prioritized.push(it);
-    else rest.push(it);
+  const prioritizedIssues = [];
+  const otherIssues = [];
+  for (const issue of issues) {
+    const sev = normalizeSeverity(issue?.severity);
+    if (sev === severitySelected) prioritizedIssues.push(issue);
+    else otherIssues.push(issue);
   }
 
   // Ordenamos cada bloque por ubicación y concatenamos
-  return [...sortIssuesByLocation(prioritized), ...sortIssuesByLocation(rest)];
+  return [...sortIssuesByLocation(prioritizedIssues), ...sortIssuesByLocation(otherIssues)];
 }
 
 /**
  * Construye un texto corto con la localización del issue.
- * Ejemplo: "input.py · línea 12, col 5"
+ * Ejemplo: "línea 12, col 5"
  */
 export function formatIssueLocation(issue) {
+
+  // Obtenemos y normalizamos campos del issue
   const path = typeof issue?.path === "string" ? issue.path : "";
   const line = toInt(issue?.line);
   const column = toInt(issue?.column);
@@ -93,7 +84,6 @@ export function formatIssueLocation(issue) {
  */
 export function sortIssuesByLocation(issues) {
 
-  // Entrada inválida, devolvemos lista vacía
   if (!Array.isArray(issues)) return [];
 
   // Copiamos la lista para no modificar la original

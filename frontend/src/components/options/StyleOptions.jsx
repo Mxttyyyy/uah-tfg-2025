@@ -15,9 +15,9 @@ import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
  * - onChange: (nextValue) => void
  */
 export default function StyleOptions({ options, onChange }) {
-  
+
   // Normalizamos las opciones para garantizar siempre un objeto válido
-  // y evitar valores null/undefined en la UI.
+  // y evitar valores null/undefined.
   const normalizedOptions = isPlainObject(options) ? options : {};
 
   // Convertimos las listas de reglas a CSV para mostrarlas en la UI.
@@ -72,7 +72,7 @@ export default function StyleOptions({ options, onChange }) {
   );
 }
 
-/* ------------------------------- Componente auxiliar ------------------------------ */
+/* ------------------------------- Componentes auxiliares ------------------------------ */
 
 /**
  * Input de texto reutilizable con label y mensaje de ayuda opcional.
@@ -91,7 +91,10 @@ function TextInput({ id, label, value, onChange, placeholder, hint }) {
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        className={`
+          mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+          outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+        `}
       />
 
       {hint ? <p className="mt-1 text-xs text-gray-600">{hint}</p> : null}

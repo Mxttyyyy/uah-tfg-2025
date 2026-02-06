@@ -53,6 +53,8 @@ export default function Alert({ variant = "info", title, children, onClose }) {
   );
 }
 
+/* ----------------------------- Funciones auxiliares ---------------------------- */
+
 /**
  * Estilos según el tipo de mensaje (variant)
  */

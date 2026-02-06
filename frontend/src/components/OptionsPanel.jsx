@@ -346,7 +346,7 @@ export default function OptionsPanel({ options, onChange }) {
   );
 }
 
-/* ------------------------------- Componente auxiliar ------------------------------- */
+/* ------------------------------- Componentes auxiliares ------------------------------- */
 
 /**
  * Fila reutilizable con checkbox y su label asociado.
