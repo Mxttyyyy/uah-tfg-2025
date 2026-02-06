@@ -21,6 +21,7 @@ export default function App() {
 const codeSectionRef = useRef(null);
 const textareaRef = useRef(null);
 
+// Gestiona la selección de un issue y posiciona el cursor en la línea afectada del código
 function handleIssueSelect(issue) {
   const line = Number(issue?.line);
   if (!Number.isFinite(line) || line <= 0) return;
@@ -43,7 +44,7 @@ function handleIssueSelect(issue) {
     const start = getLineStartIndex(text, line);
     const end = getLineEndIndex(text, start);
 
-    ta.focus(); // marcamos la línea
+    ta.focus(); // activamos el textarea (elemento seleccionado)
     ta.setSelectionRange(start, end); // marca línea completa
 
     // hacer scroll interno del textarea para que se vea esa línea
@@ -52,29 +53,41 @@ function handleIssueSelect(issue) {
   }, 250);
 }
 
+/**
+ * Devuelve el índice del carácter donde comienza una línea concreta
+ * dentro de un texto multilinea.
+ */
 function getLineStartIndex(text, lineNumber) {
   let idx = 0;
   let currentLine = 1;
 
   while (currentLine < lineNumber && idx < text.length) {
-    const nl = text.indexOf("\n", idx);
-    if (nl === -1) return text.length;
-    idx = nl + 1;
+    const new_line = text.indexOf("\n", idx);
+    if (new_line === -1) return text.length;
+    idx = new_line + 1;
     currentLine += 1;
   }
   return idx;
 }
 
+/**
+ * Devuelve el índice del carácter donde termina una línea concreta
+ * dentro de un texto multilinea.
+ */
 function getLineEndIndex(text, lineStartIndex) {
-  const nl = text.indexOf("\n", lineStartIndex);
-  return nl === -1 ? text.length : nl;
+  const new_line = text.indexOf("\n", lineStartIndex);
+  return new_line === -1 ? text.length : new_line;
 }
 
-function getTextareaLineHeight(textareaEl) {
-  const cs = window.getComputedStyle(textareaEl);
-  const lh = parseFloat(cs.lineHeight);
+/**
+ * Calcula la altura de una línea del textarea en píxeles.
+ */
+function getTextareaLineHeight(ta) {
+  const cs = window.getComputedStyle(ta); // Obtenemos los estilos del textarea 
+  const lh = parseFloat(cs.lineHeight); // Intentamos leer el valor de "lineHeight"
   if (Number.isFinite(lh)) return lh;
 
+  // Si lineHeight no es un número, usamos fontSize * 1.4
   const fs = parseFloat(cs.fontSize);
   return Number.isFinite(fs) ? fs * 1.4 : 20;
 }
