@@ -3,10 +3,16 @@ import CodeActions from "./CodeActions";
  * Área de entrada de código.
  *
  * Props:
- * - value: string
- * - onChange: (newValue: string) => void
- * - placeholder: string (opcional)
- * - disabled: boolean (opcional)
+ * - value: string (contenido actual del código)
+ * - onChange: (newValue: string) => void (callback al modificar el código)
+ * - placeholder: string (texto mostrado cuando no hay contenido)
+ * - disabled: boolean (deshabilita la edición del textarea)
+ * - isLoading: boolean (indica si el análisis está en curso)
+ * - onAnalyze: () => void (lanza el análisis del código)
+ * - onClear: () => void (limpia el contenido del editor)
+ * - onExample: () => void (carga un ejemplo de código) ---- ¿? ----
+ * - textareaRef: (referencia al textarea)
+ * - sectionRef: (referencia al contenedor del bloque)
  */
 export default function CodeInput({
   value,
@@ -25,7 +31,6 @@ export default function CodeInput({
 
   return (
     <section
-      id="code_section"
       ref={sectionRef}
       className={`
         rounded-xl border border-gray-200 bg-white p-4 shadow-sm

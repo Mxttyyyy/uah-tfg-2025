@@ -43,7 +43,7 @@ export async function analyzeCode(payload) {
             message = err.message;
         }
 
-        // Si hay status HTTP real, lo annadimos al mensaje
+        // Si hay status HTTP real, lo agregamos al mensaje
         if (status && status !== 0) {
             message = `${message} (HTTP ${status})`;
         }

@@ -65,15 +65,3 @@ export function createDefaultAnalyzeOptions() {
     },
   };
 }
-
-/**
- * Crea la plantilla de la petición POST /analyze
- * El código lo rellenará el usuario en la UI.
- */
-export function createDefaultAnalyzeRequest() {
-  return {
-    language: DEFAULT_LANGUAGE,
-    code: "",
-    options: createDefaultAnalyzeOptions(),
-  };
-}

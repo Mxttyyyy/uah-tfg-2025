@@ -7,7 +7,7 @@
 export default function Header() {
   const links = [
     { label: "Guía rápida", href: "#" },
-    { label: "Documentación", href: "#" },
+    //{ label: "Documentación", href: "#" },
     { label: "GitHub", href: "#" },
   ];
 
