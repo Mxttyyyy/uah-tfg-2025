@@ -17,31 +17,6 @@ code, pre, textarea {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
 }
-/* Glow azul animado bajo el header */
-.header-glow {
-  background: radial-gradient(
-    70% 100% at 50% 100%,
-    rgba(31, 88, 211, 0.35) 0%,
-    rgba(36, 111, 208, 0.25) 35%,
-    rgba(33, 88, 207, 0.15) 55%,
-    rgba(255, 255, 255, 0) 75%
-  );
-  filter: blur(8px);
-  transform: translateY(8px);
-  animation: headerGlowPulse s ease-in-out infinite;
-}
-
-@keyframes headerGlowPulse {
-  0% {
-    opacity: 0.60;
-  }
-  50% {
-    opacity: 0.95;
-  }
-  100% {
-    opacity: 0.60;
-  }
-}
 
 /* Scrollbar moderna (Chrome/Edge/Safari) */
 .scrollbar-modern::-webkit-scrollbar {

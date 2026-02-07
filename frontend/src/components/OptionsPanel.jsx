@@ -23,7 +23,6 @@ import { isPlainObject } from "../utils/uiUtils";
  * - onChange: (nextOptions) => void
  */
 export default function OptionsPanel({ options, onChange }) {
-  
   // Opciones normalizadas para garantizar una estructura válida
   const normalizedOptions = isPlainObject(options) ? options : {};
 
@@ -111,8 +110,8 @@ export default function OptionsPanel({ options, onChange }) {
   return (
     <section
       className={[
-        "rounded-xl border border-gray-200 bg-white p-4 shadow-sm",
-        "transition hover:shadow-md hover:-translate-y-[1px]",
+        "rounded-xl border border-gray-300 bg-white p-4 shadow-sm",
+        "transition hover:shadow-lg hover:-translate-y-[1px]",
         // Altura estable
         "max-h-[clamp(650px,70vh,890px)]",
         // Para que el scroll interno funcione bien
@@ -202,7 +201,7 @@ export default function OptionsPanel({ options, onChange }) {
       </div>
 
       {/* Separador */}
-      <div className="my-5 flex items-center gap-3" aria-hidden="true">
+      <div className="my-3 flex items-center gap-3" aria-hidden="true">
         <div className="h-px flex-1 bg-gray-200" />
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
           Opciones avanzadas

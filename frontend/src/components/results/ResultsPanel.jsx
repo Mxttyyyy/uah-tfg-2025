@@ -241,7 +241,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
 
   return (
     <details
-      open={hasMetrics}
+      open={false}
       className={`
         rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
         hover:bg-blue-100/60 transition ${leftBorderClass}
