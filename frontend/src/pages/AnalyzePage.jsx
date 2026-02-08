@@ -27,6 +27,7 @@ export default function App() {
   const [options, setOptions] = useState(() => createDefaultAnalyzeOptions());
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
 
   // Referencias para controlar el scroll y selección de código
   const codeSectionRef = useRef(null);
@@ -43,7 +44,7 @@ export default function App() {
 
     // analyzeCode ya valida código vacío y devuelve un error normalizado
     const data = await analyzeCode({
-      language: DEFAULT_LANGUAGE,
+      language,
       code,
       options,
     });
@@ -59,6 +60,42 @@ export default function App() {
     setCode("");
     setResult(null);
   }
+
+  /**
+   * Carga un ejemplo de código.
+   */
+  function handleLoadExample() {
+  const EXAMPLE_CODE = `
+    import subprocess
+    import hashlib
+
+    def run_cmd(cmd):
+        # Bandit: shell=True
+        return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout
+
+    def weak_hash(password):
+        # Bandit: md5 inseguro
+        return hashlib.md5(password.encode("utf-8")).hexdigest()
+
+    def complex_check(x):
+        # Algo de complejidad extra (Radon puede detectarlo)
+        if x > 10:
+            return "big"
+        elif x > 5:
+            return "medium"
+        elif x > 0:
+            return "small"
+        else:
+            return "zero"
+
+    print(run_cmd("echo hello"))
+    print(weak_hash("1234"))
+    print(complex_check(7))
+  `;
+
+  setCode(EXAMPLE_CODE);
+  setResult(null); // limpia resultados anteriores
+}
 
   /**
    * 
@@ -108,10 +145,13 @@ export default function App() {
           <div ref={codeSectionRef} className="min-w-0 scroll-mt-24">
             <CodeInput
               value={code}
+              language={language}
               onChange={setCode}
               isLoading={isLoading}
               onAnalyze={handleAnalyze}
               onClear={handleClear}
+              onExample={handleLoadExample}
+              onLanguageChange={setLanguage}
               textareaRef={textareaRef}
             />
           </div>

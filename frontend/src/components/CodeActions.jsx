@@ -7,34 +7,41 @@ import Spinner from "./Spinner";
  * - Contiene los botones que disparan acciones globales:
  *   - Analizar (llama a la API)
  *   - Limpiar (vacía el textarea)
- *   - Ejemplo (pega un snippet de ejemplo) ----¿?----
+ *   - Ejemplo (pega un snippet de ejemplo)
  *
  * Props:
  * - code: string (contenido actual del textarea)
  * - isLoading: boolean (true mientras estás esperando la respuesta del análisis)
  * - onAnalyze: () => void
  * - onClear: () => void
- * - onExample: () => void (¿?)
+ * - onExample: () => void
  */
 export default function CodeActions({
   code,
+  language,
   isLoading,
   onAnalyze,
   onClear,
   onExample,
 }) {
 
-  // Obtenemos campos dependiendo del estado del análisis
+  // Lista de lenguajes soportados por la herramienta
+   const LANGUAGES = [
+    { value: "python", label: "Python" },
+    { value: "java", label: "Java (próximamente)", disabled: true },
+  ];
+
+  // Obtenemos valores dependiendo del estado del análisis
   const hasCode = typeof code === "string" && code.trim().length > 0;
   const analyzeDisabled = !hasCode || isLoading;
   const clearDisabled = !hasCode || isLoading;
   const exampleDisabled = isLoading;
 
   return (
-    <div className="flex flex-wrap items-center justify-between">
+    <div className="flex w-full flex-wrap items-center justify-between gap-5">
 
       {/* Info izquierda */}
-      <div className="text-sm text-gray-600 font-semibold ">
+      <div className="flex-1 text-sm text-gray-600 font-semibold">
         {isLoading ? (
           <span>Analizando...</span>
         ) : hasCode ? (
@@ -45,10 +52,33 @@ export default function CodeActions({
       </div>
 
       {/* Botones derecha */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex shrink-0 items-center gap-3">
 
-        {/* Botón para mostrar ejemplo de código -----------------¿¿¿???--------------- */}
-        {typeof onExample === "function" ? (
+        <div className="flex items-center gap-3">
+        <label htmlFor="language" className="text-sm font-semibold text-gray-800">
+          Lenguaje
+        </label>
+
+        {/* Selector de lenguaje */}
+        <select
+          id="language"
+          name="language"
+          value={language}
+          onChange={(e) => onLanguageChange?.(e.target.value)}
+          className={`
+            cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+            outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-200 hover:bg-gray-50
+          `}
+        >
+          {LANGUAGES.map((l) => (
+            <option key={l.value} value={l.value} disabled={!!l.disabled}>
+              {l.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+        {/* Botón para mostrar ejemplo de código */}
           <button
             type="button"
             onClick={onExample}
@@ -61,7 +91,6 @@ export default function CodeActions({
           >
             Ejemplo
           </button>
-        ) : null}
 
         {/* Botón para limpiar el textarea */}
         <button

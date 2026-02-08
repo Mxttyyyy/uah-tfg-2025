@@ -12,7 +12,6 @@ import CodeActions from "./CodeActions";
  * - onClear: () => void (limpia el contenido del editor)
  * - onExample: () => void (carga un ejemplo de código) ---- ¿? ----
  * - textareaRef: (referencia al textarea)
- * - sectionRef: (referencia al contenedor del bloque)
  */
 export default function CodeInput({
   value,
@@ -23,15 +22,15 @@ export default function CodeInput({
   onAnalyze,
   onClear,
   onExample,
+  language,
+  onLanguageChange,
   textareaRef,
-  sectionRef,
 }) {
   // Número de líneas del código
   const lines = countLines(value);
 
   return (
     <section
-      ref={sectionRef}
       className={`
         rounded-xl border border-gray-300 bg-white p-4 shadow-sm
         sm:p-6 w-full hover:shadow-lg hover:-translate-y-[2px] transition
@@ -78,10 +77,12 @@ export default function CodeInput({
       <div className="mt-5 border-t border-gray-200 pt-4">
         <CodeActions
           code={value}
+          language={language}
           isLoading={!!isLoading}
           onAnalyze={onAnalyze}
           onClear={onClear}
           onExample={onExample}
+          onLanguageChange={onLanguageChange}
         />
       </div>
     </section>
