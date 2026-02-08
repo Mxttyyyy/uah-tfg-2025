@@ -56,6 +56,7 @@ def analyze(request: AnalyzeRequest) -> Dict[str, Any]:
     # Comprobamos si hay un error
     if "error" in result and isinstance(result["error"], dict):
         status = int(result["error"].get("http_status", 500))
+        logger.error(result["error"]["message"])
         return JSONResponse(status_code=status, content=result)
 
     logger.info("Ánalisis completado con exito")

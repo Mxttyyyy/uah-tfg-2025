@@ -144,7 +144,9 @@ export default function ResultsPanel({
         <div className="mt-4">
           <Alert
             variant="error"
-            title="No se pudo completar el análisis. Vuelve a intentarlo."
+            title={error.error_code === "LANGUAGE_MISMATCH"
+              ? "El código no es Python válido o no coincide con el lenguaje seleccionado" 
+              : "No se pudo completar el análisis. Vuelve a intentarlo."}
             message={`${String(error.message || "Error desconocido")}${
               typeof error.http_status === "number"
                 ? ` (HTTP ${error.http_status})`

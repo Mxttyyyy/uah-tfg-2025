@@ -75,6 +75,7 @@ export function normalizeAnalyzeResponse(raw) {
     out.error = {
       message: asString(raw.error.message, "Error desconocido"),
       http_status: asNumber(raw.error.http_status, 500),
+      error_code: asString(raw.error.error_code, null),
     };
   }
 

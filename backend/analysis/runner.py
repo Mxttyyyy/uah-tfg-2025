@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 import time
+import ast
 
 from analysis.python.style_analysis import analyze_style
 from analysis.python.security_analysis import analyze_security
@@ -19,6 +20,19 @@ def run_analysis(
     """
     start = time.perf_counter()  # Inicio del contador para calcular analysis_time_ms
     language = (language or "").strip().lower()
+
+    # Validamos que el lenguaje sea Python, si no lo es mostramos
+    if language == "python":
+        try:
+            ast.parse(code)
+        except SyntaxError:
+            return _error_response(
+                language=language,
+                message="El código no es Python válido o no coincide con el lenguaje seleccionado",
+                error_code="LANGUAGE_MISMATCH",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+            )
 
     options = options or {}
 
@@ -242,7 +256,7 @@ def _build_summary(issues: list[dict]) -> dict:
 
 
 def _error_response(
-    language: str, message: str, http_status: int, analysis_time_ms: int
+    language: str, message: str, http_status: int, analysis_time_ms: int, error_code: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Genera una respuesta de error con un formato estable.
@@ -253,6 +267,7 @@ def _error_response(
         "error": {
             "message": message,
             "http_status": http_status,
+            "error_code": error_code,
         },
         # Summary a 0, ya que no se pudo analizar
         "summary": {

@@ -21,7 +21,7 @@ const DEFAULT_LANGUAGE = "python";
  * - coordinación entre entrada de código, opciones y resultados
  */
 export default function App() {
-  
+
   // Estados principales
   const [code, setCode] = useState("");
   const [options, setOptions] = useState(() => createDefaultAnalyzeOptions());
