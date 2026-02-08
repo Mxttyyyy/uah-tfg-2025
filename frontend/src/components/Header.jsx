@@ -5,11 +5,6 @@
  */
 
 export default function Header() {
-  const links = [
-    { label: "Guía rápida", href: "#" },
-    //{ label: "Documentación", href: "#" },
-    { label: "GitHub", href: "#" },
-  ];
 
   return (
     <header className="relative bg-white/70 shadow-sm ">
@@ -22,6 +17,7 @@ export default function Header() {
       {/* Contenedor más estrecho => logo y links */}
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:max-w-5xl">
         <div className="flex h-16 items-center justify-between">
+          
           {/* Logo */}
           <a
             href="#"
@@ -38,16 +34,24 @@ export default function Header() {
           {/* Links del lado derecho */}
           <nav aria-label="Global">
             <ul className="flex items-center gap-14 text-sm">
-              {links.map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.href}
-                    className="text-gray-700 transition hover:text-blue-700 text-lg font-semibold"
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-700 transition hover:text-blue-700 text-lg font-semibold"
+                >
+                  Guía rápida
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/Mxttyyyy/uah-tfg-2025/tree/development"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-700 transition hover:text-blue-700 text-lg font-semibold"
+                >
+                  GitHub
+                </a>
+              </li>
             </ul>
           </nav>
         </div>

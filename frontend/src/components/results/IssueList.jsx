@@ -98,8 +98,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
   const tool = typeof issue.tool === "string" ? issue.tool : "";
   const category = typeof issue.category === "string" ? issue.category : "";
 
-  const suggestion =
-    typeof issue.suggestion === "string" ? issue.suggestion : "";
+  const suggestion = typeof issue.suggestion === "string" ? issue.suggestion : "";
   const helpUrl = typeof issue.help_url === "string" ? issue.help_url : "";
   const notes = Array.isArray(issue.notes) ? issue.notes : [];
 

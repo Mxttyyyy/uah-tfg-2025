@@ -89,7 +89,7 @@ export default function CodeActions({
               "disabled:cursor-not-allowed disabled:opacity-50",
             ].join(" ")}
           >
-            Ejemplo
+            Cargar ejemplo
           </button>
 
         {/* Botón para limpiar el textarea */}

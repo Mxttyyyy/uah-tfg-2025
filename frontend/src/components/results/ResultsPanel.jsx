@@ -117,7 +117,10 @@ export default function ResultsPanel({
   return (
     <section
       ref={sectionRef}
-      className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+      className={`
+        rounded-xl border border-gray-200 bg-white p-4
+        shadow-sm hover:shadow-lg hover:-translate-y-[2px] transition
+      `}
     >
       {/* Cabecera del panel */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

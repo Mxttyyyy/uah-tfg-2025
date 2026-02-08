@@ -21,7 +21,7 @@ const DEFAULT_LANGUAGE = "python";
  * - coordinación entre entrada de código, opciones y resultados
  */
 export default function App() {
-
+  
   // Estados principales
   const [code, setCode] = useState("");
   const [options, setOptions] = useState(() => createDefaultAnalyzeOptions());
@@ -65,40 +65,30 @@ export default function App() {
    * Carga un ejemplo de código.
    */
   function handleLoadExample() {
-  const EXAMPLE_CODE = `
-    import subprocess
-    import hashlib
+    const EXAMPLE_CODE = [
+      "import subprocess",
+      "import hashlib",
+      "",
+      "def run_cmd(cmd):",
+      "    # Bandit: shell=True",
+      "    return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout",
+      "",
+      "def weak_hash(password):",
+      "    # Bandit: md5 inseguro",
+      "    return hashlib.md5(password.encode('utf-8')).hexdigest()",
+      "",
+      "unused_var = 123  # Vulture: sin usar",
+      "",
+      "print(run_cmd('echo hello'))",
+      "print(weak_hash('1234'))",
+    ].join("\n");
 
-    def run_cmd(cmd):
-        # Bandit: shell=True
-        return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout
-
-    def weak_hash(password):
-        # Bandit: md5 inseguro
-        return hashlib.md5(password.encode("utf-8")).hexdigest()
-
-    def complex_check(x):
-        # Algo de complejidad extra (Radon puede detectarlo)
-        if x > 10:
-            return "big"
-        elif x > 5:
-            return "medium"
-        elif x > 0:
-            return "small"
-        else:
-            return "zero"
-
-    print(run_cmd("echo hello"))
-    print(weak_hash("1234"))
-    print(complex_check(7))
-  `;
-
-  setCode(EXAMPLE_CODE);
-  setResult(null); // limpia resultados anteriores
-}
+    setCode(EXAMPLE_CODE);
+    setResult(null); // limpia resultados anteriores
+  }
 
   /**
-   * 
+   *
    * Gestiona la selección de un issue y posiciona el cursor en la línea afectada del código
    * */
   function handleIssueSelect(issue) {
