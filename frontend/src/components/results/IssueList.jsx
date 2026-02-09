@@ -104,17 +104,31 @@ function IssueCard({ issue: raw_issue, onSelect }) {
 
   const location = formatIssueLocation(issue);
 
+  // Exclusivamente para Bandit
+  const severityLevel = typeof issue.severity === "string" ? issue.severity : "";
+  const confidenceLevel = typeof issue.confidence === "string" ? issue.confidence : "";
+
   return (
     <div className="rounded-md border border-gray-200 bg-white p-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          
           {/* Labels informativos */}
           <div className="flex flex-wrap items-center gap-2">
             <SeverityLabel severity={severity} />
             {tool ? <IssueLabel label={tool} /> : null}
             {category ? <IssueLabel label={category} /> : null}
             {rule_code ? <IssueLabel label={rule_code} /> : null}
+            
+            {/* Metadatos específicos de Bandit */}
+            {tool === "bandit" && (severityLevel || confidenceLevel) ? (
+              <div className="flex flex-wrap gap-2 text-xs text-gray-600">
+                {confidenceLevel ? (
+                  <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium">
+                    Confianza: {confidenceLevel}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           {/* Mensaje del issue */}

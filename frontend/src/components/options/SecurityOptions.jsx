@@ -19,7 +19,6 @@ import { useState } from "react";
  * - onChange: (nextValue) => void
  */
 export default function SecurityOptions({ options, onChange }) {
-
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
@@ -56,7 +55,13 @@ export default function SecurityOptions({ options, onChange }) {
             updateSecurityOptions({ severity_level: selectedSeverity })
           }
           options={LEVELS}
-          hint="Severidad mínima a reportar."
+          hint={
+            <>
+              Severidad mínima a reportar.
+              <br />
+              (low = info, medium = warning, high = error).
+            </>
+          }
         />
 
         <SelectInput
@@ -78,7 +83,8 @@ export default function SecurityOptions({ options, onChange }) {
         value={skipCsv}
         onChange={(text) => {
           setSkipCsv(text);
-          updateSecurityOptions({ skip: csvToList(text) })}}
+          updateSecurityOptions({ skip: csvToList(text) });
+        }}
         hint="IDs de reglas a ignorar."
       />
 
@@ -89,7 +95,8 @@ export default function SecurityOptions({ options, onChange }) {
         value={testsCsv}
         onChange={(text) => {
           setTestsCsv(text);
-          updateSecurityOptions({ tests: csvToList(text) })}}
+          updateSecurityOptions({ tests: csvToList(text) });
+        }}
         hint="Si lo rellenas, Bandit ejecuta solo estas reglas."
       />
 
