@@ -6,8 +6,6 @@ import { isPlainObject, pickOrEmpty } from "../../utils/uiUtils";
  * Backend espera (todas opcionales):
  * - cc_min: "A"|"B"|"C"|"D"|"E"|"F"
  * - cc_max: "A"|"B"|"C"|"D"|"E"|"F"
- * - mi_min: "A"|"B"|"C"
- * - mi_max: "A"|"B"|"C"
  *
  * En la UI usamos <select> con "(por defecto)".
  *
@@ -24,8 +22,6 @@ export default function MetricsOptions({ options, onChange }) {
   // Validamos las opciones y aplicamos valores por defecto.
   const ccMin = pickOrEmpty(normalizedOptions.cc_min);
   const ccMax = pickOrEmpty(normalizedOptions.cc_max);
-  const miMin = pickOrEmpty(normalizedOptions.mi_min);
-  const miMax = pickOrEmpty(normalizedOptions.mi_max);
 
   /**
    * Actualiza parcialmente las opciones de métricas,
@@ -55,24 +51,6 @@ export default function MetricsOptions({ options, onChange }) {
           options={CC_LEVELS}
           hint="Complejidad ciclomática: rango máximo."
         />
-
-        <SelectInput
-          id="m-mi-min"
-          label="mi_min"
-          value={miMin}
-          onChange={(value) => updateMetricsOptions({ mi_min: value || "" })}
-          options={MI_LEVELS}
-          hint="Maintainability Index: rango mínimo."
-        />
-
-        <SelectInput
-          id="m-mi-max"
-          label="mi_max"
-          value={miMax}
-          onChange={(value) => updateMetricsOptions({ mi_max: value || "" })}
-          options={MI_LEVELS}
-          hint="Maintainability Index: rango máximo."
-        />
       </div>
 
       <p className="text-xs text-gray-600">
@@ -92,13 +70,6 @@ const CC_LEVELS = [
   { value: "D", label: "D" },
   { value: "E", label: "E" },
   { value: "F", label: "F" },
-];
-
-const MI_LEVELS = [
-  { value: "", label: "(por defecto)" },
-  { value: "A", label: "A" },
-  { value: "B", label: "B" },
-  { value: "C", label: "C" },
 ];
 
 /* ------------------------------- Componentes auxiliares ------------------------------ */

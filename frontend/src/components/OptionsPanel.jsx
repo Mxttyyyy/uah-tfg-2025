@@ -14,7 +14,7 @@ import { isPlainObject } from "../utils/uiUtils";
  * - timeout_seconds: int > 0
  * - style: { select, ignore, extend_select }
  * - security: { severity_level, confidence_level, skip, tests }
- * - metrics: { cc_min, cc_max, mi_min, mi_max }
+ * - metrics: { cc_min, cc_max }
  * - dead_code: { min_confidence, ignore_names, ignore_decorators }
  * - types: { ignore_missing_imports, python_version, strict, show_error_code_links, enable_error_codes, disable_error_codes }
  *
