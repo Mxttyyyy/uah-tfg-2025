@@ -25,10 +25,10 @@ def run_analysis(
     if language == "python":
         try:
             ast.parse(code)
-        except SyntaxError:
+        except SyntaxError as se:
             return _error_response(
                 language=language,
-                message="El código no es Python válido o no coincide con el lenguaje seleccionado",
+                message=str(se),
                 error_code="LANGUAGE_MISMATCH",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),

@@ -1,4 +1,5 @@
 import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
+import { useState } from "react";
 
 /**
  * Opciones de Bandit (security).
@@ -33,8 +34,8 @@ export default function SecurityOptions({ options, onChange }) {
       ? normalizedOptions.confidence_level
       : "all";
 
-  const skipCsv = listToCsv(normalizedOptions.skip);
-  const testsCsv = listToCsv(normalizedOptions.tests);
+  const [skipCsv, setSkipCsv] = useState(listToCsv(normalizedOptions.skip));
+  const [testsCsv, setTestsCsv] = useState(listToCsv(normalizedOptions.tests));
 
   /**
    * Actualiza parcialmente las opciones de seguridad,
@@ -75,7 +76,9 @@ export default function SecurityOptions({ options, onChange }) {
         label="skip"
         placeholder="Ej: B101, B603"
         value={skipCsv}
-        onChange={(text) => updateSecurityOptions({ skip: csvToList(text) })}
+        onChange={(text) => {
+          setSkipCsv(text);
+          updateSecurityOptions({ skip: csvToList(text) })}}
         hint="IDs de reglas a ignorar."
       />
 
@@ -84,7 +87,9 @@ export default function SecurityOptions({ options, onChange }) {
         label="tests"
         placeholder="Ej: B101, B301"
         value={testsCsv}
-        onChange={(text) => updateSecurityOptions({ tests: csvToList(text) })}
+        onChange={(text) => {
+          setTestsCsv(text);
+          updateSecurityOptions({ tests: csvToList(text) })}}
         hint="Si lo rellenas, Bandit ejecuta solo estas reglas."
       />
 

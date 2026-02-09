@@ -153,6 +153,21 @@ export default function ResultsPanel({
                 : ""
             }`}
           />
+          {/* Ver detalles */}
+    {typeof error.message === "string" && error.message.trim() && (
+      <details className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+        <summary className="cursor-pointer font-medium text-gray-800 hover:text-blue-600">
+          Ver detalles
+        </summary>
+
+        <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-700">
+          {error.message}
+          {typeof error.http_status === "number"
+            ? `\n(HTTP ${error.http_status})`
+            : ""}
+        </pre>
+      </details>
+    )}
         </div>
       ) : null}
 

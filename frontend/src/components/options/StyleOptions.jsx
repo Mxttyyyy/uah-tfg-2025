@@ -1,4 +1,5 @@
 import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
+import { useState } from "react";
 
 /**
  * Opciones de Ruff (style).
@@ -21,9 +22,9 @@ export default function StyleOptions({ options, onChange }) {
   const normalizedOptions = isPlainObject(options) ? options : {};
 
   // Convertimos las listas de reglas a CSV para mostrarlas en la UI.
-  const selectCsv = listToCsv(normalizedOptions.select);
-  const ignoreCsv = listToCsv(normalizedOptions.ignore);
-  const extendSelectCsv = listToCsv(normalizedOptions.extend_select);
+  const [selectCsv, setSelectCsv] = useState(listToCsv(normalizedOptions.select));
+  const [ignoreCsv, setIgnoreCsv] = useState(listToCsv(normalizedOptions.ignore));
+  const [extendSelectCsv, setExtendSelectCsv] = useState(listToCsv(normalizedOptions.extend_select));
 
   /**
    * Actualiza parcialmente las opciones de estilo,
@@ -40,7 +41,10 @@ export default function StyleOptions({ options, onChange }) {
         label="select"
         placeholder="Ej: F401, E501"
         value={selectCsv}
-        onChange={(text) => updateStyleOptions({ select: csvToList(text) })}
+        onChange={(text) => {
+          setSelectCsv(text);
+          updateStyleOptions({ select: csvToList(text) })}}
+
         hint="Si lo rellenas, Ruff ejecuta solo estas reglas."
       />
 
@@ -49,7 +53,9 @@ export default function StyleOptions({ options, onChange }) {
         label="ignore"
         placeholder="Ej: E501"
         value={ignoreCsv}
-        onChange={(text) => updateStyleOptions({ ignore: csvToList(text) })}
+        onChange={(text) => {
+          setIgnoreCsv(text);
+          updateStyleOptions({ ignore: csvToList(text) })}}
         hint="Reglas a ignorar."
       />
 
@@ -58,9 +64,9 @@ export default function StyleOptions({ options, onChange }) {
         label="extend_select"
         placeholder="Ej: I001, UP007"
         value={extendSelectCsv}
-        onChange={(text) =>
-          updateStyleOptions({ extend_select: csvToList(text) })
-        }
+        onChange={(text) =>{
+          setExtendSelectCsv(text);
+          updateStyleOptions({ extend_select: csvToList(text) })}}
         hint="Añade reglas extra además de las predeterminadas."
       />
 
