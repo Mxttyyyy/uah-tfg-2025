@@ -105,8 +105,10 @@ function IssueCard({ issue: raw_issue, onSelect }) {
   const location = formatIssueLocation(issue);
 
   // Exclusivamente para Bandit
-  const severityLevel = typeof issue.severity === "string" ? issue.severity : "";
-  const confidenceLevel = typeof issue.confidence === "string" ? issue.confidence : "";
+  const confidenceLevelBandit = typeof issue.confidence === "string" ? issue.confidence : "";
+
+  // Exclusivamente para Vulture
+  const confidenceLevelVulture = typeof issue.confidence === "number" ? issue.confidence : "";
 
   return (
     <div className="rounded-md border border-gray-200 bg-white p-3">
@@ -120,11 +122,21 @@ function IssueCard({ issue: raw_issue, onSelect }) {
             {rule_code ? <IssueLabel label={rule_code} /> : null}
             
             {/* Metadatos específicos de Bandit */}
-            {tool === "bandit" && (severityLevel || confidenceLevel) ? (
+            {tool === "bandit" && (confidenceLevelBandit) ? (
               <div className="flex flex-wrap gap-2 text-xs text-gray-600">
-                {confidenceLevel ? (
+                {confidenceLevelBandit ? (
                   <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium">
-                    Confianza: {confidenceLevel}
+                    Confianza: {confidenceLevelBandit}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+            {/* Metadatos específicos de Vulture */}
+            {tool === "vulture" && (confidenceLevelVulture > 60) ? (
+              <div className="flex flex-wrap gap-2 text-xs text-gray-600">
+                {confidenceLevelVulture ? (
+                  <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium">
+                    Confianza: {confidenceLevelVulture}
                   </span>
                 ) : null}
               </div>

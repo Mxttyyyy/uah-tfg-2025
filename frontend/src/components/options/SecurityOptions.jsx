@@ -12,7 +12,7 @@ import { useState } from "react";
  *
  * En la UI:
  * - severity/confidence como <select>
- * - skip/tests como texto CSV (ej: "B101, B603") porque es lo más simple
+ * - skip/tests como texto CSV (ej: "B101, B603") ya que es lo más simple
  *
  * Props:
  * - options: objeto con opciones actuales de security

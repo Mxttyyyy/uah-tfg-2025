@@ -52,7 +52,7 @@ export default function CodeActions({
       </div>
 
       {/* Botones derecha */}
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
 
         <div className="flex items-center gap-3">
         <label htmlFor="language" className="text-sm font-semibold text-gray-800">
