@@ -4,8 +4,9 @@ import MetricsOptions from "./options/MetricsOptions";
 import DeadCodeOptions from "./options/DeadCodeOptions";
 import TypesOptions from "./options/TypesOptions";
 
+import { useState } from "react";
 import { isPlainObject } from "../utils/uiUtils";
-
+import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
 /**
  * Panel de opciones.
  *
@@ -53,6 +54,9 @@ export default function OptionsPanel({ options, onChange }) {
 
   const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code", "types"];
 
+  // Estado para controlar el botón de reset options
+  const [isPulsedClear, setClear] = useState(false);
+  
   /**
    * Actualiza opciones de primer nivel del panel (p. ej. enabled, timeout).
    *
@@ -61,6 +65,14 @@ export default function OptionsPanel({ options, onChange }) {
    */
   function updateGlobalOptions(patch) {
     onChange({ ...normalizedOptions, ...patch });
+  }
+
+  /**
+   * Resetea las opciones a las predeterminadas.
+   */
+  function resetOptionsToDefault() {
+    onChange(createDefaultAnalyzeOptions());
+    setClear(true);
   }
 
   /**
@@ -120,12 +132,26 @@ export default function OptionsPanel({ options, onChange }) {
         "overflow-hidden",
       ].join(" ")}
     >
-      <div className="mb-4">
+      <div className="mb-4 items-start justify-between gap-3">
         <h2 className="text-base font-semibold text-gray-900">Opciones</h2>
         <p className="mt-1 text-sm text-gray-600">
           Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se
           ejecutarán todos.
         </p>
+        {/* Botón de restablecer valores de options */}
+        <button
+          type="button"
+          onClick={resetOptionsToDefault}
+          className={`
+            shrink-0 rounded-lg border border-gray-300 bg-white
+            px-3 py-1.5 text-sm font-semibold text-gray-700
+            hover:bg-gray-50 hover:text-gray-900
+            focus:outline-none focus:ring-2 focus:ring-blue-200
+            transition
+        `}
+        >
+          Restablecer
+        </button>
       </div>
 
       {/* Selección de análisis (enabled) */}
@@ -237,6 +263,8 @@ export default function OptionsPanel({ options, onChange }) {
             <StyleOptions
               options={style}
               onChange={(v) => updateModuleOptions("style", v)}
+              isPulsedClear={isPulsedClear}
+              onClear={setClear}
             />
           </div>
         </details>

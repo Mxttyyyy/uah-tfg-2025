@@ -57,8 +57,8 @@ export default function ScrollToTopButton({
       onClick={scrollToTop}
       aria-label="Subir arriba"
       className={`
-        fixed bottom-6 right-6 z-50 rounded-full border border-gray-200 bg-white p-3.5 shadow-md transition
-        hover:-translate-y-1.5 hover:text-blue-600 hover:ring-blue-600 hover:ring-2 hover:shadow-lg focus:outline-none cursor-pointer
+        fixed bottom-6 right-6 z-50 rounded-full border border-gray-500 bg-white p-3.5 shadow-md transition
+        hover:-translate-y-1.5 hover:text-blue-600 hover:ring-blue-600 hover:ring-1 hover:shadow-lg focus:outline-none cursor-pointer
       `}
     >
       {/* Icono de flecha hacia arriba */}

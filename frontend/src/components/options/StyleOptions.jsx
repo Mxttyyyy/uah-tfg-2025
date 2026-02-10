@@ -1,6 +1,6 @@
 import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
-import { useState } from "react";
-
+import { useState} from "react";
+import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
 /**
  * Opciones de Ruff (style).
  *
@@ -15,7 +15,7 @@ import { useState } from "react";
  * - options: objeto con opciones actuales de style
  * - onChange: (nextValue) => void
  */
-export default function StyleOptions({ options, onChange }) {
+export default function StyleOptions({ options, onChange, isPulsedClear, onClear }) {
 
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined.
@@ -25,6 +25,9 @@ export default function StyleOptions({ options, onChange }) {
   const [selectCsv, setSelectCsv] = useState(listToCsv(normalizedOptions.select));
   const [ignoreCsv, setIgnoreCsv] = useState(listToCsv(normalizedOptions.ignore));
   const [extendSelectCsv, setExtendSelectCsv] = useState(listToCsv(normalizedOptions.extend_select));
+ 
+  // Obtenemos las opciones predeterminadas
+  const defaultOptionsStyle = createDefaultAnalyzeOptions().style;
 
   /**
    * Actualiza parcialmente las opciones de estilo,
@@ -40,12 +43,12 @@ export default function StyleOptions({ options, onChange }) {
         id="style-select"
         label="select"
         placeholder="Ej: F401, E501"
-        value={selectCsv}
+        value={isPulsedClear ? defaultOptionsStyle.select :  selectCsv}
         onChange={(text) => {
           setSelectCsv(text);
+          onClear(false);
           updateStyleOptions({ select: csvToList(text) })}
         }
-
         hint="Si lo rellenas, Ruff ejecuta solo estas reglas."
       />
 
