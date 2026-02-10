@@ -43,7 +43,8 @@ export default function StyleOptions({ options, onChange }) {
         value={selectCsv}
         onChange={(text) => {
           setSelectCsv(text);
-          updateStyleOptions({ select: csvToList(text) })}}
+          updateStyleOptions({ select: csvToList(text) })}
+        }
 
         hint="Si lo rellenas, Ruff ejecuta solo estas reglas."
       />
@@ -55,7 +56,8 @@ export default function StyleOptions({ options, onChange }) {
         value={ignoreCsv}
         onChange={(text) => {
           setIgnoreCsv(text);
-          updateStyleOptions({ ignore: csvToList(text) })}}
+          updateStyleOptions({ ignore: csvToList(text) })}
+        }
         hint="Reglas a ignorar."
       />
 
@@ -66,7 +68,8 @@ export default function StyleOptions({ options, onChange }) {
         value={extendSelectCsv}
         onChange={(text) =>{
           setExtendSelectCsv(text);
-          updateStyleOptions({ extend_select: csvToList(text) })}}
+          updateStyleOptions({ extend_select: csvToList(text) })}
+        }
         hint="Añade reglas extra además de las predeterminadas."
       />
 

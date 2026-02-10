@@ -127,7 +127,7 @@ export function listToCsv(v) {
 }
 
 /**
- * Convierte una cadena CSV en una lista de strings normalizados en mayúsculas.
+ * Convierte una cadena CSV en una lista de strings normalizados en mayúsculas (General)
  */
 export function csvToList(text) {
   if (typeof text !== "string") return [];
@@ -136,6 +136,28 @@ export function csvToList(text) {
     .map((s) => s.trim())
     .filter(Boolean)
     .map((s) => s.toUpperCase());
+}
+/**
+ * Convierte una cadena CSV en una lista de strings normalizados (Exclusivo de Vulture, para las options ignore_*).
+ */
+export function csvToListNotUpper(text) {
+  if (typeof text !== "string") return [];
+  return text
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
+/**
+ * Convierte una cadena CSV en una lista de strings normalizados (Exclusivo de Vulture, para la option de ignore_decorators).
+ */
+export function csvToListDecorators(text) {
+  if (typeof text !== "string") return [];
+  return text
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map(s => (s.startsWith("@") ? s : `@${s}`));
 }
 
 /**

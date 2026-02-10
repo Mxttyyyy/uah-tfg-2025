@@ -93,11 +93,11 @@ def _build_vulture_command(filename: str, options: Dict[str, Any]) -> List[str]:
 
     ignore_names = options.get("ignore_names")
     if is_str_list(ignore_names):
-        cmd += ["--ignore-names", ",".join(i_n.strip().upper() for i_n in ignore_names)]
+        cmd += ["--ignore-names", ",".join(i_n.strip() for i_n in ignore_names)]
 
     ignore_decorators = options.get("ignore_decorators")
     if is_str_list(ignore_decorators):
-        cmd += ["--ignore-decorators", ",".join(i_d.strip().upper() for i_d in ignore_decorators)]
+        cmd += ["--ignore-decorators", ",".join(i_d.strip() for i_d in ignore_decorators)]
 
     cmd.append(filename)
     return cmd

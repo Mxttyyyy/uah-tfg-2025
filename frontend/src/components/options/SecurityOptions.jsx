@@ -83,8 +83,8 @@ export default function SecurityOptions({ options, onChange }) {
         value={skipCsv}
         onChange={(text) => {
           setSkipCsv(text);
-          updateSecurityOptions({ skip: csvToList(text) });
-        }}
+          updateSecurityOptions({ skip: csvToList(text) })}
+        }
         hint="IDs de reglas a ignorar."
       />
 
@@ -95,8 +95,8 @@ export default function SecurityOptions({ options, onChange }) {
         value={testsCsv}
         onChange={(text) => {
           setTestsCsv(text);
-          updateSecurityOptions({ tests: csvToList(text) });
-        }}
+          updateSecurityOptions({ tests: csvToList(text) })}
+        }
         hint="Si lo rellenas, Bandit ejecuta solo estas reglas."
       />
 

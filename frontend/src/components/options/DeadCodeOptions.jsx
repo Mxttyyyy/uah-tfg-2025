@@ -1,5 +1,5 @@
-import {isPlainObject, listToCsv, csvToList, normalizeIntInRange } from "../../utils/uiUtils";
-
+import {isPlainObject, listToCsv, csvToListNotUpper, csvToListDecorators, normalizeIntInRange } from "../../utils/uiUtils";
+import { useState } from "react";
 /**
  * Opciones de Vulture (dead_code).
  *
@@ -28,8 +28,8 @@ export default function DeadCodeOptions({ options, onChange }) {
       ? normalizedOptions.min_confidence
       : 60;
 
-  const ignoreNamesCsv = listToCsv(normalizedOptions.ignore_names);
-  const ignoreDecoratorsCsv = listToCsv(normalizedOptions.ignore_decorators);
+  const [ignoreNamesCsv, setIgnoreNamesCsv] = useState(listToCsv(normalizedOptions.ignore_names));
+  const [ignoreDecoratorsCsv, setIgnoreDecoratorsCsv] = useState(listToCsv(normalizedOptions.ignore_decorators));
 
   /**
    * Actualiza parcialmente las opciones de código muerto,
@@ -50,16 +50,17 @@ export default function DeadCodeOptions({ options, onChange }) {
         onChange={(n) =>
           updateDeadCodeOptions({min_confidence: normalizeIntInRange(n, 0, 100),})
         }
-        hint="0–100. Cuanto más alto, más estricto."
+        hint="0-100. Cuanto más alto, más estricto."
       />
 
       <TextInput
         id="dc-ignore-names"
         label="ignore_names"
-        placeholder="Ej: temp_*, debug_*"
+        placeholder="Ej: temp_var, debug_funct"
         value={ignoreNamesCsv}
-        onChange={(text) =>
-          updateDeadCodeOptions({ ignore_names: csvToList(text) })
+        onChange={(text) => {
+          setIgnoreNamesCsv(text);
+          updateDeadCodeOptions({ ignore_names: csvToListNotUpper(text) })}
         }
         hint="Patrones de nombres a ignorar (separados por comas)."
       />
@@ -67,12 +68,13 @@ export default function DeadCodeOptions({ options, onChange }) {
       <TextInput
         id="dc-ignore-decorators"
         label="ignore_decorators"
-        placeholder="Ej: app.get, app.post"
+        placeholder="Ej: @app.get, @app.post"
         value={ignoreDecoratorsCsv}
-        onChange={(text) =>
-          updateDeadCodeOptions({ ignore_decorators: csvToList(text) })
+        onChange={(text) => {
+          setIgnoreDecoratorsCsv(text);
+          updateDeadCodeOptions({ ignore_decorators: csvToListDecorators(text) })}
         }
-        hint="Decoradores a ignorar (útil en frameworks basados en decoradores)."
+        hint="Decoradores a ignorar (deben empezar por @)."
       />
 
       <p className="text-xs text-gray-600">
