@@ -60,9 +60,9 @@ export default function CodeInput({
           "w-full overflow-auto scrollbar-modern resize-y rounded-lg",
           "border border-gray-200 bg-gray-50 focus:bg-white",
           "px-3 py-3 text-sm text-gray-900 transition",
-          "min-h-[clamp(340px,45vh,440px)]",
-          "h-[clamp(440px,60vh,740px)]",
-          "max-h-[clamp(440px,60vh,740px)]",
+          "min-h-[clamp(340px,40vh,420px)]",
+          "h-[clamp(420px,53vh,680px)]",
+          "max-h-[clamp(420px,53vh,680px)]",
           "outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 focus:shadow-md",
           "disabled:cursor-not-allowed disabled:bg-gray-50",
         ].join(" ")}
