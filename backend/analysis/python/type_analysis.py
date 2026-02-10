@@ -101,6 +101,10 @@ def analyze_types(
     # Si no hay issues y el returncode es raro, lo tratamos como error.
     if result.returncode not in (0, 1) and not issues:
         stderr = (result.stderr or "").strip()
+        if options:
+            raise ValueError(
+                stderr or "Opciones inválidas para Mypy."
+            )
         raise RuntimeError(
             stderr or f"Mypy falló con un error (exit code {result.returncode})."
         )

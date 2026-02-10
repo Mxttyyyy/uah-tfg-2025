@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Alert from "../Alert";
 import ResultsSummary from "./ResultsSummary";
 import IssueList from "./IssueList";
-import { buildSeverityCounts, isPlainObject, toInt } from "../../utils/uiUtils";
+import { buildSeverityCounts, isPlainObject, toInt, cleanErrorDetails } from "../../utils/uiUtils";
 
 /**
  * Panel principal de resultados del análisis.
@@ -154,20 +154,24 @@ export default function ResultsPanel({
             }`}
           />
           {/* Ver detalles */}
-    {typeof error.message === "string" && error.message.trim() && (
-      <details className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-        <summary className="cursor-pointer font-medium text-gray-800 hover:text-blue-600">
-          Ver detalles
-        </summary>
+          {typeof error.message === "string" && error.message.trim() && (
+            <details className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+              <summary className="cursor-pointer font-medium text-gray-800 hover:text-red-900">
+                Ver detalles
+              </summary>
 
-        <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-700">
-          {error.message}
-          {typeof error.http_status === "number"
-            ? `\n(HTTP ${error.http_status})`
-            : ""}
-        </pre>
-      </details>
-    )}
+              <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-800">
+                {cleanErrorDetails(error)}
+              </pre>
+
+              {typeof error.http_status === "number" ? (
+                <div className="mt-2 text-[11px] text-gray-600">
+                  HTTP {error.http_status}
+                </div>
+              ) :null}
+              
+            </details>
+          )}
         </div>
       ) : null}
 

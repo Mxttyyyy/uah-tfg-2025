@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional
 import time
 import ast
+import subprocess
 
 from analysis.python.style_analysis import analyze_style
 from analysis.python.security_analysis import analyze_security
@@ -126,10 +127,18 @@ def run_analysis(
         except ValueError as exc:
             return _error_response(
                 language=language,
-                message=f"Opciones inválidas: {exc}",
+                message=f"Opciones inválidas en Ruff: {exc}",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
+        
+        except subprocess.TimeoutExpired:
+            return _error_response(
+                language=language,
+                message=f"Timeout: el análisis de estilo superó {timeout_seconds} s.",
+                http_status=408,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
         
         except Exception as exc:
             return _error_response(
@@ -148,10 +157,18 @@ def run_analysis(
         except ValueError as exc:
             return _error_response(
                 language=language,
-                message=f"Opciones inválidas: {exc}",
+                message=f"Opciones inválidas en Bandit: {exc}",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
+        
+        except subprocess.TimeoutExpired:
+            return _error_response(
+                language=language,
+                message=f"Timeout: el análisis de seguridad superó {timeout_seconds} s.",
+                http_status=408,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
         
         except Exception as exc:
             return _error_response(
@@ -170,10 +187,18 @@ def run_analysis(
         except ValueError as exc:
             return _error_response(
                 language=language,
-                message=f"Opciones inválidas: {exc}",
+                message=f"Opciones inválidas en Radon: {exc}",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
+        
+        except subprocess.TimeoutExpired:
+            return _error_response(
+                language=language,
+                message=f"Timeout: el análisis de métricas superó {timeout_seconds} s.",
+                http_status=408,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
 
         except Exception as exc:
             return _error_response(
@@ -192,10 +217,18 @@ def run_analysis(
         except ValueError as exc:
             return _error_response(
                 language=language,
-                message=f"Opciones inválidas: {exc}",
+                message=f"Opciones inválidas en Vulture: {exc}",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
+        
+        except subprocess.TimeoutExpired:
+            return _error_response(
+                language=language,
+                message=f"Timeout: el análisis de código muerto superó {timeout_seconds} s.",
+                http_status=408,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
 
         except Exception as exc:
             return _error_response(
@@ -210,6 +243,22 @@ def run_analysis(
             types_issues = analyze_types(
                 code=code, options=types_options, timeout_seconds=timeout_seconds
             )
+
+        except ValueError as exc:
+            return _error_response(
+                language=language,
+                message=f"Opciones inválidas en Mypy : {exc}",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+            )
+        
+        except subprocess.TimeoutExpired:
+            return _error_response(
+                language=language,
+                message=f"Timeout: el análisis de tipos superó {timeout_seconds} s.",
+                http_status=408,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+        )
 
         except Exception as exc:
             return _error_response(

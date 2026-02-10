@@ -186,3 +186,57 @@ export function toInt(value) {
   const n = Number(value);
   return Number.isFinite(n) ? Math.trunc(n) : null;
 }
+
+/**
+ * Limpia y formatea mensajes de error técnicos (CLI/logs) para mostrarlos mejor en "Ver detalles".
+ */
+export function cleanErrorDetails(error) {
+  // Mensaje crudo
+  const msg = typeof error?.message === "string" ? error.message : "";
+  if (!msg.trim()) return "";
+
+  // Ruff.
+  // Eliminamos la línea típica de CLI
+  if (msg.includes("For more information, try '--help'")) {
+    return msg
+      .split("\n")
+      .filter((line) => !line.includes("For more information, try '--help'"))
+      .join("\n")
+      .trim();
+  }
+
+  // Bandit.
+  // Su salida incluye tags basura para el usuario
+  if (msg.includes("[main]") || msg.includes("[extension_loader]")) {
+    // Normalizamos líneas: trim + quitamos vacías
+    const lines = msg
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const cleanedLines = [];
+    let hasPrefix = false;
+
+    for (const line of lines) {
+      const isPrefix = line.toLowerCase().startsWith("opciones inválidas:");
+      if (isPrefix) {
+        hasPrefix = true;
+        // Nos quedamos solo con el prefijo (sin el resto del log INFO)
+        cleanedLines.push("Opciones inválidas en Bandit:");
+        continue;
+      }
+
+      // Quitamos INFO, conservamos WARNING/ERROR
+      if (line.includes("\tINFO\t") || line.includes(" INFO ")) continue;
+
+      cleanedLines.push(line);
+    }
+
+    const cleaned = cleanedLines.join("\n").trim();
+    // Si no existía prefijo, lo agregamos nosotros para dar contexto de herramienta.
+    if (!hasPrefix) return `Opciones inválidas en Bandit:\n${cleaned}`;
+    return cleaned;
+  }
+
+  return msg.trim();
+}
