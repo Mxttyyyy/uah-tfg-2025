@@ -1,4 +1,5 @@
-import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
+import { isPlainObject, listToCsv, csvToListNotUpper } from "../../utils/uiUtils";
+import { useState } from "react";
 
 /**
  * Opciones de Mypy (types).
@@ -33,8 +34,9 @@ export default function TypesOptions({ options, onChange }) {
     typeof normalizedOptions.python_version === "string"
       ? normalizedOptions.python_version
       : "";
-  const enableCodesCsv = listToCsv(normalizedOptions.enable_error_codes);
-  const disableCodesCsv = listToCsv(normalizedOptions.disable_error_codes);
+
+  const [enableCodesCsv, setEnableCodesCsv] = useState(listToCsv(normalizedOptions.enable_error_codes));
+  const [disableCodesCsv, setDisableCodesCsv] = useState(listToCsv(normalizedOptions.disable_error_codes));
 
   /**
    * Actualiza parcialmente las opciones de tipos,
@@ -88,8 +90,9 @@ export default function TypesOptions({ options, onChange }) {
         label="enable_error_codes"
         placeholder="Ej: truthy-bool, redundant-expr"
         value={enableCodesCsv}
-        onChange={(text) =>
-          updateTypesOptions({ enable_error_codes: csvToList(text) })
+        onChange={(text) => {
+          setEnableCodesCsv(text);
+          updateTypesOptions({ enable_error_codes: csvToListNotUpper(text) })}
         }
         hint="Códigos de error a activar (separados por comas)."
       />
@@ -99,8 +102,9 @@ export default function TypesOptions({ options, onChange }) {
         label="disable_error_codes"
         placeholder="Ej: assignment"
         value={disableCodesCsv}
-        onChange={(text) =>
-          updateTypesOptions({ disable_error_codes: csvToList(text) })
+        onChange={(text) => {
+          setDisableCodesCsv(text);
+          updateTypesOptions({ disable_error_codes: csvToListNotUpper(text) })}
         }
         hint="Códigos de error a desactivar (separados por comas)."
       />

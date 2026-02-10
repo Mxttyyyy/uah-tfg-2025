@@ -142,7 +142,7 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
         if pv.count(".") == 1 and all(part.isdigit() for part in pv.split(".")):
              cmd += ["--python-version", pv]
         else:
-            raise ValueError(f"options.tpes.python_version debe tener formato 'X.Y' (por ejemplo, '3.10').")
+            raise ValueError(f"options.types.python_version debe tener formato 'X.Y' (por ejemplo, '3.10').")
        
 
     # Modo estricto (opcional, ya que activa muchas comprobaciones adicionales)
@@ -324,6 +324,7 @@ def _suggestion_for_mypy_rule(rule_code: str) -> str:
         "dict-item": "Las claves o valores del diccionario no coinciden con los tipos anotados.",
         "has-type": "Añade anotaciones de tipo explícitas para ayudar a Mypy a inferir correctamente.",
         "call-overload": "La llamada no coincide con ninguna sobrecarga (@overload). Ajusta el tipo del argumento o añade una variante @overload que acepte ese tipo.",
+        "redundant-expr": "Hay una expresión/condición redundante (por tipos, Mypy puede deducir que siempre es True/False o innecesaria). Simplifica la condición.",
     }
 
     if rule_code in tips:
