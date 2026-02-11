@@ -10,6 +10,7 @@
 export default function QuickGuideModal({ open, onClose }) {
   if (!open) return null;
 
+  // Pasos de la guía rápida. El texto se mostrará dividido en bullets por frases.
   const steps = [
     {
       title: "Pega tu código",
