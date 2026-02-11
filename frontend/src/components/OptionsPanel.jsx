@@ -185,7 +185,7 @@ export default function OptionsPanel({ options, onChange }) {
             hover:bg-gray-100 hover:text-gray-900 active:bg-blue-100
             transition cursor-pointer mt-4 mb-1 w-full
           `}
-          title="Restaura selección, timeout y opciones avanzadas"
+          title="Restaura selección, timeout y opciones avanzadas a valores por defecto"
         >
           Restablecer todas las opciones
         </button>

@@ -13,19 +13,28 @@ export default function QuickGuideModal({ open, onClose }) {
   const steps = [
     {
       title: "Pega tu código",
-      text: "Copia y pega el archivo completo en el área principal para obtener resultados más fiables.",
+      text:
+        "Copia y pega tu código en el área principal. Se recomienda pegar el archivo completo para obtener resultados más fiables. " +
+        'Pulsa el botón "Limpiar" para vaciar el editor. ' +
+        'También puedes usar el botón "Cargar ejemplo" para probar la herramienta rápidamente.',
+      
     },
     {
       title: "Configura el análisis",
-      text: "Marca qué herramientas quieres ejecutar (si no seleccionas ninguna, se ejecutan todas). Ajusta el timeout si lo necesitas.",
+      text:
+        "Selecciona el lenguaje y marca los análisis que quieres ejecutar. " +
+        "También puedes ajustar las opciones avanzadas de cada herramienta y el timeout si lo necesitas. " +
+        'Si te has equivocado, usa el botón "Restablecer todas las opciones" para volver a la configuración inicial.',
     },
     {
       title: "Pulsa Analizar",
-      text: "Se generará un resumen y, debajo, los resultados por módulo (Ruff, Bandit, Radon, Vulture, Mypy).",
+      text: "Se mostrará un resumen de los problemas encontrados (agrupados por severidad) y los resultados por módulo (Ruff, Bandit, Radon, Vulture, Mypy).",
     },
     {
       title: "Revisa y navega",
-      text: "Abre los módulos con incidencias y pulsa en la ubicación para saltar a la línea del código.",
+      text:
+        "Revisa los resultados y la información de cada problema (detalles, sugerencias y, si están disponibles, enlaces de ayuda). " +
+        "Pulsa sobre la ubicación de cada problema para saltar a la línea correspondiente en el código.",
     },
   ];
 
@@ -43,9 +52,9 @@ export default function QuickGuideModal({ open, onClose }) {
       {/* Contenido del modal */}
       <div
         className="
-          relative w-full max-w-2xl rounded-2xl bg-white
-          border-1 border-blue-600 shadow-2xl
-          p-6 sm:p-8 animate-fade-in 
+          relative w-full max-w-3xl rounded-2xl bg-white
+          border border-gray-200 shadow-2xl max-h-[85vh]
+          p-6 sm:p-8 animate-fade-in overflow-auto
         "
         onClick={(e) => e.stopPropagation()}
       >
@@ -53,7 +62,7 @@ export default function QuickGuideModal({ open, onClose }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">Guía rápida</h2>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-600">
               Cómo usar el analizador en pocos pasos.
             </p>
           </div>
@@ -61,11 +70,10 @@ export default function QuickGuideModal({ open, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="
-              rounded-lg p-2 text-gray-500 transition
+            className={`
+              rounded-lg text-gray-500 transition
               hover:text-red-700 cursor-pointer text-lg
-              focus:outline-none focus:ring-2 focus:ring-blue-200 
-            "
+            `}
             aria-label="Cerrar"
             title="Cerrar"
           >
@@ -74,18 +82,18 @@ export default function QuickGuideModal({ open, onClose }) {
         </div>
 
         {/* Intro */}
-        <p className="mt-4 text-sm text-gray-700">
+        <p className="mt-4 text-sm text-gray-700 leading-relaxed">
           Esta herramienta analiza código de forma estática para detectar
           posibles problemas de estilo, seguridad, complejidad, tipado y código
           sin uso.
         </p>
 
         {/* Pasos */}
-        <div className="mt-5 space-y-3">
+        <div className="mt-5 space-y-4">
           {steps.map((s, idx) => (
             <div
               key={s.title}
-              className="flex gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3"
+              className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3"
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
                 {idx + 1}
@@ -93,7 +101,22 @@ export default function QuickGuideModal({ open, onClose }) {
 
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-gray-900">{s.title}</p>
-                <p className="mt-0.5 text-sm text-gray-700">{s.text}</p>
+
+                {/* Texto del step en bullets por frases */}
+                <div className="mt-1 space-y-1">
+                  {String(s.text)
+                    .split(". ")
+                    .map((t) => t.trim())
+                    .filter(Boolean)
+                    .map((sentence, i) => (
+                      <div key={i} className="flex gap-2 text-sm text-gray-700">
+                        <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-gray-600" />
+                        <p className="leading-relaxed">
+                          {/[.!?]$/.test(sentence) ? sentence : `${sentence}.`}
+                        </p>
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
           ))}
@@ -111,7 +134,7 @@ export default function QuickGuideModal({ open, onClose }) {
             type="button"
             onClick={onClose}
             className="
-              rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm
+              rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm
               hover:bg-blue-700 transition cursor-pointer
               focus:outline-none focus:ring-2 focus:ring-blue-200
             "
