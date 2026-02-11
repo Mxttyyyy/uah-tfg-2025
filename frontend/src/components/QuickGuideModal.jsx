@@ -18,7 +18,6 @@ export default function QuickGuideModal({ open, onClose }) {
         "Copia y pega tu código en el área principal. Se recomienda pegar el archivo completo para obtener resultados más fiables. " +
         'Pulsa el botón "Limpiar" para vaciar el editor. ' +
         'También puedes usar el botón "Cargar ejemplo" para probar la herramienta rápidamente.',
-      
     },
     {
       title: "Configura el análisis",
@@ -54,43 +53,49 @@ export default function QuickGuideModal({ open, onClose }) {
       <div
         className="
           relative w-full max-w-3xl rounded-2xl bg-white
-          border border-gray-200 shadow-2xl max-h-[85vh]
-          p-6 sm:p-8 animate-fade-in overflow-auto
+          border border-gray-200 shadow-2xl max-h-[90vh]
+          p-0 animate-fade-in
+          flex flex-col
         "
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Guía rápida</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Cómo usar el analizador en pocos pasos.
-            </p>
+        {/* -------------------- HEADER FIJO -------------------- */}
+        <div className="shrink-0 px-6 pt-6 sm:px-8 sm:pt-8 bg-white rounded-2xl">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Guía rápida</h2>
+              <p className="mt-2 text-sm text-gray-600">
+                Cómo usar Analyth en pocos pasos.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="
+                rounded-lg text-gray-500 transition
+                hover:text-red-700 cursor-pointer text-lg
+              "
+              aria-label="Cerrar"
+              title="Cerrar"
+            >
+              🗙
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className={`
-              rounded-lg text-gray-500 transition
-              hover:text-red-700 cursor-pointer text-lg
-            `}
-            aria-label="Cerrar"
-            title="Cerrar"
-          >
-            🗙
-          </button>
+          {/* Intro */}
+          <p className="mt-4 text-sm text-gray-700 leading-relaxed">
+            Esta herramienta analiza código de forma estática para detectar
+            posibles problemas de estilo, seguridad, complejidad, tipado y código
+            sin uso.
+          </p>
+
+          {/* Separador suave */}
+          <div className="mt-5 h-px w-full bg-gray-200" />
         </div>
 
-        {/* Intro */}
-        <p className="mt-4 text-sm text-gray-700 leading-relaxed">
-          Esta herramienta analiza código de forma estática para detectar
-          posibles problemas de estilo, seguridad, complejidad, tipado y código
-          sin uso.
-        </p>
-
         {/* Pasos */}
-        <div className="mt-5 space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-8 py-5 space-y-4 pr-2 scrollbar-modern">
           {steps.map((s, idx) => (
             <div
               key={s.title}
@@ -123,25 +128,30 @@ export default function QuickGuideModal({ open, onClose }) {
           ))}
         </div>
 
-        {/* Nota */}
-        <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
-          <span className="font-semibold">Nota:</span> si no seleccionas ningún
-          análisis, se ejecutarán todos por defecto.
-        </div>
+        {/* -------------------- FOOTER FIJO -------------------- */}
+        <div className="shrink-0 px-6 pb-6 sm:px-8 sm:pb-8 bg-white rounded-2xl">
+          <div className="h-px w-full bg-gray-200" />
 
-        {/* Botón */}
-        <div className="mt-6 flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="
-              rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm
-              hover:bg-blue-700 transition cursor-pointer
-              focus:outline-none focus:ring-2 focus:ring-blue-200
-            "
-          >
-            Entendido
-          </button>
+          {/* Nota */}
+          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+            <span className="font-semibold">Nota:</span> si no seleccionas ningún
+            análisis, se ejecutarán todos por defecto.
+          </div>
+
+          {/* Botón */}
+          <div className="mt-4 flex items-center justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="
+                rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm
+                hover:bg-blue-700 transition cursor-pointer
+                focus:outline-none focus:ring-2 focus:ring-blue-200
+              "
+            >
+              Entendido
+            </button>
+          </div>
         </div>
       </div>
     </div>
