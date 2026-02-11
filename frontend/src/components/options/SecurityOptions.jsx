@@ -1,5 +1,6 @@
 import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
 
 /**
  * Opciones de Bandit (security).
@@ -18,7 +19,7 @@ import { useState } from "react";
  * - options: objeto con opciones actuales de security
  * - onChange: (nextValue) => void
  */
-export default function SecurityOptions({ options, onChange }) {
+export default function SecurityOptions({ options, onChange, resetOptionsSignal, setResetSignal }) {
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
@@ -36,6 +37,11 @@ export default function SecurityOptions({ options, onChange }) {
   const [skipCsv, setSkipCsv] = useState(listToCsv(normalizedOptions.skip));
   const [testsCsv, setTestsCsv] = useState(listToCsv(normalizedOptions.tests));
 
+  // Obtenemos las opciones predeterminadas
+  const defaultOptionsSecurity = createDefaultAnalyzeOptions().security;
+  const defaultSkip = listToCsv(defaultOptionsSecurity.select);
+  const defaultTests = listToCsv(defaultOptionsSecurity.ignore);
+
   /**
    * Actualiza parcialmente las opciones de seguridad,
    * manteniendo el resto de la configuración sin modificar.
@@ -43,6 +49,16 @@ export default function SecurityOptions({ options, onChange }) {
   function updateSecurityOptions(patch) {
     onChange({ ...normalizedOptions, ...patch });
   }
+
+  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  useEffect(() => {
+      if (!resetOptionsSignal) return;
+      setSkipCsv(defaultSkip);
+      setTestsCsv(defaultTests);
+     
+      setResetSignal(false);
+    }, [resetOptionsSignal]);
 
   return (
     <div className="space-y-4">

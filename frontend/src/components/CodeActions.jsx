@@ -89,8 +89,8 @@ export default function CodeActions({
             disabled={exampleDisabled}
             className={`
               rounded-lg border px-3 py-2 text-sm font-medium transition
-              border-gray-300 bg-white text-gray-900 
-              hover:bg-gray-50 cursor-pointer
+              border-gray-300 bg-white text-gray-900
+              hover:bg-gray-50 cursor-pointer active:bg-blue-100
               disabled:cursor-not-allowed disabled:opacity-50
             `}
           >
@@ -104,7 +104,7 @@ export default function CodeActions({
             className={`
               rounded-lg border px-3 py-2 text-sm font-medium transition
               border-gray-300 bg-white text-gray-900
-              hover:bg-gray-50 cursor-pointer
+              hover:bg-gray-50 cursor-pointer active:bg-blue-100
               disabled:cursor-not-allowed disabled:opacity-50
             `}
           >

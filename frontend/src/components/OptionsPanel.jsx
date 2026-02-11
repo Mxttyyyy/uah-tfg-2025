@@ -55,7 +55,7 @@ export default function OptionsPanel({ options, onChange }) {
   const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code", "types"];
 
   // Estado para controlar el botón de reset options
-  const [isPulsedClear, setClear] = useState(false);
+  const [resetOptionsSignal, setResetOptionsSignal] = useState(false);
   
   /**
    * Actualiza opciones de primer nivel del panel (p. ej. enabled, timeout).
@@ -72,7 +72,7 @@ export default function OptionsPanel({ options, onChange }) {
    */
   function resetOptionsToDefault() {
     onChange(createDefaultAnalyzeOptions());
-    setClear(true);
+    setResetOptionsSignal(true);
   }
 
   /**
@@ -138,20 +138,7 @@ export default function OptionsPanel({ options, onChange }) {
           Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se
           ejecutarán todos.
         </p>
-        {/* Botón de restablecer valores de options */}
-        <button
-          type="button"
-          onClick={resetOptionsToDefault}
-          className={`
-            shrink-0 rounded-lg border border-gray-300 bg-white
-            px-3 py-1.5 text-sm font-semibold text-gray-700
-            hover:bg-gray-50 hover:text-gray-900
-            focus:outline-none focus:ring-2 focus:ring-blue-200
-            transition
-        `}
-        >
-          Restablecer
-        </button>
+        
       </div>
 
       {/* Selección de análisis (enabled) */}
@@ -187,6 +174,21 @@ export default function OptionsPanel({ options, onChange }) {
           onChange={() => toggleEnabled("types")}
         />
       </div>
+
+        {/* Botón de restablecer valores de options */}
+        <button
+          type="button"
+          onClick={resetOptionsToDefault}
+          className={`
+            rounded-lg border border-gray-300 bg-gray-50
+            px-3 py-1.5 text-sm font-semibold text-gray-700
+            hover:bg-gray-100 hover:text-gray-900 active:bg-blue-100
+            transition cursor-pointer mt-4 mb-1 w-full
+          `}
+          title="Restaura selección, timeout y opciones avanzadas"
+        >
+          Restablecer todas las opciones
+        </button>
 
       {/* Timeout */}
       <div
@@ -263,8 +265,8 @@ export default function OptionsPanel({ options, onChange }) {
             <StyleOptions
               options={style}
               onChange={(v) => updateModuleOptions("style", v)}
-              isPulsedClear={isPulsedClear}
-              onClear={setClear}
+              resetOptionsSignal={resetOptionsSignal}
+              setResetSignal={setResetOptionsSignal}
             />
           </div>
         </details>
@@ -290,6 +292,8 @@ export default function OptionsPanel({ options, onChange }) {
             <SecurityOptions
               options={security}
               onChange={(v) => updateModuleOptions("security", v)}
+              resetOptionsSignal={resetOptionsSignal}
+              setResetSignal={setResetOptionsSignal}
             />
           </div>
         </details>
@@ -340,6 +344,8 @@ export default function OptionsPanel({ options, onChange }) {
             <DeadCodeOptions
               options={deadCode}
               onChange={(v) => updateModuleOptions("dead_code", v)}
+              resetOptionsSignal={resetOptionsSignal}
+              setResetSignal={setResetOptionsSignal}
             />
           </div>
         </details>
@@ -365,6 +371,8 @@ export default function OptionsPanel({ options, onChange }) {
             <TypesOptions
               options={types}
               onChange={(v) => updateModuleOptions("types", v)}
+              resetOptionsSignal={resetOptionsSignal}
+              setResetSignal={setResetOptionsSignal}
             />
           </div>
         </details>

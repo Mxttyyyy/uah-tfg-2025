@@ -1,5 +1,5 @@
 import { isPlainObject, listToCsv, csvToList } from "../../utils/uiUtils";
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
 /**
  * Opciones de Ruff (style).
@@ -15,7 +15,7 @@ import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
  * - options: objeto con opciones actuales de style
  * - onChange: (nextValue) => void
  */
-export default function StyleOptions({ options, onChange, isPulsedClear, onClear }) {
+export default function StyleOptions({ options, onChange, resetOptionsSignal, setResetSignal }) {
 
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined.
@@ -28,7 +28,9 @@ export default function StyleOptions({ options, onChange, isPulsedClear, onClear
  
   // Obtenemos las opciones predeterminadas
   const defaultOptionsStyle = createDefaultAnalyzeOptions().style;
-
+  const defaultSelect = listToCsv(defaultOptionsStyle.select);
+  const defaultIgnore = listToCsv(defaultOptionsStyle.ignore);
+  const defaultExtendSelect = listToCsv(defaultOptionsStyle.extend_select);
   /**
    * Actualiza parcialmente las opciones de estilo,
    * manteniendo el resto de la configuración sin cambios.
@@ -37,16 +39,26 @@ export default function StyleOptions({ options, onChange, isPulsedClear, onClear
     onChange({ ...normalizedOptions, ...patch });
   }
 
+  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  useEffect(() => {
+      if (!resetOptionsSignal) return;
+      setSelectCsv(defaultSelect);
+      setIgnoreCsv(defaultIgnore);
+      setExtendSelectCsv(defaultExtendSelect);
+     
+      setResetSignal(false);
+    }, [resetOptionsSignal]);
+
   return (
     <div className="space-y-4">
       <TextInput
         id="style-select"
         label="select"
         placeholder="Ej: F401, E501"
-        value={isPulsedClear ? defaultOptionsStyle.select :  selectCsv}
+        value={selectCsv}
         onChange={(text) => {
           setSelectCsv(text);
-          onClear(false);
           updateStyleOptions({ select: csvToList(text) })}
         }
         hint="Si lo rellenas, Ruff ejecuta solo estas reglas."

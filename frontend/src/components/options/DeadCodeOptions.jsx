@@ -1,5 +1,6 @@
 import {isPlainObject, listToCsv, csvToListNotUpper, csvToListDecorators, normalizeIntInRange } from "../../utils/uiUtils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
 /**
  * Opciones de Vulture (dead_code).
  *
@@ -16,7 +17,7 @@ import { useState } from "react";
  * - options: objeto con opciones actuales de dead_code
  * - onChange: (nextValue) => void
  */
-export default function DeadCodeOptions({ options, onChange }) {
+export default function DeadCodeOptions({ options, onChange, resetOptionsSignal, setResetSignal }) {
 
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
@@ -31,6 +32,11 @@ export default function DeadCodeOptions({ options, onChange }) {
   const [ignoreNamesCsv, setIgnoreNamesCsv] = useState(listToCsv(normalizedOptions.ignore_names));
   const [ignoreDecoratorsCsv, setIgnoreDecoratorsCsv] = useState(listToCsv(normalizedOptions.ignore_decorators));
 
+  // Obtenemos las opciones predeterminadas
+  const defaultOptionsDeadCode = createDefaultAnalyzeOptions().dead_code;
+  const defaultIgnoreNames = listToCsv(defaultOptionsDeadCode.ignore);
+  const defaultIgnoreDecorators = listToCsv(defaultOptionsDeadCode.extend_select);
+
   /**
    * Actualiza parcialmente las opciones de código muerto,
    * manteniendo el resto de la configuración sin modificar.
@@ -38,6 +44,17 @@ export default function DeadCodeOptions({ options, onChange }) {
   function updateDeadCodeOptions(patch) {
     onChange({ ...normalizedOptions, ...patch });
   }
+
+  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  useEffect(() => {
+    if (!resetOptionsSignal) return;
+    setIgnoreNamesCsv(defaultIgnoreNames);
+    setIgnoreDecoratorsCsv(defaultIgnoreDecorators);
+   
+    setResetSignal(false);
+  }, [resetOptionsSignal]);
+
 
   return (
     <div className="space-y-4">

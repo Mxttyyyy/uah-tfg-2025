@@ -1,5 +1,6 @@
 import { isPlainObject, listToCsv, csvToListNotUpper } from "../../utils/uiUtils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
 
 /**
  * Opciones de Mypy (types).
@@ -21,7 +22,7 @@ import { useState } from "react";
  * - options: objeto con opciones actuales de types
  * - onChange: (nextValue) => void
  */
-export default function TypesOptions({ options, onChange }) {
+export default function TypesOptions({ options, onChange, resetOptionsSignal, setResetSignal }) {
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
@@ -38,6 +39,11 @@ export default function TypesOptions({ options, onChange }) {
   const [enableCodesCsv, setEnableCodesCsv] = useState(listToCsv(normalizedOptions.enable_error_codes));
   const [disableCodesCsv, setDisableCodesCsv] = useState(listToCsv(normalizedOptions.disable_error_codes));
 
+  // Obtenemos las opciones predeterminadas
+  const defaultOptionsTypes = createDefaultAnalyzeOptions().types;
+  const defaultEnable = listToCsv(defaultOptionsTypes.enable_error_codes);
+  const defaultDisable = listToCsv(defaultOptionsTypes.disable_error_codes);
+
   /**
    * Actualiza parcialmente las opciones de tipos,
    * manteniendo el resto de la configuración sin cambios.
@@ -45,6 +51,16 @@ export default function TypesOptions({ options, onChange }) {
   function updateTypesOptions(patch) {
     onChange({ ...normalizedOptions, ...patch });
   }
+
+  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  useEffect(() => {
+      if (!resetOptionsSignal) return;
+      setEnableCodesCsv(defaultEnable);
+      setDisableCodesCsv(defaultDisable);
+     
+      setResetSignal(false);
+    }, [resetOptionsSignal]);
 
   return (
     <div className="space-y-4">
