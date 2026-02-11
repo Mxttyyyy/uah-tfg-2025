@@ -12,7 +12,7 @@ import ErrorIcon from "./icons/ErrorIcon";
  * - children: contenido (mensaje)
  * - onClose: function (opcional) -> si se pasa, muestra botón de cerrar
  */
-export default function Alert({ variant = "info", title, children, onClose }) {
+export default function Alert({ variant = "info", title, children}) {
 
   // Estilos según el tipo de alerta
   const styles = getVariantStyles(variant);
@@ -35,19 +35,6 @@ export default function Alert({ variant = "info", title, children, onClose }) {
           ) : null}
           <div className={`text-sm ${styles.text}`}>{children}</div>
         </div>
-
-        {/* Botón de cierre */}
-        {typeof onClose === "function" ? (
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md px-1 py-0 text-md text-gray-600  hover:text-red-600 cursor-pointer"
-            aria-label="Cerrar"
-            title="Cerrar"
-          >
-            🗙
-          </button>
-        ) : null}
       </div>
     </div>
   );
