@@ -56,7 +56,7 @@ export default function OptionsPanel({ options, onChange }) {
 
   // Estado para controlar el botón de reset options
   const [resetOptionsSignal, setResetOptionsSignal] = useState(false);
-  
+
   /**
    * Actualiza opciones de primer nivel del panel (p. ej. enabled, timeout).
    *
@@ -132,13 +132,30 @@ export default function OptionsPanel({ options, onChange }) {
         "overflow-hidden",
       ].join(" ")}
     >
-      <div className="mb-4 items-start justify-between gap-3">
-        <h2 className="text-base font-semibold text-gray-900">Opciones</h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se
-          ejecutarán todos.
-        </p>
-        
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-semibold text-gray-900">Opciones</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Selecciona qué análisis ejecutar. Si no seleccionas ninguno,
+            se ejecutarán todos.
+          </p>
+        </div>
+
+        {/* Botón de reset options para resoluciones menores */}
+        <button
+          type="button"
+          onClick={resetOptionsToDefault}
+          className={`
+            md:inline-flex 2xl:hidden
+            rounded-lg border border-gray-300 bg-gray-50 px-3 py-2
+            text-sm font-semibold text-gray-700
+            hover:bg-gray-100 hover:text-gray-900 transition
+            whitespace-nowrap cursor-pointer
+          `}
+          title="Restaura selección, timeout y opciones avanzadas a valores por defecto"
+        >
+          Restablecer
+        </button>
       </div>
 
       {/* Selección de análisis (enabled) */}
@@ -175,20 +192,21 @@ export default function OptionsPanel({ options, onChange }) {
         />
       </div>
 
-        {/* Botón de restablecer valores de options */}
-        <button
-          type="button"
-          onClick={resetOptionsToDefault}
-          className={`
-            rounded-lg border border-gray-300 bg-gray-50
-            px-3 py-1.5 text-sm font-semibold text-gray-700
-            hover:bg-gray-100 hover:text-gray-900 active:bg-blue-100
-            transition cursor-pointer mt-4 mb-1 w-full
-          `}
-          title="Restaura selección, timeout y opciones avanzadas a valores por defecto"
-        >
-          Restablecer todas las opciones
-        </button>
+      {/* Botón de reset options para resoluciones grandes */}
+      <button
+        type="button"
+        onClick={resetOptionsToDefault}
+        className={`
+          hidden 2xl:block
+          rounded-lg border border-gray-300 bg-gray-50
+          px-3 py-1.5 text-sm font-semibold text-gray-700
+          hover:bg-gray-100 hover:text-gray-900 active:bg-blue-100
+          transition cursor-pointer mt-4 mb-1 w-full
+        `}
+        title="Restaura selección, timeout y opciones avanzadas a valores por defecto"
+      >
+        Restablecer todas las opciones
+      </button>
 
       {/* Timeout */}
       <div
@@ -239,7 +257,9 @@ export default function OptionsPanel({ options, onChange }) {
 
       {/* Opciones por herramienta */}
       <div className="flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
-        <p className="text-sm text-gray-600">
+        
+        {/* Escondemos el texto en resoluciones menores */}
+        <p className="hidden 2xl:block text-sm text-gray-600">
           Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture,
           Mypy).
         </p>

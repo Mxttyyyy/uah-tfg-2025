@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 /**
  * Modal de Guía Rápida.
  *
@@ -8,6 +9,19 @@
  * - onClose: function (cerrar modal)
  */
 export default function QuickGuideModal({ open, onClose }) {
+
+  // Eliminar el scroll cuando se abre el modal
+  useEffect(() => {
+    if (!open) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open]);
+
   if (!open) return null;
 
   // Pasos de la guía rápida. El texto se mostrará dividido en bullets por frases.
@@ -63,9 +77,13 @@ export default function QuickGuideModal({ open, onClose }) {
         <div className="shrink-0 px-6 pt-6 sm:px-8 sm:pt-8 bg-white rounded-2xl">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Guía rápida</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Guía rápida
+              </h2>
               <p className="mt-2 text-sm text-gray-600">
-                Cómo usar Analyth en pocos pasos.
+                Cómo usar{" "}
+                <span className="font-semibold text-blue-700 ">Analyth</span> en
+                pocos pasos.
               </p>
             </div>
 
@@ -86,8 +104,8 @@ export default function QuickGuideModal({ open, onClose }) {
           {/* Intro */}
           <p className="mt-4 text-sm text-gray-700 leading-relaxed">
             Esta herramienta analiza código de forma estática para detectar
-            posibles problemas de estilo, seguridad, complejidad, tipado y código
-            sin uso.
+            posibles problemas de estilo, seguridad, complejidad, tipado y
+            código sin uso.
           </p>
 
           {/* Separador suave */}
@@ -134,8 +152,8 @@ export default function QuickGuideModal({ open, onClose }) {
 
           {/* Nota */}
           <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
-            <span className="font-semibold">Nota:</span> si no seleccionas ningún
-            análisis, se ejecutarán todos por defecto.
+            <span className="font-semibold">Nota:</span> si no seleccionas
+            ningún análisis, se ejecutarán todos por defecto.
           </div>
 
           {/* Botón */}

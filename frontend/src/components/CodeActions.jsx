@@ -11,6 +11,7 @@ import Spinner from "./Spinner";
  *
  * Props:
  * - code: string (contenido actual del textarea)
+ * - language: string (lenguaje seleccionado)
  * - isLoading: boolean (true mientras estás esperando la respuesta del análisis)
  * - onAnalyze: () => void
  * - onClear: () => void
@@ -27,7 +28,7 @@ export default function CodeActions({
   // Lista de lenguajes soportados por la herramienta
   const LANGUAGES = [
     { value: "python", label: "Python" },
-    { value: "java", label: "Java (próximamente)", disabled: true },
+    { value: "java", label: "Java", disabled: true },
   ];
 
   // Obtenemos valores dependiendo del estado del análisis
@@ -38,6 +39,7 @@ export default function CodeActions({
 
   return (
     <div className="flex w-full flex-wrap justify-between flex-col gap-5">
+
       {/* FILA 1 - INFO */}
       <div className="flex-1 text-sm font-semibold text-gray-600">
         {isLoading ? (
@@ -51,6 +53,7 @@ export default function CodeActions({
 
       {/* FILA 2 - CONTROLES */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
         {/* Selector (izquierda) */}
         <div className="flex items-center gap-3 shrink-0">
           <label
