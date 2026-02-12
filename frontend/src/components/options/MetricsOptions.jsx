@@ -53,8 +53,9 @@ export default function MetricsOptions({ options, onChange }) {
         />
       </div>
 
-      <p className="text-xs text-gray-600">
-        <span className="font-mono">(por defecto)</span> usa los valores predeterminados.
+      <p className="text-xs text-gray-600 dark:text-neutral-300">
+        <span className="font-mono dark:text-neutral-200">(por defecto)</span>{" "}
+        usa los valores predeterminados.
       </p>
     </div>
   );
@@ -80,7 +81,7 @@ const CC_LEVELS = [
 function SelectInput({ id, label, value, onChange, options, hint }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-900">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-900 dark:text-neutral-100">
         {label}
       </label>
 
@@ -90,8 +91,10 @@ function SelectInput({ id, label, value, onChange, options, hint }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={`
-          mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
-          outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 cursor-pointer
+          mt-2 w-full cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+          outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+          dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-100
+          dark:focus:border-sky-500 dark:focus:ring-sky-900/40
         `}
       >
         {options.map((o) => (
@@ -101,7 +104,9 @@ function SelectInput({ id, label, value, onChange, options, hint }) {
         ))}
       </select>
 
-      {hint ? <p className="mt-1 text-xs text-gray-600">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-1 text-xs text-gray-600 dark:text-neutral-300">{hint}</p>
+      ) : null}
     </div>
   );
 }

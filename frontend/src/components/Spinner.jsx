@@ -14,9 +14,18 @@ export default function Spinner({ size = "md", label = "Cargando..." }) {
   return (
     <div className="inline-flex items-center gap-2">
       {/* Icono */}
-      <SpinnerIcon className={`animate-spin ${sizeClass} text-gray-300`} />
+      <SpinnerIcon
+        className={`
+          animate-spin ${sizeClass}
+          text-gray-500
+          dark:text-neutral-300
+        `}
+      />
+      
       {/* Mensaje */}
-      <span className="text-sm text-gray-300">{label}</span>
+      <span className="text-sm text-gray-600 dark:text-neutral-300">
+        {label}
+      </span>
     </div>
   );
 }

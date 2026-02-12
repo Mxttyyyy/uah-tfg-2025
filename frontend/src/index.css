@@ -1,4 +1,6 @@
+@config "../tailwind.config.js";
 @import "tailwindcss";
+
 
 html,
 body,
@@ -23,7 +25,7 @@ code, pre, textarea {
   width: 10px;
   height: 10px;
 }
-
+ 
 .scrollbar-modern::-webkit-scrollbar-track {
   background: transparent;
 }

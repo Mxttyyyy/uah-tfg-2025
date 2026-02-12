@@ -5,10 +5,10 @@ import { toInt } from "../../utils/uiUtils";
  *
  * Muestra el número total de issues y su distribución por severidad
  * (error, warning e info).
- * 
+ *
  * Este componente no aplica el filtrado por severidad directamente;
  * únicamente notifica cambios de severidad al padre (ResultsPanel)
- * 
+ *
  *  Props:
  * - total: int (número total de issues)
  * - issuesBySeverity de issues por severidad)
@@ -30,15 +30,15 @@ export default function ResultsSummary({
 
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-
-      { /*SummaryCard para "total" y para cada tipo de severidad */}
+      
+      {/* SummaryCard para "total" y para cada tipo de severidad */}
       <SummaryCard
         title="Total"
         value={toInt(total) ?? 0}
-        selected={false} 
+        selected={false}
         onClick={
           typeof onSeverityChange === "function"
-            ? () => onSeverityChange("none") 
+            ? () => onSeverityChange("none")
             : undefined
         }
       />
@@ -51,7 +51,7 @@ export default function ResultsSummary({
           typeof onSeverityChange === "function"
             ? () =>
                 onSeverityChange(
-                  severitySelected === "error" ? "none" : "error",
+                  severitySelected === "error" ? "none" : "error"
                 )
             : undefined
         }
@@ -102,10 +102,10 @@ function SummaryCard({
   onClick,
 }) {
   const severityStyles = {
-    neutral: "border-gray-300 bg-gray-50/80",
-    info: "border-blue-300 bg-blue-100/50",
-    warning: "border-amber-300 bg-amber-100/50",
-    error: "border-red-300 bg-red-100/50",
+    neutral: "border-gray-300 bg-gray-50/80 dark:border-neutral-700 dark:bg-neutral-950/30",
+    info: "border-blue-300 bg-blue-100/50 dark:border-sky-900/50 dark:bg-sky-950/30",
+    warning: "border-amber-300 bg-amber-100/50 dark:border-amber-900/50 dark:bg-amber-950/30",
+    error: "border-red-300 bg-red-100/50 dark:border-red-900/50 dark:bg-red-950/30",
   };
 
   return (
@@ -117,14 +117,19 @@ function SummaryCard({
       className={[
         "rounded-lg border p-3 text-left transition",
         severityStyles[tone] || severityStyles.neutral,
-        onClick ? "cursor-pointer hover:shadow-md" : "cursor-default",
-        selected ? "-translate-y-[10px] shadow-md border-2" : ""
+        onClick ? "cursor-pointer hover:shadow-md dark:hover:shadow-none" : "cursor-default",
+        selected ? "-translate-y-[10px] shadow-md border-2 dark:shadow-none" : "",
+        
+        // Focus visible en dark también
+        "focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-sky-900/40",
       ].join(" ")}
     >
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-600">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-neutral-300">
         {title}
       </p>
-      <p className="mt-1 text-2xl font-semibold text-gray-900">{value}</p>
+      <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-neutral-100">
+        {value}
+      </p>
     </button>
   );
 }

@@ -122,50 +122,55 @@ export default function App() {
   }
 
   return (
-    <div
-      id="top"
-      className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50"
-    >
-      <Header />
+  <div
+    id="top"
+    className={`
+      min-h-screen
+      bg-gradient-to-b from-gray-50 via-white to-gray-50
+      dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900
+      dark:text-neutral-100
+    `}
+  >
+    <Header />
 
-      <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8 2xl:max-w-[1660px] 2xl:px-10">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_clamp(420px,35vw,650px)]">
-          {/* Panel izquierdo de código */}
-          <div ref={codeSectionRef} className="min-w-0 scroll-mt-24">
-            <CodeInput
-              value={code}
-              language={language}
-              onChange={setCode}
-              isLoading={isLoading}
-              onAnalyze={handleAnalyze}
-              onClear={handleClear}
-              onExample={handleLoadExample}
-              onLanguageChange={setLanguage}
-              textareaRef={textareaRef}
-            />
-          </div>
-
-          {/* Panel derecho de opciones */}
-          <div className="min-w-0">
-            <OptionsPanel options={options} onChange={setOptions} />
-          </div>
-        </div>
-
-        {/* Resultados abajo */}
-        <div className="mt-8">
-          <ResultsPanel
-            result={result}
-            autoScroll
-            anchorId="results"
-            onIssueSelect={handleIssueSelect}
+    <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8 2xl:max-w-[1660px] 2xl:px-10">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_clamp(420px,35vw,650px)]">
+        {/* Panel izquierdo de código */}
+        <div ref={codeSectionRef} className="min-w-0 scroll-mt-24">
+          <CodeInput
+            value={code}
+            language={language}
+            onChange={setCode}
+            isLoading={isLoading}
+            onAnalyze={handleAnalyze}
+            onClear={handleClear}
+            onExample={handleLoadExample}
+            onLanguageChange={setLanguage}
+            textareaRef={textareaRef}
           />
         </div>
-      </main>
 
-      {/* Botón flotante para subir arriba */}
-      <ScrollToTopButton anchorId="top" showAfterPx={500} />
-    </div>
-  );
+        {/* Panel derecho de opciones */}
+        <div className="min-w-0">
+          <OptionsPanel options={options} onChange={setOptions} />
+        </div>
+      </div>
+
+      {/* Resultados abajo */}
+      <div className="mt-8">
+        <ResultsPanel
+          result={result}
+          autoScroll
+          anchorId="results"
+          onIssueSelect={handleIssueSelect}
+        />
+      </div>
+    </main>
+
+    {/* Botón flotante para subir arriba */}
+    <ScrollToTopButton anchorId="top" showAfterPx={500} />
+  </div>
+);
 }
 
 /* ----------------------------- Funciones auxiliares ----------------------------- */

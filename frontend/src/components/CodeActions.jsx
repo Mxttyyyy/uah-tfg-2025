@@ -41,7 +41,7 @@ export default function CodeActions({
     <div className="flex w-full flex-wrap justify-between flex-col gap-5">
 
       {/* FILA 1 - INFO */}
-      <div className="flex-1 text-sm font-semibold text-gray-600">
+      <div className="flex-1 text-sm font-semibold text-gray-600 dark:text-neutral-300">
         {isLoading ? (
           <span>Analizando...</span>
         ) : hasCode ? (
@@ -53,12 +53,12 @@ export default function CodeActions({
 
       {/* FILA 2 - CONTROLES */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
+        
         {/* Selector (izquierda) */}
         <div className="flex items-center gap-3 shrink-0">
           <label
             htmlFor="language"
-            className="text-sm font-semibold text-gray-800"
+            className="text-sm font-semibold text-gray-800 dark:text-neutral-200"
           >
             Lenguaje
           </label>
@@ -74,10 +74,18 @@ export default function CodeActions({
               outline-none transition
               hover:bg-gray-50
               focus:border-blue-500 focus:ring-1 focus:ring-blue-200
+              dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100
+              dark:hover:bg-neutral-900
+              dark:focus:border-sky-400 dark:focus:ring-sky-900/40
             `}
           >
             {LANGUAGES.map((l) => (
-              <option key={l.value} value={l.value} disabled={!!l.disabled}>
+              <option
+                key={l.value}
+                value={l.value}
+                disabled={!!l.disabled}
+                className="dark:bg-neutral-950"
+              >
                 {l.label}
               </option>
             ))}
@@ -95,6 +103,8 @@ export default function CodeActions({
               border-gray-300 bg-white text-gray-900
               hover:bg-gray-50 cursor-pointer active:bg-blue-100
               disabled:cursor-not-allowed disabled:opacity-50
+              dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100
+              dark:hover:bg-neutral-700 dark:active:bg-sky-900/30
             `}
           >
             Cargar ejemplo
@@ -109,6 +119,8 @@ export default function CodeActions({
               border-gray-300 bg-white text-gray-900
               hover:bg-gray-50 cursor-pointer active:bg-blue-100
               disabled:cursor-not-allowed disabled:opacity-50
+              dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100
+              dark:hover:bg-neutral-700 dark:active:bg-sky-900/30
             `}
           >
             Limpiar
@@ -123,6 +135,7 @@ export default function CodeActions({
               rounded-lg px-4 py-2 text-sm font-semibold transition
               bg-blue-600 text-white hover:bg-blue-700 cursor-pointer
               disabled:cursor-not-allowed disabled:opacity-50
+              dark:bg-sky-600 dark:hover:bg-sky-500
             `}
           >
             {isLoading ? <Spinner size="sm" /> : null}

@@ -22,7 +22,13 @@ import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
  * - options: objeto con opciones actuales de types
  * - onChange: (nextValue) => void
  */
-export default function TypesOptions({ options, onChange, resetOptionsSignal, setResetSignal }) {
+export default function TypesOptions({
+  options,
+  onChange,
+  resetOptionsSignal,
+  setResetSignal,
+}) {
+
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
@@ -55,12 +61,12 @@ export default function TypesOptions({ options, onChange, resetOptionsSignal, se
   // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
   // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
   useEffect(() => {
-      if (!resetOptionsSignal) return;
-      setEnableCodesCsv(defaultEnable);
-      setDisableCodesCsv(defaultDisable);
-     
-      setResetSignal(false);
-    }, [resetOptionsSignal]);
+    if (!resetOptionsSignal) return;
+    setEnableCodesCsv(defaultEnable);
+    setDisableCodesCsv(defaultDisable);
+
+    setResetSignal(false);
+  }, [resetOptionsSignal]);
 
   return (
     <div className="space-y-4">
@@ -108,8 +114,8 @@ export default function TypesOptions({ options, onChange, resetOptionsSignal, se
         value={enableCodesCsv}
         onChange={(text) => {
           setEnableCodesCsv(text);
-          updateTypesOptions({ enable_error_codes: csvToListNotUpper(text) })}
-        }
+          updateTypesOptions({ enable_error_codes: csvToListNotUpper(text) });
+        }}
         hint="Códigos de error a activar (separados por comas)."
       />
 
@@ -120,8 +126,8 @@ export default function TypesOptions({ options, onChange, resetOptionsSignal, se
         value={disableCodesCsv}
         onChange={(text) => {
           setDisableCodesCsv(text);
-          updateTypesOptions({ disable_error_codes: csvToListNotUpper(text) })}
-        }
+          updateTypesOptions({ disable_error_codes: csvToListNotUpper(text) });
+        }}
         hint="Códigos de error a desactivar (separados por comas)."
       />
     </div>
@@ -143,13 +149,20 @@ function CheckboxRow({ id, label, checked, onChange, hint }) {
           type="checkbox"
           checked={!!checked}
           onChange={onChange}
-          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200"
+          className={`
+            h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200
+            dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-sky-400 dark:focus:ring-sky-900/40
+          `}
         />
-        <label htmlFor={id} className="text-sm font-medium text-gray-900">
+        <label htmlFor={id} className="text-sm font-medium text-gray-900 dark:text-neutral-100">
           {label}
         </label>
       </div>
-      {hint ? <p className="mt-1 text-xs text-gray-600">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-1 text-xs text-gray-600 dark:text-neutral-300">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -160,7 +173,7 @@ function CheckboxRow({ id, label, checked, onChange, hint }) {
 function TextInput({ id, label, value, onChange, placeholder, hint }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-900">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-900 dark:text-neutral-100">
         {label}
       </label>
 
@@ -174,10 +187,14 @@ function TextInput({ id, label, value, onChange, placeholder, hint }) {
         className={`
           mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
           outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+          dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-100 dark:placeholder:text-neutral-500
+          dark:focus:border-sky-500 dark:focus:ring-sky-900/40
         `}
       />
 
-      {hint ? <p className="mt-1 text-xs text-gray-600">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-1 text-xs text-gray-600 dark:text-neutral-300">{hint}</p>
+      ) : null}
     </div>
   );
 }

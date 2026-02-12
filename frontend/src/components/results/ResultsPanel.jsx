@@ -2,7 +2,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Alert from "../Alert";
 import ResultsSummary from "./ResultsSummary";
 import IssueList from "./IssueList";
-import { buildSeverityCounts, isPlainObject, toInt, cleanErrorDetails } from "../../utils/uiUtils";
+import {
+  buildSeverityCounts,
+  isPlainObject,
+  toInt,
+  cleanErrorDetails,
+} from "../../utils/uiUtils";
 
 /**
  * Panel principal de resultados del análisis.
@@ -104,10 +109,12 @@ export default function ResultsPanel({
     return (
       <section
         ref={sectionRef}
-        className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+        className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-900"
       >
-        <h2 className="text-base font-semibold text-gray-900">Resultados</h2>
-        <p className="mt-2 text-sm text-gray-600">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-neutral-100">
+          Resultados
+        </h2>
+        <p className="mt-2 text-sm text-gray-600 dark:text-neutral-300">
           Esperando resultados del análisis.
         </p>
       </section>
@@ -120,13 +127,16 @@ export default function ResultsPanel({
       className={`
         rounded-xl border border-gray-200 bg-white p-4
         shadow-sm hover:shadow-lg hover:-translate-y-[2px] transition
+        dark:border-neutral-700 dark:bg-neutral-900 dark:hover:shadow-none
       `}
     >
       {/* Cabecera del panel */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-gray-900">Resultados</h2>
-          <p className="mt-1 text-sm text-gray-600">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-neutral-100">
+            Resultados
+          </h2>
+          <p className="mt-1 text-sm text-gray-600 dark:text-neutral-300">
             Resumen global y detalles del análisis.
           </p>
         </div>
@@ -145,35 +155,44 @@ export default function ResultsPanel({
           <Alert
             variant="error"
             title={error.error_code === "LANGUAGE_MISMATCH"
-              ? "El código no es Python válido o no coincide con el lenguaje seleccionado" 
-              : "No se pudo completar el análisis. Vuelve a intentarlo."}
+                ? "El código no es Python válido o no coincide con el lenguaje seleccionado"
+                : "No se pudo completar el análisis. Vuelve a intentarlo."
+            }
             message={`${String(error.message || "Error desconocido")}${
               typeof error.http_status === "number"
                 ? ` (HTTP ${error.http_status})`
                 : ""
             }`}
           />
+
           {/* Ver detalles */}
           {typeof error.message === "string" && error.message.trim() && (
-            <details className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-              <summary className="cursor-pointer font-medium text-gray-800 hover:text-red-900">
+            <details className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
+              <summary className="cursor-pointer font-medium text-gray-800 hover:text-red-900 dark:text-neutral-100 dark:hover:text-red-200">
                 Ver detalles
               </summary>
 
-              <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-800">
+              <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-800 dark:text-neutral-100">
                 {cleanErrorDetails(error)}
               </pre>
 
               {typeof error.http_status === "number" ? (
-                <div className="mt-2 text-[11px] text-gray-600">
+                <div className="mt-2 text-[11px] text-gray-600 dark:text-neutral-300">
                   HTTP {error.http_status}
                 </div>
-              ) :null}
-              
+              ) : null}
             </details>
           )}
         </div>
-      ) : null}
+      ) : (
+        <div className="mt-4">
+          <Alert
+            variant="success"
+            title={"Análisis realizado con éxito."}
+            message={"Análisis realizado con éxito."}
+          />
+        </div>
+      )}
 
       {/* Resumen global de issues y selector de severidad */}
       <div className="mt-5">
@@ -245,7 +264,6 @@ export default function ResultsPanel({
  * y los bloques con mayor complejidad ciclomática.
  */
 function MetricsSection({ metrics, leftBorderClass }) {
-
   const hasMetrics = isPlainObject(metrics) && Object.keys(metrics).length > 0;
 
   // Obtenemos los campos relevantes y normalizamos
@@ -269,6 +287,8 @@ function MetricsSection({ metrics, leftBorderClass }) {
       className={`
         rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
         hover:bg-blue-100/60 transition ${leftBorderClass}
+        dark:border-neutral-700 dark:bg-neutral-950/30
+        dark:hover:border-sky-900/60 dark:hover:bg-sky-950/30
       `}
     >
       {/* Cabecera del panel */}
@@ -276,11 +296,12 @@ function MetricsSection({ metrics, leftBorderClass }) {
         className={`
           flex cursor-pointer list-item items-center justify-between
           gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+          dark:text-neutral-100 dark:hover:text-sky-400
         `}
       >
         <span className="flex items-center gap-2">
           Métricas ({tool})
-          <span className="text-xs font-semibold text-gray-600">
+          <span className="text-xs font-semibold text-gray-600 dark:text-neutral-300">
             {hasMetrics ? "" : "(vacío)"}
           </span>
         </span>
@@ -288,33 +309,37 @@ function MetricsSection({ metrics, leftBorderClass }) {
 
       <div className="px-3 pb-3">
         {!hasMetrics ? (
-          <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700">
+          <div 
+            className={`
+            rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
+            dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200
+            `}
+          >
             No se devolvieron métricas.
           </div>
         ) : (
           <div className="space-y-3">
             <div className="grid gap-3 lg:grid-cols-2">
-
               {/* Panel de índice de mantenibilidad global del código */}
-              <div className="rounded-md border border-gray-200 bg-white p-3">
-                <h4 className="text-sm font-semibold text-gray-900">
+              <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
                   Maintainability Index (MI)
                 </h4>
-                <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-700">
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-neutral-200">
                   <IssueLabel label={`Score: ${mi.score ?? "—"}`} />
                   <IssueLabel label={`Rank: ${mi.rank || "—"}`} />
                 </div>
-                <p className="mt-2 text-xs text-gray-600">
+                <p className="mt-2 text-xs text-gray-600 dark:text-neutral-300">
                   Cuanto mayor es el MI, mejor mantenibilidad global.
                 </p>
               </div>
 
               {/* Panel/Tabla de métricas básicas */}
-              <div className="rounded-md border border-gray-200 bg-white p-3">
-                <h4 className="text-sm font-semibold text-gray-900">
+              <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
                   Raw metrics
                 </h4>
-                <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-gray-700 sm:grid-cols-3">
+                <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-gray-700 sm:grid-cols-3 dark:text-neutral-200">
                   <MetricItem label="LOC" value={raw.loc} />
                   <MetricItem label="LLOC" value={raw.lloc} />
                   <MetricItem label="SLOC" value={raw.sloc} />
@@ -326,19 +351,19 @@ function MetricsSection({ metrics, leftBorderClass }) {
             </div>
 
             {/* Panel/Tabla de complejidad ciclomática */}
-            <div className="rounded-md border border-gray-200 bg-white p-3">
-              <h4 className="text-sm font-semibold text-gray-900">
+            <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
                 Complejidad ciclomática (top bloques)
               </h4>
 
               {topBlocks.length === 0 ? (
-                <p className="mt-2 text-sm text-gray-700">
+                <p className="mt-2 text-sm text-gray-700 dark:text-neutral-200">
                   No hay bloques para mostrar.
                 </p>
               ) : (
                 <div className="mt-2 overflow-x-auto">
                   <table className="min-w-[620px] w-full text-left text-sm">
-                    <thead className="text-xs uppercase tracking-wide text-gray-600">
+                    <thead className="text-xs uppercase tracking-wide text-gray-600 dark:text-neutral-300">
                       <tr>
                         <th className="py-2 pr-3">Bloque</th>
                         <th className="py-2 pr-3">Tipo</th>
@@ -347,11 +372,11 @@ function MetricsSection({ metrics, leftBorderClass }) {
                         <th className="py-2 pr-3">Línea</th>
                       </tr>
                     </thead>
-                    <tbody className="text-gray-800">
+                    <tbody className="text-gray-800 dark:text-neutral-200">
                       {topBlocks.map((b, idx) => (
                         <tr
                           key={`${b.name || "block"}-${idx}`}
-                          className="border-t border-gray-200"
+                          className="border-t border-gray-200 dark:border-neutral-700"
                         >
                           <td className="py-2 pr-3 font-medium">
                             {String(b.name || "—")}
@@ -369,7 +394,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
                 </div>
               )}
 
-              <p className="mt-2 text-xs text-gray-600">
+              <p className="mt-2 text-xs text-gray-600 dark:text-neutral-300">
                 CC más alto → lógica más compleja (más difícil de mantener).
               </p>
             </div>
@@ -387,9 +412,16 @@ function MetricsSection({ metrics, leftBorderClass }) {
  */
 function MetricItem({ label, value }) {
   return (
-    <div className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
-      <p className="text-xs font-semibold text-gray-600">{label}</p>
-      <p className="text-sm font-medium text-gray-900">{value ?? "-"}</p>
+    <div className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5 dark:border-neutral-700 dark:bg-neutral-950/40">
+      
+      <p className="text-xs font-semibold text-gray-600 dark:text-neutral-300">
+        {label}
+      </p>
+
+      <p className="text-sm font-medium text-gray-900 dark:text-neutral-100">
+        {value ?? "-"}
+      </p>
+
     </div>
   );
 }
@@ -403,7 +435,8 @@ function IssueLabel({ label }) {
       className={`
         inline-flex items-center rounded-full border 
         border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-semibold text-gray-700
-    `}
+        dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-200
+      `}
     >
       {label}
     </span>

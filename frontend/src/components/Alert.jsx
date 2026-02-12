@@ -12,7 +12,7 @@ import ErrorIcon from "./icons/ErrorIcon";
  * - children: contenido (mensaje)
  * - onClose: function (opcional) -> si se pasa, muestra botón de cerrar
  */
-export default function Alert({ variant = "info", title, children}) {
+export default function Alert({ variant = "info", title, children }) {
 
   // Estilos según el tipo de alerta
   const styles = getVariantStyles(variant);
@@ -48,37 +48,37 @@ export default function Alert({ variant = "info", title, children}) {
 function getVariantStyles(variant) {
   if (variant === "error") {
     return {
-      container: "border-red-200 bg-red-50",
-      title: "text-red-900",
-      text: "text-red-800",
-      icon: "text-red-700",
+      container: "border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/35",
+      title: "text-red-900 dark:text-red-200",
+      text: "text-red-800 dark:text-red-200/90",
+      icon: "text-red-700 dark:text-red-300",
     };
   }
 
   if (variant === "warning") {
     return {
-      container: "border-yellow-200 bg-yellow-50",
-      title: "text-yellow-900",
-      text: "text-yellow-800",
-      icon: "text-yellow-700",
+      container: "border-yellow-200 bg-yellow-50 dark:border-amber-900/50 dark:bg-amber-950/30",
+      title: "text-yellow-900 dark:text-amber-200",
+      text: "text-yellow-800 dark:text-amber-200/90",
+      icon: "text-yellow-700 dark:text-amber-300",
     };
   }
 
   if (variant === "success") {
     return {
-      container: "border-green-200 bg-green-50",
-      title: "text-green-900",
-      text: "text-green-800",
-      icon: "text-green-700",
+      container: "border-green-200 bg-green-50 dark:border-emerald-900/50 dark:bg-emerald-950/30",
+      title: "text-green-900 dark:text-emerald-200",
+      text: "text-green-800 dark:text-emerald-200/90",
+      icon: "text-green-700 dark:text-emerald-300",
     };
   }
 
   // info (por defecto)
   return {
-    container: "border-blue-200 bg-blue-50",
-    title: "text-blue-900",
-    text: "text-blue-800",
-    icon: "text-blue-700",
+    container: "border-blue-200 bg-blue-50 dark:border-sky-900/50 dark:bg-sky-950/30",
+    title: "text-blue-900 dark:text-sky-200",
+    text: "text-blue-800 dark:text-sky-200/90",
+    icon: "text-blue-700 dark:text-sky-300",
   };
 }
 

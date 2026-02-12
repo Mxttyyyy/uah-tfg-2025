@@ -130,14 +130,18 @@ export default function OptionsPanel({ options, onChange }) {
         "w-full flex flex-col min-h-0",
         // Evita doble scrollbar
         "overflow-hidden",
+        // Dark
+        "dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none",
       ].join(" ")}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-gray-900">Opciones</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Selecciona qué análisis ejecutar. Si no seleccionas ninguno,
-            se ejecutarán todos.
+          <h2 className="text-base font-semibold text-gray-900 dark:text-neutral-100">
+            Opciones
+          </h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-neutral-300">
+            Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se
+            ejecutarán todos.
           </p>
         </div>
 
@@ -151,6 +155,8 @@ export default function OptionsPanel({ options, onChange }) {
             text-sm font-semibold text-gray-700
             hover:bg-gray-100 hover:text-gray-900 transition
             whitespace-nowrap cursor-pointer
+            dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200
+            dark:hover:bg-neutral-700 dark:hover:text-neutral-100
           `}
           title="Restaura selección, timeout y opciones avanzadas a valores por defecto"
         >
@@ -202,6 +208,8 @@ export default function OptionsPanel({ options, onChange }) {
           px-3 py-1.5 text-sm font-semibold text-gray-700
           hover:bg-gray-100 hover:text-gray-900 active:bg-blue-100
           transition cursor-pointer mt-4 mb-1 w-full
+          dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200
+          dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:active:bg-sky-900/30
         `}
         title="Restaura selección, timeout y opciones avanzadas a valores por defecto"
       >
@@ -213,11 +221,13 @@ export default function OptionsPanel({ options, onChange }) {
         className={`
           mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3
           transition hover:bg-blue-50/70 hover:border-blue-200
+          dark:border-neutral-700 dark:bg-neutral-950/40
+          dark:hover:bg-sky-950/40 dark:hover:border-sky-900/60
         `}
       >
         <label
           htmlFor="opt-timeout"
-          className="block text-sm font-medium text-gray-900"
+          className="block text-sm font-medium text-gray-900 dark:text-neutral-100"
         >
           Timeout (segundos)
         </label>
@@ -235,12 +245,17 @@ export default function OptionsPanel({ options, onChange }) {
               className={`
                 w-20 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
                 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+                dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100
+                dark:placeholder:text-neutral-500 dark:[color-scheme:dark]
+                dark:focus:border-sky-400 dark:focus:ring-sky-900/40
               `}
             />
-            <span className="text-sm text-gray-500">s</span>
+            <span className="text-sm text-gray-500 dark:text-neutral-400">
+              s
+            </span>
           </div>
 
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-neutral-300">
             Tiempo máximo de ejecución por herramienta.
           </p>
         </div>
@@ -248,18 +263,17 @@ export default function OptionsPanel({ options, onChange }) {
 
       {/* Separador */}
       <div className="my-3 flex items-center gap-3" aria-hidden="true">
-        <div className="h-px flex-1 bg-gray-200" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+        <div className="h-px flex-1 bg-gray-200 dark:bg-neutral-700" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-neutral-400">
           Opciones avanzadas
         </span>
-        <div className="h-px flex-1 bg-gray-200" />
+        <div className="h-px flex-1 bg-gray-200 dark:bg-neutral-700" />
       </div>
 
       {/* Opciones por herramienta */}
       <div className="flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
-        
         {/* Escondemos el texto en resoluciones menores */}
-        <p className="hidden 2xl:block text-sm text-gray-600">
+        <p className="hidden 2xl:block text-sm text-gray-600 dark:text-neutral-300">
           Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture,
           Mypy).
         </p>
@@ -268,16 +282,22 @@ export default function OptionsPanel({ options, onChange }) {
           className={`
             rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-cyan-300 border-l-4 hover:border-l-cyan-300
+            dark:border-l-cyan-300 dark:border-neutral-700 dark:bg-neutral-950
+            dark:hover:bg-sky-900/10
           `}
         >
           <summary
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+              dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
             <span>Ruff (Estilo)</span>
-            <span className="text-gray-500" aria-hidden="true">
+            <span
+              className="text-gray-500 dark:text-neutral-400"
+              aria-hidden="true"
+            >
               ▾
             </span>
           </summary>
@@ -295,16 +315,22 @@ export default function OptionsPanel({ options, onChange }) {
           className={`
             rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-purple-300 border-l-4 hover:border-l-purple-300
+            dark:border-l-purple-300 dark:border-neutral-700 dark:bg-neutral-950
+            dark:hover:bg-sky-900/10
           `}
         >
           <summary
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+              dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
             <span>Bandit (Seguridad)</span>
-            <span className="text-gray-500" aria-hidden="true">
+            <span
+              className="text-gray-500 dark:text-neutral-400"
+              aria-hidden="true"
+            >
               ▾
             </span>
           </summary>
@@ -322,16 +348,22 @@ export default function OptionsPanel({ options, onChange }) {
           className={`
             rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-amber-300 border-l-4 hover:border-l-amber-300
+            dark:border-l-amber-300 dark:border-neutral-700 dark:bg-neutral-950
+            dark:hover:bg-sky-900/10
           `}
         >
           <summary
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+              dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
             <span>Radon (Métricas)</span>
-            <span className="text-gray-500" aria-hidden="true">
+            <span
+              className="text-gray-500 dark:text-neutral-400"
+              aria-hidden="true"
+            >
               ▾
             </span>
           </summary>
@@ -347,16 +379,22 @@ export default function OptionsPanel({ options, onChange }) {
           className={`
             rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-emerald-300 border-l-4 hover:border-l-emerald-300
-            `}
+            dark:border-l-emerald-300 dark:border-neutral-700 dark:bg-neutral-950
+            dark:hover:bg-sky-900/10
+          `}
         >
           <summary
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+              dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
             <span>Vulture (Código Muerto)</span>
-            <span className="text-gray-500" aria-hidden="true">
+            <span
+              className="text-gray-500 dark:text-neutral-400"
+              aria-hidden="true"
+            >
               ▾
             </span>
           </summary>
@@ -372,18 +410,24 @@ export default function OptionsPanel({ options, onChange }) {
 
         <details
           className={`
-            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200 
+            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-orange-400 border-l-4 hover:border-l-orange-400
-            `}
+            dark:border-l-orange-400 dark:border-neutral-700 dark:bg-neutral-950
+            dark:hover:bg-sky-900/10
+          `}
         >
           <summary
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+              dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
             <span>Mypy (Tipos)</span>
-            <span className="text-gray-500" aria-hidden="true">
+            <span
+              className="text-gray-500 dark:text-neutral-400"
+              aria-hidden="true"
+            >
               ▾
             </span>
           </summary>
@@ -415,9 +459,12 @@ function CheckboxRow({ id, label, checked, onChange }) {
         type="checkbox"
         checked={!!checked}
         onChange={onChange}
-        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200"
+        className={`
+          h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200
+          dark:border-neutral-600 dark:bg-neutral-900 dark:text-sky-500 dark:focus:ring-sky-900/40
+        `}
       />
-      <label htmlFor={id} className="text-sm font-medium text-gray-900">
+      <label htmlFor={id} className="text-sm font-medium text-gray-900 dark:text-neutral-100">
         {label}
       </label>
     </div>

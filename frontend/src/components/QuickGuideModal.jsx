@@ -54,10 +54,11 @@ export default function QuickGuideModal({ open, onClose }) {
 
   return (
     <div
-      className="
+      className={`
         fixed inset-0 z-50 flex items-center justify-center p-4
         bg-black/50 backdrop-blur-sm
-      "
+        dark:bg-black/70
+      `}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -65,35 +66,40 @@ export default function QuickGuideModal({ open, onClose }) {
     >
       {/* Contenido del modal */}
       <div
-        className="
-          relative w-full max-w-3xl rounded-2xl bg-white
-          border border-gray-200 shadow-2xl max-h-[90vh]
+        className={`
+          relative w-full max-w-3xl rounded-2xl
+          bg-white dark:bg-neutral-950
+          border border-gray-200 dark:border-neutral-800
+          shadow-2xl max-h-[90vh]
           p-0 animate-fade-in
           flex flex-col
-        "
+        `}
         onClick={(e) => e.stopPropagation()}
       >
         {/* -------------------- HEADER FIJO -------------------- */}
-        <div className="shrink-0 px-6 pt-6 sm:px-8 sm:pt-8 bg-white rounded-2xl">
+        <div className="shrink-0 px-6 pt-6 sm:px-8 sm:pt-8 bg-white dark:bg-neutral-950 rounded-2xl">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-100">
                 Guía rápida
               </h2>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-gray-600 dark:text-neutral-300">
                 Cómo usar{" "}
-                <span className="font-semibold text-blue-700 ">Analyth</span> en
-                pocos pasos.
+                <span className="font-semibold text-blue-700 dark:text-sky-400">
+                  Analyth
+                </span>{" "}
+                en pocos pasos.
               </p>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="
-                rounded-lg text-gray-500 transition
-                hover:text-red-700 cursor-pointer text-lg
-              "
+              className={`
+                rounded-lg text-gray-500 dark:text-neutral-400 transition
+                hover:text-red-700 dark:hover:text-red-400 cursor-pointer text-lg
+                focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-sky-700/40
+              `}
               aria-label="Cerrar"
               title="Cerrar"
             >
@@ -102,14 +108,14 @@ export default function QuickGuideModal({ open, onClose }) {
           </div>
 
           {/* Intro */}
-          <p className="mt-4 text-sm text-gray-700 leading-relaxed">
+          <p className="mt-4 text-sm text-gray-700 dark:text-neutral-300 leading-relaxed">
             Esta herramienta analiza código de forma estática para detectar
             posibles problemas de estilo, seguridad, complejidad, tipado y
             código sin uso.
           </p>
 
           {/* Separador suave */}
-          <div className="mt-5 h-px w-full bg-gray-200" />
+          <div className="mt-5 h-px w-full bg-gray-200 dark:bg-neutral-800" />
         </div>
 
         {/* Pasos */}
@@ -117,14 +123,26 @@ export default function QuickGuideModal({ open, onClose }) {
           {steps.map((s, idx) => (
             <div
               key={s.title}
-              className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3"
+              className={`
+                flex items-start gap-3 rounded-xl
+                border border-gray-200 dark:border-neutral-800
+                bg-gray-50 dark:bg-neutral-900/60
+                p-3
+              `}
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+              <div 
+                className={`
+                  flex h-8 w-8 shrink-0 items-center justify-center rounded-full
+                  bg-blue-600 dark:bg-sky-500 text-sm font-bold text-white
+                `}
+              >
                 {idx + 1}
               </div>
 
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-gray-900">{s.title}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
+                  {s.title}
+                </p>
 
                 {/* Texto del step en bullets por frases */}
                 <div className="mt-1 space-y-1">
@@ -133,8 +151,8 @@ export default function QuickGuideModal({ open, onClose }) {
                     .map((t) => t.trim())
                     .filter(Boolean)
                     .map((sentence, i) => (
-                      <div key={i} className="flex gap-2 text-sm text-gray-700">
-                        <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-gray-600" />
+                      <div key={i} className="flex gap-2 text-sm text-gray-700 dark:text-neutral-300">
+                        <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-gray-600 dark:bg-neutral-400" />
                         <p className="leading-relaxed">
                           {/[.!?]$/.test(sentence) ? sentence : `${sentence}.`}
                         </p>
@@ -147,11 +165,17 @@ export default function QuickGuideModal({ open, onClose }) {
         </div>
 
         {/* -------------------- FOOTER FIJO -------------------- */}
-        <div className="shrink-0 px-6 pb-6 sm:px-8 sm:pb-8 bg-white rounded-2xl">
-          <div className="h-px w-full bg-gray-200" />
+        <div className="shrink-0 px-6 pb-6 sm:px-8 sm:pb-8 bg-white dark:bg-neutral-950 rounded-2xl">
+          <div className="h-px w-full bg-gray-200 dark:bg-neutral-800" />
 
           {/* Nota */}
-          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+          <div
+            className={`
+              mt-4 rounded-xl border border-blue-200 dark:border-sky-900/50
+              bg-blue-50 dark:bg-sky-950/40
+              p-3 text-sm text-blue-900 dark:text-sky-200
+            `}
+          >
             <span className="font-semibold">Nota:</span> si no seleccionas
             ningún análisis, se ejecutarán todos por defecto.
           </div>
@@ -161,11 +185,11 @@ export default function QuickGuideModal({ open, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="
-                rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm
-                hover:bg-blue-700 transition cursor-pointer
-                focus:outline-none focus:ring-2 focus:ring-blue-200
-              "
+              className={`
+                rounded-xl bg-blue-600 dark:bg-sky-500 px-5 py-2 text-sm font-semibold text-white shadow-sm
+                hover:bg-blue-700 dark:hover:bg-sky-400 transition cursor-pointer
+                focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-sky-700/40
+              `}
             >
               Entendido
             </button>

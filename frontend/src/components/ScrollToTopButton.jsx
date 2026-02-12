@@ -14,6 +14,7 @@ export default function ScrollToTopButton({
   showAfterPx = 500,
   anchorId = "top",
 }) {
+  
   // Controla la visibilidad del botón en función del scroll
   const [visible, setVisible] = useState(false);
 
@@ -57,9 +58,14 @@ export default function ScrollToTopButton({
       onClick={scrollToTop}
       aria-label="Subir arriba"
       className={`
-        fixed bottom-6 xl:bottom-10 xl:right-10 z-50 rounded-full border border-gray-500
-        bg-white p-3.5 shadow-lg transition cursor-pointer
-        hover:-translate-y-1.5 hover:text-blue-600 hover:ring-blue-600 hover:ring-1 hover:shadow-xl focus:outline-none 
+        fixed bottom-6 right-6 xl:bottom-10 xl:right-10 z-50
+        rounded-full border border-gray-400 bg-white p-3.5 text-gray-800 shadow-lg
+        transition cursor-pointer
+        hover:-translate-y-1.5 hover:text-blue-600 hover:ring-1 hover:ring-blue-600 hover:shadow-xl
+        focus:outline-none focus:ring-2 focus:ring-blue-200
+        dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-200
+        dark:hover:text-sky-400 dark:hover:ring-sky-500
+        dark:focus:ring-sky-700/40
       `}
     >
       {/* Icono de flecha hacia arriba */}
@@ -69,7 +75,7 @@ export default function ScrollToTopButton({
         viewBox="0 0 24 24"
         strokeWidth="2"
         stroke="currentColor"
-        class="size-6"
+        className="size-6"
       >
         <path
           strokeLinecap="round"
