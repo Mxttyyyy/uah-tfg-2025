@@ -98,7 +98,7 @@ function SelectInput({ id, label, value, onChange, options, hint }) {
         `}
       >
         {options.map((o) => (
-          <option key={o.value} value={o.value}>
+          <option key={o.value} value={o.value} className="dark:bg-neutral-900">
             {o.label}
           </option>
         ))}

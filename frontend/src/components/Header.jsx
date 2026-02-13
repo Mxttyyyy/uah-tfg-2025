@@ -160,7 +160,7 @@ export default function Header() {
           className={`
             h-[2px] w-full bg-gradient-to-r from-blue-700
             via-sky-400 to-blue-700 opacity-80
-            dark:opacity-70 dark:from-neutral-800 dark:via-neutral-500 dark:to-neutral-800
+            dark:opacity-70 dark:from-sky-950 dark:via-sky-500 dark:to-sky-950
           `}
         />
       </header>

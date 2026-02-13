@@ -17,13 +17,13 @@ export default function Spinner({ size = "md", label = "Cargando..." }) {
       <SpinnerIcon
         className={`
           animate-spin ${sizeClass}
-          text-gray-500
+          text-gray-300
           dark:text-neutral-300
         `}
       />
       
       {/* Mensaje */}
-      <span className="text-sm text-gray-600 dark:text-neutral-300">
+      <span className="text-sm text-gray-300 dark:text-neutral-300">
         {label}
       </span>
     </div>

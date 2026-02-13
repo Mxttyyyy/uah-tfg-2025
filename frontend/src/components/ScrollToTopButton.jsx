@@ -58,7 +58,7 @@ export default function ScrollToTopButton({
       onClick={scrollToTop}
       aria-label="Subir arriba"
       className={`
-        fixed bottom-6 right-6 xl:bottom-10 xl:right-10 z-50
+        fixed bottom-6 right-6 2xl:bottom-10 2xl:right-10 z-50
         rounded-full border border-gray-400 bg-white p-3.5 text-gray-800 shadow-lg
         transition cursor-pointer
         hover:-translate-y-1.5 hover:text-blue-600 hover:ring-1 hover:ring-blue-600 hover:shadow-xl

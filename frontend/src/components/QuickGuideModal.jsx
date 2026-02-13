@@ -69,7 +69,7 @@ export default function QuickGuideModal({ open, onClose }) {
         className={`
           relative w-full max-w-3xl rounded-2xl
           bg-white dark:bg-neutral-950
-          border border-gray-200 dark:border-neutral-800
+          border border-gray-200 dark:border-neutral-700/70
           shadow-2xl max-h-[90vh]
           p-0 animate-fade-in
           flex flex-col

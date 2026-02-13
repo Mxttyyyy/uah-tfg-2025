@@ -181,7 +181,7 @@ function NumberInput({ id, label, value, min, max, onChange, hint }) {
           mt-2 w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
           outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
           dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-100 dark:placeholder:text-neutral-500
-          dark:focus:border-sky-500 dark:focus:ring-sky-900/40
+          dark:focus:border-sky-500 dark:focus:ring-sky-900/40 dark:[color-scheme:dark]
         `}
       />
 

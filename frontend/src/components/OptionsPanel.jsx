@@ -460,7 +460,7 @@ function CheckboxRow({ id, label, checked, onChange }) {
         checked={!!checked}
         onChange={onChange}
         className={`
-          h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200
+          h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200 dark:[color-scheme:dark]
           dark:border-neutral-600 dark:bg-neutral-900 dark:text-sky-500 dark:focus:ring-sky-900/40
         `}
       />
