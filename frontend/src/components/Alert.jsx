@@ -48,7 +48,7 @@ export default function Alert({ variant = "info", title, children }) {
 function getVariantStyles(variant) {
   if (variant === "error") {
     return {
-      container: "border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/35",
+      container: "border-red-200 bg-red-100 dark:border-red-900/50 dark:bg-red-950/35",
       title: "text-red-900 dark:text-red-200",
       text: "text-red-800 dark:text-red-200/90",
       icon: "text-red-700 dark:text-red-300",
@@ -66,7 +66,7 @@ function getVariantStyles(variant) {
 
   if (variant === "success") {
     return {
-      container: "border-green-200 bg-green-50 dark:border-emerald-900/50 dark:bg-emerald-950/30",
+      container: "border-green-200 bg-green-100 dark:border-emerald-900/50 dark:bg-emerald-950/40",
       title: "text-green-900 dark:text-emerald-200",
       text: "text-green-800 dark:text-emerald-200/90",
       icon: "text-green-700 dark:text-emerald-300",

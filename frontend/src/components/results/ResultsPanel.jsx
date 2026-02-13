@@ -167,7 +167,7 @@ export default function ResultsPanel({
 
           {/* Ver detalles */}
           {typeof error.message === "string" && error.message.trim() && (
-            <details className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
+            <details className="mt-3 rounded-lg border border-red-200 bg-red-100 p-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
               <summary className="cursor-pointer font-medium text-gray-800 hover:text-red-900 dark:text-neutral-100 dark:hover:text-red-200">
                 Ver detalles
               </summary>
@@ -213,7 +213,7 @@ export default function ResultsPanel({
           emptyText="Sin issues de estilo."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-cyan-300 border-l-4 hover:border-l-cyan-300"
+          leftBorderClass="border-l-cyan-300 border-l-4 hover:border-l-cyan-300 dark:border-l-cyan-300 border-l-4 dark:hover:border-l-cyan-300"
         />
 
         <IssueList
@@ -223,12 +223,12 @@ export default function ResultsPanel({
           emptyText="Sin issues de seguridad."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-purple-300 border-l-4 hover:border-l-purple-300"
+          leftBorderClass="border-l-purple-300 border-l-4 hover:border-l-purple-300 dark:border-l-purple-300 border-l-4 dark:hover:border-l-purple-300"
         />
 
         <MetricsSection
           metrics={metrics}
-          leftBorderClass="border-l-amber-300 border-l-4 hover:border-l-amber-300"
+          leftBorderClass="border-l-amber-300 border-l-4 hover:border-l-amber-300 dark:border-l-amber-300 border-l-4 dark:hover:border-l-amber-300"
         />
 
         <IssueList
@@ -238,7 +238,7 @@ export default function ResultsPanel({
           emptyText="Sin avisos de código muerto."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-emerald-300 border-l-4 hover:border-l-emerald-300"
+          leftBorderClass="border-l-emerald-300 border-l-4 hover:border-l-emerald-300 dark:border-l-emerald-300 border-l-4 dark:hover:border-l-emerald-300"
         />
 
         <IssueList
@@ -248,7 +248,7 @@ export default function ResultsPanel({
           emptyText="Sin issues de tipado."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-orange-400 border-l-4 hover:border-l-orange-400"
+          leftBorderClass="border-l-orange-400 border-l-4 hover:border-l-orange-400 dark:border-l-orange-400 border-l-4 dark:hover:border-l-orange-400"
         />
       </div>
     </section>
@@ -434,7 +434,7 @@ function IssueLabel({ label }) {
     <span
       className={`
         inline-flex items-center rounded-full border 
-        border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-semibold text-gray-700
+        border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700
         dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-200
       `}
     >

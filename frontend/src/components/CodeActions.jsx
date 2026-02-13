@@ -74,8 +74,8 @@ export default function CodeActions({
               outline-none transition
               hover:bg-gray-50
               focus:border-blue-500 focus:ring-1 focus:ring-blue-200
-              dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100
-              dark:hover:bg-neutral-900
+              dark:border-neutral-700 dark:bg-neutral-800/30 dark:text-neutral-100
+              dark:hover:bg-neutral-800
               dark:focus:border-sky-400 dark:focus:ring-sky-900/40
             `}
           >
@@ -103,8 +103,8 @@ export default function CodeActions({
               border-gray-300 bg-white text-gray-900
               hover:bg-gray-50 cursor-pointer active:bg-blue-100
               disabled:cursor-not-allowed disabled:opacity-50
-              dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100
-              dark:hover:bg-neutral-700 dark:active:bg-sky-900/30
+              dark:border-neutral-700 dark:bg-neutral-800/30 dark:text-neutral-100
+              dark:hover:bg-neutral-800 dark:active:bg-sky-900/30
             `}
           >
             Cargar ejemplo
@@ -119,8 +119,8 @@ export default function CodeActions({
               border-gray-300 bg-white text-gray-900
               hover:bg-gray-50 cursor-pointer active:bg-blue-100
               disabled:cursor-not-allowed disabled:opacity-50
-              dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100
-              dark:hover:bg-neutral-700 dark:active:bg-sky-900/30
+              dark:border-neutral-700 dark:bg-neutral-800/30 dark:text-neutral-100
+              dark:hover:bg-neutral-800 dark:active:bg-sky-900/30
             `}
           >
             Limpiar

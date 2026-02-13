@@ -103,9 +103,9 @@ function SummaryCard({
 }) {
   const severityStyles = {
     neutral: "border-gray-300 bg-gray-50/80 dark:border-neutral-700 dark:bg-neutral-950/30",
-    info: "border-blue-300 bg-blue-100/50 dark:border-sky-900/50 dark:bg-sky-950/30",
-    warning: "border-amber-300 bg-amber-100/50 dark:border-amber-900/50 dark:bg-amber-950/30",
-    error: "border-red-300 bg-red-100/50 dark:border-red-900/50 dark:bg-red-950/30",
+    info: "border-blue-300 bg-blue-100/80 dark:border-sky-900/50 dark:bg-sky-950/50",
+    warning: "border-amber-300 bg-amber-100/80 dark:border-amber-900/50 dark:bg-amber-950/50",
+    error: "border-red-300 bg-red-100/80 dark:border-red-900/50 dark:bg-red-950/40",
   };
 
   return (
@@ -121,7 +121,7 @@ function SummaryCard({
         selected ? "-translate-y-[10px] shadow-md border-2 dark:shadow-none" : "",
         
         // Focus visible en dark también
-        "focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-sky-900/40",
+        "focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-sky-900/20",
       ].join(" ")}
     >
       <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-neutral-300">

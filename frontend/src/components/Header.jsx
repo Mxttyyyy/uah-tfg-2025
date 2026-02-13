@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import QuickGuideModal from "./QuickGuideModal";
+import { useDarkMode } from "../utils/useDarkMode";
 /**
  * Cabecera principal de la web.
  *
@@ -9,34 +10,18 @@ import QuickGuideModal from "./QuickGuideModal";
 export default function Header() {
   const [showGuide, setShowGuide] = useState(false);
 
-  // Estado del tema (true => dark)
-  const [isDark, setIsDark] = useState(false);
-
-  // Inicializa el tema al montar el componente (localStorage -> prefers-color-scheme)
-  useEffect(() => {
-    const stored = localStorage.getItem("theme"); // "dark" | "light" | null
-    const prefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    const shouldBeDark = stored ? stored === "dark" : prefersDark;
-
-    setIsDark(shouldBeDark);
-    document.documentElement.classList.toggle("dark", shouldBeDark);
-  }, []);
-
-  function toggleTheme() {
-    setIsDark((prev) => {
-      const next = !prev;
-      document.documentElement.classList.toggle("dark", next);
-      localStorage.setItem("theme", next ? "dark" : "light");
-      return next;
-    });
-  }
+  // Tema oscuro
+  const { isDark, toggleDark } = useDarkMode();
 
   return (
     <>
-      <header className="relative bg-white/70 shadow-sm dark:bg-neutral-950/70 dark:shadow-none">
+      <header
+        className={`
+          shadow-sm dark:shadow-none
+          dark:bg-[url('/fondo-dark.png')] dark:bg-black/90 dark:bg-blend-darken
+          bg-blend-soft-light bg-gray-50/95 bg-[url('/fondo-light.png')]
+        `}
+      >
         {/* Glow azul animado bajo el header */}
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-6 header-glow"
@@ -50,12 +35,19 @@ export default function Header() {
             <a
               href="#"
               aria-label="Homepage"
-              className="flex items-center transition-transform duration-300 hover:scale-110"
+              className="flex items-center transition-transform duration-300 hover:scale-105"
             >
               <img
-                src="/analyth.png"
+                src="/analyth-light.png"
                 alt="Logo"
-                className="h-25 mt-2.5 w-auto"
+                className="h-25 mt-2.5 w-auto dark:hidden"
+              />
+
+              {/* Logo en darkmode */}
+              <img
+                src="/analyth-dark.png"
+                alt="Logo"
+                className="h-25 mt-2.5 w-auto hidden dark:block"
               />
             </a>
 
@@ -97,13 +89,13 @@ export default function Header() {
 
               {/* Separador del toggle */}
               <span
-                className="h-8 w-px bg-gray-300 dark:bg-neutral-700"
+                className="h-8 w-px bg-gray-400/70 dark:bg-neutral-700"
                 aria-hidden="true"
               />
 
               <button
                 type="button"
-                onClick={toggleTheme}
+                onClick={toggleDark}
                 className={`
                       inline-flex items-center gap-2 rounded-full
                       border border-gray-200 bg-gray-100 px-4 py-1.5
@@ -168,7 +160,7 @@ export default function Header() {
           className={`
             h-[2px] w-full bg-gradient-to-r from-blue-700
             via-sky-400 to-blue-700 opacity-80
-            dark:opacity-60
+            dark:opacity-70 dark:from-neutral-800 dark:via-neutral-500 dark:to-neutral-800
           `}
         />
       </header>

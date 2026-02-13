@@ -44,7 +44,7 @@ export default function IssueList({
         rounded-lg border border-gray-200 hover:border-blue-200
         bg-gray-50/60 hover:bg-blue-50/80 transition ${leftBorderClass}
         dark:border-neutral-700 dark:bg-neutral-950/30
-        dark:hover:border-sky-900/60 dark:hover:bg-sky-950/30
+        dark:hover:border-sky-900/60 dark:hover:bg-neutral-800/50 
       `}
     >
       <summary
@@ -77,7 +77,7 @@ export default function IssueList({
             {emptyText}
           </div>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-4">
             {sortedIssues.map((issue, index) => (
               <li key={issueKey(issue, index)}>
                 <IssueCard issue={issue} onSelect={onIssueSelect} />
@@ -172,7 +172,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
 
       {/* Sugerencia */}
       {suggestion ? (
-        <div className="mt-3 rounded-md border border-blue-100 bg-blue-50/50 px-3 py-2 dark:border-sky-900/50 dark:bg-sky-950/30">
+        <div className="mt-3 rounded-md border border-blue-100 bg-blue-50/50 px-3 py-2 dark:border-sky-900/50 dark:bg-sky-950/20">
           <p className="text-xs font-semibold text-blue-900 dark:text-sky-200">
             Sugerencia
           </p>
@@ -223,7 +223,7 @@ function IssueLabel({ label }) {
     <span
       className={`
         inline-flex items-center rounded-full border border-gray-200
-        bg-gray-50 px-2 py-0.5 text-xs font-semibold text-gray-700
+        bg-gray-50 px-2.5 py-0.5 text-xs font-semibold text-gray-700
         dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-200
       `}
     >
@@ -238,11 +238,11 @@ function IssueLabel({ label }) {
 function SeverityLabel({ severity }) {
   const map = {
     error:
-      "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200",
+      "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200",
     warning:
-      "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200",
+      "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200",
     info:
-      "border-blue-200 bg-blue-50 text-blue-800 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-200",
+      "border-blue-200 bg-blue-50 text-blue-800 dark:border-sky-900/50 dark:bg-sky-950/40 dark:text-sky-200",
   };
 
   const label =
@@ -257,7 +257,7 @@ function SeverityLabel({ severity }) {
     <span
       className={`
         inline-flex items-center rounded-full border
-        px-2 py-0.5 text-xs font-bold ${severityClass}
+        px-2.5 py-0.5 text-xs font-bold ${severityClass}
       `}
     >
       {label}

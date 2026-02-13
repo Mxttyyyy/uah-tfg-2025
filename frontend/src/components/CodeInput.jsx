@@ -34,7 +34,7 @@ export default function CodeInput({
       className={`
         rounded-xl border border-gray-300 bg-white p-4 shadow-sm
         sm:p-6 w-full hover:shadow-lg hover:-translate-y-[2px] transition
-        dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none
+        dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none 
       `}
     >
       {/* Título del contenedor y contador de líneas */}
@@ -61,7 +61,7 @@ export default function CodeInput({
         spellCheck={false}
         className={[
           "w-full overflow-auto scrollbar-modern resize-y rounded-lg",
-          "border border-gray-200 bg-gray-50 focus:bg-white",
+          "border border-gray-200 bg-gray-100 focus:bg-white",
           "px-3 py-3 text-sm text-gray-900 transition",
           "min-h-[clamp(340px,40vh,420px)]",
           "h-[clamp(420px,53vh,680px)]",

@@ -125,13 +125,13 @@ export default function App() {
   <div
     id="top"
     className={`
-      min-h-screen
-      bg-gradient-to-b from-gray-50 via-white to-gray-50
-      dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900
-      dark:text-neutral-100
+      min-h-screen dark:bg-[url('/fondo-dark.png')]
+      bg-[url('/fondo-light.png')] bg-blend-soft-light bg-gray-50/97 
+      dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950
+      dark:text-neutral-100 dark:bg-black/94 dark:bg-blend-darken 
     `}
   >
-    <Header />
+    <Header/>
 
     <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8 2xl:max-w-[1660px] 2xl:px-10">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_clamp(420px,35vw,650px)]">

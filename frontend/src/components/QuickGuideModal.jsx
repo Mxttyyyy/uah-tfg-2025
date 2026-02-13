@@ -130,10 +130,11 @@ export default function QuickGuideModal({ open, onClose }) {
                 p-3
               `}
             >
+              {/* Número de paso */}
               <div 
                 className={`
                   flex h-8 w-8 shrink-0 items-center justify-center rounded-full
-                  bg-blue-600 dark:bg-sky-500 text-sm font-bold text-white
+                  bg-blue-600 dark:bg-sky-600 text-sm font-bold text-white
                 `}
               >
                 {idx + 1}
@@ -186,8 +187,8 @@ export default function QuickGuideModal({ open, onClose }) {
               type="button"
               onClick={onClose}
               className={`
-                rounded-xl bg-blue-600 dark:bg-sky-500 px-5 py-2 text-sm font-semibold text-white shadow-sm
-                hover:bg-blue-700 dark:hover:bg-sky-400 transition cursor-pointer
+                rounded-xl bg-blue-600 dark:bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm
+                hover:bg-blue-700 dark:hover:bg-sky-500 transition cursor-pointer
                 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-sky-700/40
               `}
             >

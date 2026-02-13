@@ -208,8 +208,8 @@ export default function OptionsPanel({ options, onChange }) {
           px-3 py-1.5 text-sm font-semibold text-gray-700
           hover:bg-gray-100 hover:text-gray-900 active:bg-blue-100
           transition cursor-pointer mt-4 mb-1 w-full
-          dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200
-          dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:active:bg-sky-900/30
+          dark:border-neutral-700 dark:bg-neutral-800/30 dark:text-neutral-200
+          dark:hover:bg-neutral-800 dark:hover:text-neutral-100 dark:active:bg-sky-900/30
         `}
         title="Restaura selección, timeout y opciones avanzadas a valores por defecto"
       >
@@ -219,10 +219,10 @@ export default function OptionsPanel({ options, onChange }) {
       {/* Timeout */}
       <div
         className={`
-          mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3
+          mt-4 rounded-lg border border-gray-200 bg-gray-100/50 p-3
           transition hover:bg-blue-50/70 hover:border-blue-200
           dark:border-neutral-700 dark:bg-neutral-950/40
-          dark:hover:bg-sky-950/40 dark:hover:border-sky-900/60
+          dark:hover:bg-neutral-800/50 dark:hover:border-sky-900/60
         `}
       >
         <label
@@ -280,10 +280,10 @@ export default function OptionsPanel({ options, onChange }) {
 
         <details
           className={`
-            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-cyan-300 border-l-4 hover:border-l-cyan-300
-            dark:border-l-cyan-300 dark:border-neutral-700 dark:bg-neutral-950
-            dark:hover:bg-sky-900/10
+            dark:border-l-cyan-300 dark:border-neutral-700 dark:bg-neutral-950/50
+            dark:hover:bg-neutral-800/50 dark:hover:border-l-cyan-300 dark:hover:border-sky-900/60
           `}
         >
           <summary
@@ -313,10 +313,10 @@ export default function OptionsPanel({ options, onChange }) {
 
         <details
           className={`
-            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-purple-300 border-l-4 hover:border-l-purple-300
-            dark:border-l-purple-300 dark:border-neutral-700 dark:bg-neutral-950
-            dark:hover:bg-sky-900/10
+            dark:border-l-purple-300 dark:border-neutral-700 dark:bg-neutral-950/50
+            dark:hover:bg-neutral-800/50 dark:hover:border-l-purple-300 dark:hover:border-sky-900/60
           `}
         >
           <summary
@@ -346,10 +346,10 @@ export default function OptionsPanel({ options, onChange }) {
 
         <details
           className={`
-            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-amber-300 border-l-4 hover:border-l-amber-300
-            dark:border-l-amber-300 dark:border-neutral-700 dark:bg-neutral-950
-            dark:hover:bg-sky-900/10
+            dark:border-l-amber-300 dark:border-neutral-700 dark:bg-neutral-950/50
+            dark:hover:bg-neutral-800/50 dark:hover:border-l-amber-300 dark:hover:border-sky-900/60
           `}
         >
           <summary
@@ -377,10 +377,10 @@ export default function OptionsPanel({ options, onChange }) {
 
         <details
           className={`
-            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-emerald-300 border-l-4 hover:border-l-emerald-300
-            dark:border-l-emerald-300 dark:border-neutral-700 dark:bg-neutral-950
-            dark:hover:bg-sky-900/10
+            dark:border-l-emerald-300 dark:border-neutral-700 dark:bg-neutral-950/50
+            dark:hover:bg-neutral-800/50 dark:hover:border-l-emerald-300 dark:hover:border-sky-900/60
           `}
         >
           <summary
@@ -410,10 +410,10 @@ export default function OptionsPanel({ options, onChange }) {
 
         <details
           className={`
-            rounded-lg border border-gray-200 bg-gray-50/40 transition hover:border-blue-200
+            rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-orange-400 border-l-4 hover:border-l-orange-400
-            dark:border-l-orange-400 dark:border-neutral-700 dark:bg-neutral-950
-            dark:hover:bg-sky-900/10
+            dark:border-l-orange-400 dark:border-neutral-700 dark:bg-neutral-950/50
+            dark:hover:bg-neutral-800/50 dark:hover:border-l-orange-400 dark:hover:border-sky-900/60
           `}
         >
           <summary
