@@ -40,7 +40,7 @@ export default function Header() {
               <img
                 src="/analyth-light.png"
                 alt="Logo"
-                className="h-25 mt-2.5 w-auto dark:hidden"
+                className="h-13 mt-0.5 w-auto dark:hidden"
               />
 
               {/* Logo en darkmode */}

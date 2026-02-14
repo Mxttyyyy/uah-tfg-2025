@@ -1,5 +1,5 @@
 <p align="center" style="margin: 0;">
-  <img src="frontend/public/analyth-light.png" width="300" alt="Analyth  Logo" style="margin: -10px 0 0 0;" />
+  <img src="frontend/public/analyth-light.png" width="200" alt="Analyth  Logo" style="margin: -10px 0 0 0;" />
 </p>
 
 <h2 align="center" style="margin: -15px 0 20px 0;">Herramienta Web de Análisis Estático de Código</h2>
