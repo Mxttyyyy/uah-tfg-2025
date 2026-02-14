@@ -49,7 +49,7 @@ def analyze_security(
         stderr = (result.stderr or "").strip()
         if options:
             raise ValueError(
-                stderr or f"Opciones inválidas para Bandit."
+                stderr or "Opciones inválidas para Bandit."
             )
         raise RuntimeError(
             stderr or f"Bandit falló con un error (exit code {result.returncode})."
@@ -137,22 +137,23 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     # Obtenemos los campos relevantes a partir del issue sin normalizar
     rule_code = str(issue.get("test_id") or "")
     message = str(issue.get("issue_text") or "").strip()
-    filename = str(issue.get("filename") or "input.py")
+    #filename = str(issue.get("filename") or "input.py")
     line = to_int(issue.get("line_number"))
 
     bandit_sev = str(issue.get("issue_severity") or "").upper()
     severity = _severity_from_bandit(bandit_sev)
 
-    confidence = str(issue.get("issue_confidence") or "").upper()
+    confidence: Optional[str] = str(issue.get("issue_confidence") or "").upper()
     if confidence not in {"LOW", "MEDIUM", "HIGH"}:
         confidence = None
 
     # Enlace opcional a documentación adicional sobre la vulnerabilidad
     raw_help_url = issue.get("more_info")
-    if not isinstance(raw_help_url, str) or not raw_help_url.strip():
-        raw_help_url = None
+    if isinstance(raw_help_url, str) and raw_help_url.strip():
+        help_url = _normalize_bandit_help_url(raw_help_url)
+    else:
+        help_url = None
 
-    help_url = _normalize_bandit_help_url(raw_help_url)
     suggestion = _suggestion_for_bandit_rule(rule_code)
 
     return {

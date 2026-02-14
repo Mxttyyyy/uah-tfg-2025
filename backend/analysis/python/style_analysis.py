@@ -121,8 +121,10 @@ def _normalize_ruff_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     rule_code = str(issue.get("code") or "")
     message = str(issue.get("message") or "").strip()
 
-    filename = str(issue.get("filename") or "input.py")
-    location = issue.get("location") if isinstance(issue.get("location"), dict) else {}
+    #filename = str(issue.get("filename") or "input.py")
+    raw_location = issue.get("location")
+    location = raw_location if isinstance(raw_location, dict) else {}
+    
     line = to_int(location.get("row"))
     column = to_int(location.get("column"))
 

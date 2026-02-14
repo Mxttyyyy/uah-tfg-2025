@@ -69,7 +69,7 @@ def analyze_dead_code(
     issues: List[Dict[str, Any]] = []
     for line in raw.splitlines():  # splitlines() divide el output (un único string multilínea) en una lista de líneas
         parsed = _normalize_vulture_line(line.strip())
-        if parsed:
+        if parsed is not None:
             issues.append(parsed)
 
     return issues
@@ -108,7 +108,7 @@ def _build_vulture_command(filename: str, options: Dict[str, Any]) -> List[str]:
 # -----------------
 
 
-def _normalize_vulture_line(line: str) -> Dict[str, Any]:
+def _normalize_vulture_line(line: str) -> Optional[Dict[str, Any]]:
     """
     Normaliza las líneas devueltas por Vulture a un formato base.
     Se extrae la información relevante para el usuario y se descartan campos que el usuario no necesita.
@@ -124,7 +124,7 @@ def _normalize_vulture_line(line: str) -> Dict[str, Any]:
         return None
 
     # Obtenemos cada parte
-    path = parts[0].strip() or "input.py"  # Obtenemos: "input.py"
+    #path = parts[0].strip() or "input.py"  # Obtenemos: "input.py"
     line_number = to_int(parts[1].strip())  # Obtenemos: "1"
     raw_message = parts[2].strip()  # Obtenemos: "unused import 'os' (90% confidence)"
 

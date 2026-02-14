@@ -146,7 +146,7 @@ def _build_mypy_command(filename: str, options: Dict[str, Any]) -> List[str]:
         if pv.count(".") == 1 and all(part.isdigit() for part in pv.split(".")):
              cmd += ["--python-version", pv]
         else:
-            raise ValueError(f"options.types.python_version debe tener formato 'X.Y' (por ejemplo, '3.10').")
+            raise ValueError("options.types.python_version debe tener formato 'X.Y' (por ejemplo, '3.10').")
        
 
     # Modo estricto (opcional, ya que activa muchas comprobaciones adicionales)
