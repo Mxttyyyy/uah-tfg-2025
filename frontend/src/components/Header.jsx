@@ -18,8 +18,8 @@ export default function Header() {
       <header
         className={`
           shadow-sm dark:shadow-none
-          dark:bg-[url('/fondo-dark.png')] dark:bg-black/90 dark:bg-blend-darken
-          bg-blend-soft-light bg-gray-50/95 bg-[url('/fondo-light.png')]
+          dark:bg-[url('/background-dark.png')] dark:bg-black/90 dark:bg-blend-darken
+          bg-blend-soft-light bg-gray-50/95 bg-[url('/background-light.png')]
         `}
       >
         {/* Glow azul animado bajo el header */}

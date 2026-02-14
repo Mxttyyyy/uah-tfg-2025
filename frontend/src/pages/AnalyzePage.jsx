@@ -125,8 +125,8 @@ export default function App() {
   <div
     id="top"
     className={`
-      min-h-screen dark:bg-[url('/fondo-dark.png')]
-      bg-[url('/fondo-light.png')] bg-blend-soft-light bg-gray-50/97 
+      min-h-screen dark:bg-[url('/background-dark.png')]
+      bg-[url('/background-light.png')] bg-blend-soft-light bg-gray-50/97 
       dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950
       dark:text-neutral-100 dark:bg-black/94 dark:bg-blend-darken 
     `}
