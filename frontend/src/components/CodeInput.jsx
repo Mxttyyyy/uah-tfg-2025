@@ -64,8 +64,8 @@ export default function CodeInput({
           "border border-gray-200 bg-gray-100 focus:bg-white",
           "px-3 py-3 text-sm text-gray-900 transition",
           "min-h-[clamp(340px,40vh,420px)]",
-          "h-[clamp(420px,53vh,680px)]",
-          "max-h-[clamp(420px,53vh,680px)]",
+          "h-[clamp(400px,53vh,680px)]",
+          "max-h-[clamp(400px,53vh,680px)]",
           "outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 focus:shadow-md",
           "disabled:cursor-not-allowed disabled:bg-gray-50",
           // Dark

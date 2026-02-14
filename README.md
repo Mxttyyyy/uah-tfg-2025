@@ -52,11 +52,13 @@ Ambos se comunican mediante una API REST propia.
 
 ## 📦 Requisitos
 
-Para ejecutar el proyecto es necesario tener instalado:
+Tener instalado previamente:
 
 - **Python 3.10 o superior**
-- **Node.js 18 o superior**
-- npm (incluido con Node.js)
+  https://www.python.org/downloads/
+
+- **Node.js (LTS)** (incluye npm)
+  https://nodejs.org/en/download
 
 ### Recomendado
 

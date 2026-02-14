@@ -125,7 +125,7 @@ export default function OptionsPanel({ options, onChange }) {
         "rounded-xl border border-gray-300 bg-white p-4 shadow-sm",
         "transition hover:shadow-lg hover:-translate-y-[1px]",
         // Altura estable
-        "max-h-[clamp(650px,70vh,890px)]",
+        "max-h-[clamp(630px,70vh,890px)]",
         // Para que el scroll interno funcione bien
         "w-full flex flex-col min-h-0",
         // Evita doble scrollbar
@@ -150,7 +150,7 @@ export default function OptionsPanel({ options, onChange }) {
           type="button"
           onClick={resetOptionsToDefault}
           className={`
-            md:inline-flex 2xl:hidden
+            md:inline-flex 3xl:hidden
             rounded-lg border border-gray-300 bg-gray-50 px-3 py-2
             text-sm font-semibold text-gray-700
             hover:bg-gray-100 hover:text-gray-900 transition
@@ -203,7 +203,7 @@ export default function OptionsPanel({ options, onChange }) {
         type="button"
         onClick={resetOptionsToDefault}
         className={`
-          hidden 2xl:block
+          hidden 3xl:block
           rounded-lg border border-gray-300 bg-gray-50
           px-3 py-1.5 text-sm font-semibold text-gray-700
           hover:bg-gray-100 hover:text-gray-900 active:bg-blue-100
