@@ -3,11 +3,14 @@ import time
 import ast
 import subprocess
 
-from analysis.python.style_analysis import analyze_style
+from analysis.python.style_analysis import analyze_style as analyze_style_python
 from analysis.python.security_analysis import analyze_security
 from analysis.python.metrics_analysis import analyze_metrics
 from analysis.python.dead_code_analysis import analyze_dead_code
 from analysis.python.type_analysis import analyze_types
+
+from analysis.java.security_analysis import analyze_security as analyze_security_java
+from analysis.utils import is_probably_java
 
 # Tipos de análisis permitidos
 _ALLOWED_ANALYSES = {"style", "security", "metrics", "dead_code", "types"}
@@ -21,19 +24,6 @@ def run_analysis(
     """
     start = time.perf_counter()  # Inicio del contador para calcular analysis_time_ms
     language = (language or "").strip().lower()
-
-    # Validamos que el lenguaje sea Python, si no lo es mostramos
-    if language == "python":
-        try:
-            ast.parse(code)
-        except SyntaxError as se:
-            return _error_response(
-                language=language,
-                message=str(se),
-                error_code="LANGUAGE_MISMATCH",
-                http_status=400,
-                analysis_time_ms=int((time.perf_counter() - start) * 1000),
-            )
 
     options = options or {}
 
@@ -56,13 +46,47 @@ def run_analysis(
         )
 
     # Validamos el lenguaje
-    if language != "python":
+    if language not in ("python", "java"):
         return _error_response(
             language=language,
-            message="Lenguaje no disponible. Por ahora solo se admite 'python'.",
+            message="Lenguaje no disponible. Por ahora solo se admite 'python' y 'java'.",
             http_status=400,
             analysis_time_ms=int((time.perf_counter() - start) * 1000),
         )
+    
+    # Validamos que el código introducido sea del lenguaje seleccionado
+    # En caso contrario, mostramos un mensaje de error específico
+    if language == "python":
+        try:
+            ast.parse(code)
+        except SyntaxError as se:
+            return _error_response(
+                language=language,
+                message=str(se),
+                error_code="LANGUAGE_MISMATCH",
+                http_status=400,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+            )
+    
+    elif language == "java":
+        try:
+            if not is_probably_java(code):
+                return _error_response(
+                    language=language,
+                    message="El código no es Java válido o no coincide con el lenguaje seleccionado.",
+                    error_code="LANGUAGE_MISMATCH",
+                    http_status=400,
+                    analysis_time_ms=int((time.perf_counter() - start) * 1000),
+                )
+        except RuntimeError as exc:
+            # javalang no instalado, etc.
+            return _error_response(
+                language=language,
+                message=str(exc),
+                http_status=500,
+                analysis_time_ms=int((time.perf_counter() - start) * 1000),
+            )
+    
 
     # Validamos que las opciones por módulo (style/security/metrics/type/dead_code) sean objetos JSON (dict)
     for key in _ALLOWED_ANALYSES:
@@ -119,15 +143,22 @@ def run_analysis(
     # STYLE
     if "style" in enabled:
         try:
-            style_issues = analyze_style(
-                code=code, options=style_options, timeout_seconds=timeout_seconds
-            )
+            if language == "python":
+                style_issues = analyze_style_python(
+                    code=code, options=style_options, timeout_seconds=timeout_seconds
+                )
+            # Java
+            else:
+                style_issues = analyze_style_java(
+                    code=code, options=style_options, timeout_seconds=timeout_seconds
+                )
 
         # Si ha ocurrido algún fallo en el análisis, devolvemos un mensaje de error
         except ValueError as exc:
+            tool_name = "Ruff" if language == "python" else "Checkstyle"
             return _error_response(
                 language=language,
-                message=f"Opciones inválidas en Ruff: {exc}",
+                message=f"Opciones inválidas en {tool_name}: {exc}",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
@@ -150,14 +181,21 @@ def run_analysis(
     # SECURITY
     if "security" in enabled:
         try:
-            security_issues = analyze_security(
-                code=code, options=security_options, timeout_seconds=timeout_seconds
-            )
+            if language == "python":
+                security_issues = analyze_security(
+                    code=code, options=security_options, timeout_seconds=timeout_seconds
+                )
+            # Java
+            else:
+                security_issues = analyze_security_java(
+                    code=code, options=security_options, timeout_seconds=timeout_seconds
+                )
 
         except ValueError as exc:
+            tool_name = "Bandit" if language == "python" else "Semgrep"
             return _error_response(
                 language=language,
-                message=f"Opciones inválidas en Bandit: {exc}",
+                message=f"Opciones inválidas en {tool_name}: {exc}",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
@@ -274,7 +312,7 @@ def run_analysis(
 
     analysis_time_ms = int((time.perf_counter() - start) * 1000)
     return {
-        "language": "python",
+        "language": language,
         "analysis_time_ms": analysis_time_ms,
         "summary": summary,
         "analysis": {
