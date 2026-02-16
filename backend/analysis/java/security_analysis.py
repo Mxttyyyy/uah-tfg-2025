@@ -19,7 +19,7 @@ def analyze_security(
     # Ejecutamos la herramienta en un directorio temporal para aislar el análisis
     # y evitar escribir archivos en el sistema del usuario
     with tempfile.TemporaryDirectory(prefix="tfg_java_security_") as tmpdir:
-        filename = "input.java"
+        filename = "Input.java"
         filepath = os.path.join(tmpdir, filename)
 
         # Guardamos el código del usuario en un archivo temporal (ya que Semgrep no acepta el código por stdin).
@@ -130,7 +130,7 @@ def _build_semgrep_command(filename: str, options: Dict[str, Any]) -> List[str]:
 
     # Opciones para filtrar reglas de Semgrep
     # Semgrep permite repetir flags para múltiples valores.
-    # Por ejemplo: semgrep scan --config p/java --config p/ci --json input.java
+    # Por ejemplo: semgrep scan --config p/java --config p/ci --json Input.java
 
     # ------- config: str o list[str] -------
     config = options.get("config", "p/findsecbugs")
@@ -182,7 +182,7 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     # Obtenemos los campos relevantes a partir del issue sin normalizar
     rule_id = str(issue.get("check_id") or "").strip()
 
-    #path = str(issue.get("path") or "input.java")
+    #path = str(issue.get("path") or "Input.java")
 
     start = issue.get("start") if isinstance(issue.get("start"), dict) else {}
     end = issue.get("end") if isinstance(issue.get("end"), dict) else {}

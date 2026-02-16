@@ -4,12 +4,13 @@ import ast
 import subprocess
 
 from analysis.python.style_analysis import analyze_style as analyze_style_python
-from analysis.python.security_analysis import analyze_security
+from analysis.python.security_analysis import analyze_security as analyze_security_python
 from analysis.python.metrics_analysis import analyze_metrics
 from analysis.python.dead_code_analysis import analyze_dead_code
 from analysis.python.type_analysis import analyze_types
 
 from analysis.java.security_analysis import analyze_security as analyze_security_java
+from analysis.java.style_analysis import analyze_style as analyze_style_java
 from analysis.utils import is_probably_java
 
 # Tipos de análisis permitidos
@@ -182,7 +183,7 @@ def run_analysis(
     if "security" in enabled:
         try:
             if language == "python":
-                security_issues = analyze_security(
+                security_issues = analyze_security_python(
                     code=code, options=security_options, timeout_seconds=timeout_seconds
                 )
             # Java
