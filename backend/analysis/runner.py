@@ -5,12 +5,13 @@ import subprocess
 
 from analysis.python.style_analysis import analyze_style as analyze_style_python
 from analysis.python.security_analysis import analyze_security as analyze_security_python
-from analysis.python.metrics_analysis import analyze_metrics
+from analysis.python.metrics_analysis import analyze_metrics as analyze_metrics_python
 from analysis.python.dead_code_analysis import analyze_dead_code
 from analysis.python.type_analysis import analyze_types
 
 from analysis.java.security_analysis import analyze_security as analyze_security_java
 from analysis.java.style_analysis import analyze_style as analyze_style_java
+from analysis.java.metrics_analysis import analyze_metrics as analyze_metrics_java
 from analysis.utils import is_probably_java
 
 # Tipos de análisis permitidos
@@ -219,14 +220,21 @@ def run_analysis(
     # METRICS
     if "metrics" in enabled:
         try:
-            metrics = analyze_metrics(
-                code=code, options=metrics_options, timeout_seconds=timeout_seconds
-            )
+            if language == "python":
+                metrics = analyze_metrics_python(
+                    code=code, options=metrics_options, timeout_seconds=timeout_seconds
+                )
+            # Java
+            else:
+                metrics = analyze_metrics_java(
+                    code=code, options=metrics_options, timeout_seconds=timeout_seconds
+                )
         
         except ValueError as exc:
+            tool_name = "Radon" if language == "python" else "Lizard"
             return _error_response(
                 language=language,
-                message=f"Opciones inválidas en Radon: {exc}",
+                message=f"Opciones inválidas en {tool_name}: {exc}",
                 http_status=400,
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
