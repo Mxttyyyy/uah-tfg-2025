@@ -44,7 +44,7 @@ def analyze_security(
                 "Semgrep no está instalado o no se encuentra en el PATH."
             ) from exc
 
-    # Semgrep puede devolver:
+    # Semgrep suele devolver:
     # - 0: ejecución correcta (puede haber o no findings)
     # - 1: ejecución correcta con findings
     # - != 0 y != 1: error real de ejecución
