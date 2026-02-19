@@ -23,7 +23,7 @@ import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
  * - options: objeto options actual
  * - onChange: (nextOptions) => void
  */
-export default function OptionsPanel({ options, onChange }) {
+export default function OptionsPanelPython({ options, onChange }) {
   // Opciones normalizadas para garantizar una estructura válida
   const normalizedOptions = isPlainObject(options) ? options : {};
 

@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { analyzeCode } from "../services/analyzeApi";
 import Header from "../components/Header";
 import CodeInput from "../components/CodeInput";
-import OptionsPanel from "../components/OptionsPanel";
+import OptionsPanelPython from "../components/OptionsPanelPython";
 import ResultsPanel from "../components/results/ResultsPanel";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
@@ -152,7 +152,7 @@ export default function App() {
 
         {/* Panel derecho de opciones */}
         <div className="min-w-0">
-          <OptionsPanel options={options} onChange={setOptions} />
+          <OptionsPanelPython options={options} onChange={setOptions} />
         </div>
       </div>
 
