@@ -1,6 +1,6 @@
-import { isPlainObject, listToCsv, csvToListNotUpper } from "../../utils/uiUtils";
+import { isPlainObject, listToCsv, csvToListNotUpper } from "../../../utils/uiUtils";
 import { useState, useEffect } from "react";
-import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
+import { createDefaultAnalyzeOptions } from "../../../utils/defaultOptions";
 
 /**
  * Opciones de Mypy (types).

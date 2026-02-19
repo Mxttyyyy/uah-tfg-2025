@@ -1,35 +1,33 @@
-import StyleOptions from "./options/python/PythonStyleOptions";
-import SecurityOptions from "./options/python/PythonSecurityOptions";
-import MetricsOptions from "./options/python/PythonMetricsOptions";
-import DeadCodeOptions from "./options/python/PythonDeadCodeOptions";
-import TypesOptions from "./options/python/PythonTypesOptions";
+import JavaStyleOptions from "./options/java/JavaStyleOptions";
+import JavaSecurityOptions from "./options/java/JavaSecurityOptions";
+import JavaMetricsOptions from "./options/java/JavaMetricsOptions";
+import JavaDeadCodeOptions from "./options/java/JavaDeadCodeOptions";
 
-import { useState } from "react";
 import { isPlainObject } from "../utils/uiUtils";
+import { useState } from "react";
 import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
+
 /**
- * Panel de opciones.
+ * Panel de opciones para análisis Java.
  *
- * Estructura del objeto "options":
- * - enabled: ["style","security","metrics","dead_code","types"] (si está vacío o falta => se ejecutan todos los análisis)
- * - timeout_seconds: int > 0
- * - style: { select, ignore, extend_select }
- * - security: { severity_level, confidence_level, skip, tests }
- * - metrics: { cc_min, cc_max }
- * - dead_code: { min_confidence, ignore_names, ignore_decorators }
- * - types: { ignore_missing_imports, python_version, strict, show_error_code_links, enable_error_codes, disable_error_codes }
+ * Herramientas:
+ * - style → Checkstyle
+ * - security → Semgrep
+ * - metrics → Lizard
+ * - dead_code → PMD
  *
  * Props:
- * - options: objeto options actual
- * - onChange: (nextOptions) => void
+ * - options
+ * - onChange
  */
-export default function OptionsPanel({ options, onChange }) {
+export default function OptionsPanelJava({ options, onChange }) {
   // Opciones normalizadas para garantizar una estructura válida
   const normalizedOptions = isPlainObject(options) ? options : {};
 
   const enabled = Array.isArray(normalizedOptions.enabled)
     ? normalizedOptions.enabled
     : [];
+
   const timeoutSeconds =
     typeof normalizedOptions.timeout_seconds === "number"
       ? normalizedOptions.timeout_seconds
@@ -48,11 +46,8 @@ export default function OptionsPanel({ options, onChange }) {
   const deadCode = isPlainObject(normalizedOptions.dead_code)
     ? normalizedOptions.dead_code
     : {};
-  const types = isPlainObject(normalizedOptions.types)
-    ? normalizedOptions.types
-    : {};
 
-  const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code", "types"];
+  const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code"];
 
   // Estado para controlar el botón de reset options
   const [resetOptionsSignal, setResetOptionsSignal] = useState(false);
@@ -137,7 +132,7 @@ export default function OptionsPanel({ options, onChange }) {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-base font-semibold text-gray-900 dark:text-neutral-100">
-            Opciones
+            Opciones (Java)
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-neutral-300">
             Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se
@@ -167,34 +162,28 @@ export default function OptionsPanel({ options, onChange }) {
       {/* Selección de análisis (enabled) */}
       <div className="space-y-2 grid grid-cols-2">
         <CheckboxRow
-          id="opt-style"
-          label="Estilo y buenas prácticas (Ruff)"
+          id="java-style"
+          label="Estilo y buenas prácticas (Checkstyle)"
           checked={enabled.includes("style")}
           onChange={() => toggleEnabled("style")}
         />
         <CheckboxRow
-          id="opt-security"
-          label="Seguridad básica (Bandit)"
+          id="java-security"
+          label="Seguridad básica (Semgrep)"
           checked={enabled.includes("security")}
           onChange={() => toggleEnabled("security")}
         />
         <CheckboxRow
-          id="opt-metrics"
-          label="Métricas (Radon)"
+          id="java-metrics"
+          label="Métricas (Lizard)"
           checked={enabled.includes("metrics")}
           onChange={() => toggleEnabled("metrics")}
         />
         <CheckboxRow
-          id="opt-dead"
-          label="Código muerto (Vulture)"
+          id="java-dead"
+          label="Código muerto (PMD)"
           checked={enabled.includes("dead_code")}
           onChange={() => toggleEnabled("dead_code")}
-        />
-        <CheckboxRow
-          id="opt-types"
-          label="Tipado (Mypy)"
-          checked={enabled.includes("types")}
-          onChange={() => toggleEnabled("types")}
         />
       </div>
 
@@ -226,7 +215,7 @@ export default function OptionsPanel({ options, onChange }) {
         `}
       >
         <label
-          htmlFor="opt-timeout"
+          htmlFor="java-timeout"
           className="block text-sm font-medium text-gray-900 dark:text-neutral-100"
         >
           Timeout (segundos)
@@ -270,7 +259,7 @@ export default function OptionsPanel({ options, onChange }) {
         <div className="h-px flex-1 bg-gray-200 dark:bg-neutral-700" />
       </div>
 
-      {/* Opciones por herramienta */}
+      {/* Opciones específicas por herramienta */}
       <div className="flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
         {/* Escondemos el texto en resoluciones menores */}
         <p className="hidden 2xl:block text-sm text-gray-600 dark:text-neutral-300">
@@ -278,7 +267,7 @@ export default function OptionsPanel({ options, onChange }) {
           Mypy).
         </p>
 
-        <details
+        <details 
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-cyan-300 border-l-4 hover:border-l-cyan-300
@@ -286,14 +275,14 @@ export default function OptionsPanel({ options, onChange }) {
             dark:hover:bg-neutral-800/50 dark:hover:border-l-cyan-300 dark:hover:border-sky-900/60
           `}
         >
-          <summary
+          <summary 
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
               dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
-            <span>Ruff (Estilo)</span>
+            <span>Checkstyle (Estilo)</span>
             <span
               className="text-gray-500 dark:text-neutral-400"
               aria-hidden="true"
@@ -302,7 +291,7 @@ export default function OptionsPanel({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <StyleOptions
+            <JavaStyleOptions
               options={style}
               onChange={(v) => updateModuleOptions("style", v)}
               resetOptionsSignal={resetOptionsSignal}
@@ -311,7 +300,7 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details
+        <details 
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-purple-300 border-l-4 hover:border-l-purple-300
@@ -319,14 +308,14 @@ export default function OptionsPanel({ options, onChange }) {
             dark:hover:bg-neutral-800/50 dark:hover:border-l-purple-300 dark:hover:border-sky-900/60
           `}
         >
-          <summary
+          <summary 
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
               dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
-            <span>Bandit (Seguridad)</span>
+            <span>Semgrep (Seguridad)</span>
             <span
               className="text-gray-500 dark:text-neutral-400"
               aria-hidden="true"
@@ -335,7 +324,7 @@ export default function OptionsPanel({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <SecurityOptions
+            <JavaSecurityOptions
               options={security}
               onChange={(v) => updateModuleOptions("security", v)}
               resetOptionsSignal={resetOptionsSignal}
@@ -344,7 +333,7 @@ export default function OptionsPanel({ options, onChange }) {
           </div>
         </details>
 
-        <details
+        <details 
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-amber-300 border-l-4 hover:border-l-amber-300
@@ -352,14 +341,14 @@ export default function OptionsPanel({ options, onChange }) {
             dark:hover:bg-neutral-800/50 dark:hover:border-l-amber-300 dark:hover:border-sky-900/60
           `}
         >
-          <summary
+          <summary 
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
               dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
-            <span>Radon (Métricas)</span>
+            <span>Lizard (Métricas)</span>
             <span
               className="text-gray-500 dark:text-neutral-400"
               aria-hidden="true"
@@ -368,14 +357,14 @@ export default function OptionsPanel({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <MetricsOptions
+            <JavaMetricsOptions
               options={metrics}
               onChange={(v) => updateModuleOptions("metrics", v)}
             />
           </div>
         </details>
 
-        <details
+        <details 
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
             hover:bg-blue-50/70 border-l-emerald-300 border-l-4 hover:border-l-emerald-300
@@ -383,14 +372,14 @@ export default function OptionsPanel({ options, onChange }) {
             dark:hover:bg-neutral-800/50 dark:hover:border-l-emerald-300 dark:hover:border-sky-900/60
           `}
         >
-          <summary
+          <summary 
             className={`
               flex w-full cursor-pointer select-none items-center justify-between
               px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
               dark:text-neutral-100 dark:hover:text-sky-400
             `}
           >
-            <span>Vulture (Código Muerto)</span>
+            <span>PMD (Código Muerto)</span>
             <span
               className="text-gray-500 dark:text-neutral-400"
               aria-hidden="true"
@@ -399,42 +388,9 @@ export default function OptionsPanel({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <DeadCodeOptions
+            <JavaDeadCodeOptions
               options={deadCode}
               onChange={(v) => updateModuleOptions("dead_code", v)}
-              resetOptionsSignal={resetOptionsSignal}
-              setResetSignal={setResetOptionsSignal}
-            />
-          </div>
-        </details>
-
-        <details
-          className={`
-            rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
-            hover:bg-blue-50/70 border-l-orange-400 border-l-4 hover:border-l-orange-400
-            dark:border-l-orange-400 dark:border-neutral-700 dark:bg-neutral-950/50
-            dark:hover:bg-neutral-800/50 dark:hover:border-l-orange-400 dark:hover:border-sky-900/60
-          `}
-        >
-          <summary
-            className={`
-              flex w-full cursor-pointer select-none items-center justify-between
-              px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
-              dark:text-neutral-100 dark:hover:text-sky-400
-            `}
-          >
-            <span>Mypy (Tipos)</span>
-            <span
-              className="text-gray-500 dark:text-neutral-400"
-              aria-hidden="true"
-            >
-              ▾
-            </span>
-          </summary>
-          <div className="px-3 pb-3 pt-2">
-            <TypesOptions
-              options={types}
-              onChange={(v) => updateModuleOptions("types", v)}
               resetOptionsSignal={resetOptionsSignal}
               setResetSignal={setResetOptionsSignal}
             />
@@ -445,11 +401,8 @@ export default function OptionsPanel({ options, onChange }) {
   );
 }
 
-/* ------------------------------- Componentes auxiliares ------------------------------- */
+/* ----------------------------- Componentes auxiliares ----------------------------- */
 
-/**
- * Fila reutilizable con checkbox y su label asociado.
- */
 function CheckboxRow({ id, label, checked, onChange }) {
   return (
     <div className="flex items-center gap-3">

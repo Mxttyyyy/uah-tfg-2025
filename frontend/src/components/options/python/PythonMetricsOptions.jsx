@@ -1,4 +1,4 @@
-import { isPlainObject, pickOrEmpty } from "../../utils/uiUtils";
+import { isPlainObject, pickOrEmpty } from "../../../utils/uiUtils";
 
 /**
  * Opciones de Radon (metrics).

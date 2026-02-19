@@ -4,10 +4,10 @@ import {
   csvToListNotUpper,
   csvToListDecorators,
   normalizeIntInRange,
-} from "../../utils/uiUtils";
+} from "../../../utils/uiUtils";
 
 import { useState, useEffect } from "react";
-import { createDefaultAnalyzeOptions } from "../../utils/defaultOptions";
+import { createDefaultAnalyzeOptions } from "../../../utils/defaultOptions";
 /**
  * Opciones de Vulture (dead_code).
  *
