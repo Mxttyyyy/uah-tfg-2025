@@ -13,7 +13,7 @@ import { isPlainObject, pickOrEmpty } from "../../../utils/uiUtils";
  * - value: objeto con opciones actuales de metrics
  * - onChange: (nextValue) => void
  */
-export default function MetricsOptions({ options, onChange }) {
+export default function PythonMetricsOptions({ options, onChange }) {
 
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.

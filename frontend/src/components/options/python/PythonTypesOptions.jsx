@@ -22,7 +22,7 @@ import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
  * - options: objeto con opciones actuales de types
  * - onChange: (nextValue) => void
  */
-export default function TypesOptions({
+export default function PythonTypesOptions({
   options,
   onChange,
   resetOptionsSignal,

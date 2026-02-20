@@ -1,12 +1,12 @@
-import StyleOptions from "./options/python/PythonStyleOptions";
-import SecurityOptions from "./options/python/PythonSecurityOptions";
-import MetricsOptions from "./options/python/PythonMetricsOptions";
-import DeadCodeOptions from "./options/python/PythonDeadCodeOptions";
-import TypesOptions from "./options/python/PythonTypesOptions";
+import PythonStyleOptions from "./options/python/PythonStyleOptions";
+import PythonSecurityOptions from "./options/python/PythonSecurityOptions";
+import PythonMetricsOptions from "./options/python/PythonMetricsOptions";
+import PythonDeadCodeOptions from "./options/python/PythonDeadCodeOptions";
+import PythonTypesOptions from "./options/python/PythonTypesOptions";
 
 import { useState } from "react";
 import { isPlainObject } from "../utils/uiUtils";
-import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
+import { createDefaultPythonOptions } from "../utils/defaultOptions";
 /**
  * Panel de opciones.
  *
@@ -71,7 +71,7 @@ export default function OptionsPanelPython({ options, onChange }) {
    * Resetea las opciones a las predeterminadas.
    */
   function resetOptionsToDefault() {
-    onChange(createDefaultAnalyzeOptions());
+    onChange(createDefaultPythonOptions());
     setResetOptionsSignal(true);
   }
 
@@ -302,7 +302,7 @@ export default function OptionsPanelPython({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <StyleOptions
+            <PythonStyleOptions
               options={style}
               onChange={(v) => updateModuleOptions("style", v)}
               resetOptionsSignal={resetOptionsSignal}
@@ -335,7 +335,7 @@ export default function OptionsPanelPython({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <SecurityOptions
+            <PythonSecurityOptions
               options={security}
               onChange={(v) => updateModuleOptions("security", v)}
               resetOptionsSignal={resetOptionsSignal}
@@ -368,7 +368,7 @@ export default function OptionsPanelPython({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <MetricsOptions
+            <PythonMetricsOptions
               options={metrics}
               onChange={(v) => updateModuleOptions("metrics", v)}
             />
@@ -399,7 +399,7 @@ export default function OptionsPanelPython({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <DeadCodeOptions
+            <PythonDeadCodeOptions
               options={deadCode}
               onChange={(v) => updateModuleOptions("dead_code", v)}
               resetOptionsSignal={resetOptionsSignal}
@@ -432,7 +432,7 @@ export default function OptionsPanelPython({ options, onChange }) {
             </span>
           </summary>
           <div className="px-3 pb-3 pt-2">
-            <TypesOptions
+            <PythonTypesOptions
               options={types}
               onChange={(v) => updateModuleOptions("types", v)}
               resetOptionsSignal={resetOptionsSignal}

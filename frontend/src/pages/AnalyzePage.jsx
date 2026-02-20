@@ -20,7 +20,7 @@ const DEFAULT_LANGUAGE = "python";
  * - comunicación con el backend
  * - coordinación entre entrada de código, opciones y resultados
  */
-export default function App() {
+export default function AnalyzePage() {
 
   // Estados principales
   const [code, setCode] = useState("");

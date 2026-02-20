@@ -19,7 +19,7 @@ import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
  * - options: objeto con opciones actuales de security
  * - onChange: (nextValue) => void
  */
-export default function SecurityOptions({
+export default function PythonSecurityOptions({
   options,
   onChange,
   resetOptionsSignal,

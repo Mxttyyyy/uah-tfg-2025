@@ -16,7 +16,7 @@ import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
  * - options: objeto con opciones actuales de style
  * - onChange: (nextValue) => void
  */
-export default function StyleOptions({
+export default function PythonStyleOptions({
   options,
   onChange,
   resetOptionsSignal,

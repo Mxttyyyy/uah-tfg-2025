@@ -2,10 +2,11 @@ import JavaStyleOptions from "./options/java/JavaStyleOptions";
 import JavaSecurityOptions from "./options/java/JavaSecurityOptions";
 import JavaMetricsOptions from "./options/java/JavaMetricsOptions";
 import JavaDeadCodeOptions from "./options/java/JavaDeadCodeOptions";
+import JavaTypesOptions from "./options/java/JavaTypesOptions";
 
 import { isPlainObject } from "../utils/uiUtils";
 import { useState } from "react";
-import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
+import { createDefaultJavaOptions } from "../utils/defaultOptions";
 
 /**
  * Panel de opciones para análisis Java.
@@ -15,6 +16,7 @@ import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
  * - security → Semgrep
  * - metrics → Lizard
  * - dead_code → PMD
+ * - types → Javac
  *
  * Props:
  * - options
@@ -46,8 +48,11 @@ export default function OptionsPanelJava({ options, onChange }) {
   const deadCode = isPlainObject(normalizedOptions.dead_code)
     ? normalizedOptions.dead_code
     : {};
+  const types = isPlainObject(normalizedOptions.types)
+    ? normalizedOptions.types
+    : {};
 
-  const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code"];
+  const ANALYSES_ORDER = ["style", "security", "metrics", "dead_code", "types"];
 
   // Estado para controlar el botón de reset options
   const [resetOptionsSignal, setResetOptionsSignal] = useState(false);
@@ -66,7 +71,7 @@ export default function OptionsPanelJava({ options, onChange }) {
    * Resetea las opciones a las predeterminadas.
    */
   function resetOptionsToDefault() {
-    onChange(createDefaultAnalyzeOptions());
+    onChange(createDefaultJavaOptions());
     setResetOptionsSignal(true);
   }
 
@@ -184,6 +189,12 @@ export default function OptionsPanelJava({ options, onChange }) {
           label="Código muerto (PMD)"
           checked={enabled.includes("dead_code")}
           onChange={() => toggleEnabled("dead_code")}
+        />
+        <CheckboxRow
+          id="java-types"
+          label="Tipado (Javac)"
+          checked={enabled.includes("types")}
+          onChange={() => toggleEnabled("types")}
         />
       </div>
 
@@ -391,6 +402,39 @@ export default function OptionsPanelJava({ options, onChange }) {
             <JavaDeadCodeOptions
               options={deadCode}
               onChange={(v) => updateModuleOptions("dead_code", v)}
+              resetOptionsSignal={resetOptionsSignal}
+              setResetSignal={setResetOptionsSignal}
+            />
+          </div>
+        </details>
+
+        <details 
+          className={`
+            rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
+            hover:bg-blue-50/70 border-l-orange-300 border-l-4 hover:border-l-orange-300
+            dark:border-l-orange-300 dark:border-neutral-700 dark:bg-neutral-950/50
+            dark:hover:bg-neutral-800/50 dark:hover:border-l-orange-300 dark:hover:border-sky-900/60
+          `}
+        >
+          <summary 
+            className={`
+              flex w-full cursor-pointer select-none items-center justify-between
+              px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+              dark:text-neutral-100 dark:hover:text-sky-400
+            `}
+          >
+            <span>Javac (Tipos)</span>
+            <span
+              className="text-gray-500 dark:text-neutral-400"
+              aria-hidden="true"
+            >
+              ▾
+            </span>
+          </summary>
+          <div className="px-3 pb-3 pt-2">
+            <JavaTypesOptions
+              options={types}
+              onChange={(v) => updateModuleOptions("types", v)}
               resetOptionsSignal={resetOptionsSignal}
               setResetSignal={setResetOptionsSignal}
             />

@@ -24,7 +24,7 @@ import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
  * - options: objeto con opciones actuales de dead_code
  * - onChange: (nextValue) => void
  */
-export default function DeadCodeOptions({
+export default function PythonDeadCodeOptions({
   options,
   onChange,
   resetOptionsSignal,
