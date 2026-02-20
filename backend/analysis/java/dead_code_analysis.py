@@ -150,14 +150,11 @@ def _build_pmd_command(filename: str, options: Dict[str, Any]) -> List[str]:
     # ------- exclude_rules (list[str]) -------
     # Permite desactivar reglas concretas dentro del perfil
     exclude_rules = options.get("exclude_rules")
-
-    if exclude_rules is None:
-        exclude_rules_list: List[str] = []
-    elif is_str_list(exclude_rules):
+    exclude_rules_list: List[str] = []
+   
+    if is_str_list(exclude_rules):
         exclude_rules_list = [r.strip() for r in exclude_rules]
-    else:
-        raise ValueError("options.dead_code.exclude_rules debe ser una lista de strings no vacíos.")
-
+    
     # Aplicamos exclusiones si existen
     if exclude_rules_list:
         rule_list = _apply_exclusions(rule_list, exclude_rules_list)

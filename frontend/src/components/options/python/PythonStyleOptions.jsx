@@ -1,6 +1,6 @@
 import { isPlainObject, listToCsv, csvToList } from "../../../utils/uiUtils";
 import { useState, useEffect } from "react";
-import { createDefaultAnalyzeOptions } from "../../../utils/defaultOptions";
+import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
 
 /**
  * Opciones de Ruff (style).
@@ -33,7 +33,7 @@ export default function StyleOptions({
   const [extendSelectCsv, setExtendSelectCsv] = useState(listToCsv(normalizedOptions.extend_select));
 
   // Obtenemos las opciones predeterminadas
-  const defaultOptionsStyle = createDefaultAnalyzeOptions().style;
+  const defaultOptionsStyle = createDefaultPythonOptions().style;
   const defaultSelect = listToCsv(defaultOptionsStyle.select);
   const defaultIgnore = listToCsv(defaultOptionsStyle.ignore);
   const defaultExtendSelect = listToCsv(defaultOptionsStyle.extend_select);

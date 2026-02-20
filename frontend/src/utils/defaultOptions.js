@@ -7,10 +7,10 @@ export const DEFAULT_LANGUAGE = "python";
 export const DEFAULT_TIMEOUT_SECONDS = 10;
 
 /**
- * Crea un objeto NUEVO con las opciones por defecto.
+ * Crea un objeto NUEVO con las opciones por defecto para Python.
  * Se devuelve un objeto nuevo para evitar referencias compartidas en React state.
  */
-export function createDefaultAnalyzeOptions() {
+export function createDefaultPythonOptions() {
   return {
     // Por defecto, activamos todos los análisis
     enabled: [...ANALYSIS_KEYS],
@@ -65,3 +65,60 @@ export function createDefaultAnalyzeOptions() {
     },
   };
 }
+
+/**
+ * Crea un objeto NUEVO con las opciones por defecto para Python.
+ * Se devuelve un objeto nuevo para evitar referencias compartidas en React state.
+ */
+export function createDefaultJavaOptions() {
+  return {
+
+    enabled: [...ANALYSIS_KEYS],
+    
+    timeout_seconds: DEFAULT_TIMEOUT_SECONDS,
+
+    // Checkstyle
+    style: {
+      min_severity: "",
+    },
+
+    // Semgrep
+    security: {
+      config: [],
+      exclude_rules: [],
+      exclude_contains: [],
+      severity: [],
+    },
+
+    // Lizard
+    metrics: {
+      cc_min: "",
+      nloc_min: "",
+      args_min: "",
+    },
+
+    // PMD
+    dead_code: {
+      profile: "default",
+      exclude_rules: [],
+      minimum_priority: "",
+    },
+
+    // Javac
+    types: {
+      release: "",
+      lint: false,
+    },
+  };
+}
+
+/**
+ * Devuelve las opciones por defecto según el lenguaje seleccionado.
+ * Si no es "java", caemos a Python.
+ */
+export function createDefaultAnalyzeOptionsForLanguage(language) {
+  return language === "java"
+    ? createDefaultJavaOptions()
+    : createDefaultAnalyzeOptions();
+}
+

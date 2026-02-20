@@ -7,7 +7,7 @@ import OptionsPanelPython from "../components/OptionsPanelPython";
 import ResultsPanel from "../components/results/ResultsPanel";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
-import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
+import { createDefaultPythonOptions } from "../utils/defaultOptions";
 
 const DEFAULT_LANGUAGE = "python";
 
@@ -24,7 +24,7 @@ export default function App() {
 
   // Estados principales
   const [code, setCode] = useState("");
-  const [options, setOptions] = useState(() => createDefaultAnalyzeOptions());
+  const [options, setOptions] = useState(() => createDefaultPythonOptions());
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE);

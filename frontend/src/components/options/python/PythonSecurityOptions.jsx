@@ -1,6 +1,6 @@
 import { isPlainObject, listToCsv, csvToList } from "../../../utils/uiUtils";
 import { useState, useEffect } from "react";
-import { createDefaultAnalyzeOptions } from "../../../utils/defaultOptions";
+import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
 
 /**
  * Opciones de Bandit (security).
@@ -44,7 +44,7 @@ export default function SecurityOptions({
   const [testsCsv, setTestsCsv] = useState(listToCsv(normalizedOptions.tests));
 
   // Obtenemos las opciones predeterminadas
-  const defaultOptionsSecurity = createDefaultAnalyzeOptions().security;
+  const defaultOptionsSecurity = createDefaultPythonOptions().security;
   const defaultSkip = listToCsv(defaultOptionsSecurity.select);
   const defaultTests = listToCsv(defaultOptionsSecurity.ignore);
 

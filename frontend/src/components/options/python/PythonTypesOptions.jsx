@@ -1,6 +1,6 @@
 import { isPlainObject, listToCsv, csvToListNotUpper } from "../../../utils/uiUtils";
 import { useState, useEffect } from "react";
-import { createDefaultAnalyzeOptions } from "../../../utils/defaultOptions";
+import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
 
 /**
  * Opciones de Mypy (types).
@@ -46,7 +46,7 @@ export default function TypesOptions({
   const [disableCodesCsv, setDisableCodesCsv] = useState(listToCsv(normalizedOptions.disable_error_codes));
 
   // Obtenemos las opciones predeterminadas
-  const defaultOptionsTypes = createDefaultAnalyzeOptions().types;
+  const defaultOptionsTypes = createDefaultPythonOptions().types;
   const defaultEnable = listToCsv(defaultOptionsTypes.enable_error_codes);
   const defaultDisable = listToCsv(defaultOptionsTypes.disable_error_codes);
 

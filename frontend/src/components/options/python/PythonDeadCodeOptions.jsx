@@ -7,7 +7,7 @@ import {
 } from "../../../utils/uiUtils";
 
 import { useState, useEffect } from "react";
-import { createDefaultAnalyzeOptions } from "../../../utils/defaultOptions";
+import { createDefaultPythonOptions } from "../../../utils/defaultOptions";
 /**
  * Opciones de Vulture (dead_code).
  *
@@ -45,7 +45,7 @@ export default function DeadCodeOptions({
   const [ignoreDecoratorsCsv, setIgnoreDecoratorsCsv] = useState(listToCsv(normalizedOptions.ignore_decorators));
 
   // Obtenemos las opciones predeterminadas
-  const defaultOptionsDeadCode = createDefaultAnalyzeOptions().dead_code;
+  const defaultOptionsDeadCode = createDefaultPythonOptions().dead_code;
   const defaultIgnoreNames = listToCsv(defaultOptionsDeadCode.ignore);
   const defaultIgnoreDecorators = listToCsv(defaultOptionsDeadCode.extend_select);
 

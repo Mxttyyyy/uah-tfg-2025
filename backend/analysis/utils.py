@@ -31,6 +31,7 @@ def is_str_list(value: Any) -> bool:
     if not isinstance(value, list):
         return False
 
+    # Lista vacía []
     if not value:
         return False
 

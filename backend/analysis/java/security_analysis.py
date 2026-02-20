@@ -136,10 +136,8 @@ def _build_semgrep_command(filename: str, options: Dict[str, Any]) -> List[str]:
     config = options.get("config", "p/findsecbugs")
 
     # Si config es un string, lo agregamos
-    if isinstance(config, str) and config.strip():
-        cmd += ["--config", config.strip()]
 
-    elif is_str_list(config):
+    if is_str_list(config):
         for c in config:
             cmd += ["--config", c.strip()]
 
@@ -149,15 +147,14 @@ def _build_semgrep_command(filename: str, options: Dict[str, Any]) -> List[str]:
     # ------- exclude_rules: str o list[str] -------
     exclude_rules = options.get("exclude_rules")
 
-    if isinstance(exclude_rules, str) and exclude_rules.strip():
-        cmd += ["--exclude-rule", exclude_rules.strip()]
-
-    elif is_str_list(exclude_rules):
+    if is_str_list(exclude_rules):
         for er in exclude_rules:
             cmd += ["--exclude-rule", er.strip()]
 
     # ------- severity: str o list[str] -------
     severity = options.get("severity")
+
+    # Si llega severity = "", no lo annadimos
     if isinstance(severity, str) and severity.strip():
         cmd += ["--severity", (severity.strip().upper())]
 
