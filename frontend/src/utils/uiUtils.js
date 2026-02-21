@@ -1,16 +1,5 @@
 
 /**
- * Convierte milisegundos a un string legible:
- * - < 1000 => "123 ms"
- * - >= 1000 => "1.23 s"
- */
-export function formatAnalysisTime(ms) {
-  if (typeof ms !== "number" || !Number.isFinite(ms)) return "-";
-  if (ms < 1000) return `${Math.round(ms)} ms`;
-  return `${(ms / 1000).toFixed(2)} s`;
-}
-
-/**
  * Normaliza severidad a los 3 valores esperados por el sistema:
  * info | warning | error
  */

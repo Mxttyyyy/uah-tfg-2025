@@ -2,7 +2,6 @@ import {
   isPlainObject,
   listToCsv,
   csvToListNotUpper,
-  normalizeIntInRange,
 } from "../../../utils/uiUtils";
 
 import { useState, useEffect } from "react";
