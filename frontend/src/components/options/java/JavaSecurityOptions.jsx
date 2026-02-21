@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
 
 /**
- * Opciones de Semgrep (security) para Java.
+ * Opciones de Semgrep (security).
  *
  * Backend espera (todas opcionales):
  * - severity: string[]  (LOW | MEDIUM | HIGH | CRITICAL)

@@ -121,7 +121,7 @@ def _build_pmd_command(filename: str, options: Dict[str, Any]) -> List[str]:
     Options soportadas:
     - profile: "minimal" | "default" | "strict" (por defecto "default")
     - exclude_rules: list[str] con nombres cortos (p.ej. ["UnusedFormalParameter"])
-    - minimum_priority: int 1..5 (1 = más grave)
+    - min_priority: int 1..5 (1 = más grave)
     """
     # Obtenemos la ruta del launcher
     launcher = _get_pmd_launcher()
@@ -165,13 +165,13 @@ def _build_pmd_command(filename: str, options: Dict[str, Any]) -> List[str]:
 
     cmd += ["-R", ",".join(rule_list)]
 
-    # ------- minimum_priority (1..5) -------
+    # ------- min_priority (1..5) -------
     # Permite filtrar por severidad mínima
-    min_prio = options.get("minimum_priority")
+    min_prio = options.get("min_priority")
 
     if min_prio is not None:
         if not isinstance(min_prio, int) or not (1 <= min_prio <= 5):
-            raise ValueError("options.dead_code.minimum_priority debe ser un entero entre 1 y 5.")
+            raise ValueError("options.dead_code.min_priority debe ser un entero entre 1 y 5.")
         cmd += ["--minimum-priority", str(min_prio)]
 
     cmd.append("-d")
