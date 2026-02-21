@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 import { analyzeCode } from "../services/analyzeApi";
 import Header from "../components/Header";
@@ -7,7 +7,9 @@ import OptionsPanelPython from "../components/OptionsPanelPython";
 import ResultsPanel from "../components/results/ResultsPanel";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
-import { createDefaultPythonOptions } from "../utils/defaultOptions";
+import JavaSecurityOptions from "../components/options/java/JavaSecurityOptions";
+
+import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
 
 const DEFAULT_LANGUAGE = "python";
 
@@ -24,7 +26,7 @@ export default function AnalyzePage() {
 
   // Estados principales
   const [code, setCode] = useState("");
-  const [options, setOptions] = useState(() => createDefaultPythonOptions());
+  const [options, setOptions] = useState(() => createDefaultAnalyzeOptions(DEFAULT_LANGUAGE));
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
@@ -32,6 +34,13 @@ export default function AnalyzePage() {
   // Referencias para controlar el scroll y selección de código
   const codeSectionRef = useRef(null);
   const textareaRef = useRef(null);
+
+  // Cuando cambia el lenguaje seleccionado, reiniciamos las opciones
+  // con los valores por defecto correspondientes a ese lenguaje y limpiamos los resultados.
+  useEffect(() => {
+    setOptions(createDefaultAnalyzeOptions(language));
+    setResult(null);
+  }, [language]);
 
   /**
    * Ejecuta el análisis del código actual.
@@ -153,6 +162,7 @@ export default function AnalyzePage() {
         {/* Panel derecho de opciones */}
         <div className="min-w-0">
           <OptionsPanelPython options={options} onChange={setOptions} />
+          <JavaSecurityOptions options={options} onChange={setOptions} />
         </div>
       </div>
 

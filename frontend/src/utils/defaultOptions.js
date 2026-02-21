@@ -116,9 +116,9 @@ export function createDefaultJavaOptions() {
  * Devuelve las opciones por defecto según el lenguaje seleccionado.
  * Si no es "java", caemos a Python.
  */
-export function createDefaultAnalyzeOptionsForLanguage(language) {
+export function createDefaultAnalyzeOptions(language) {
   return language === "java"
     ? createDefaultJavaOptions()
-    : createDefaultAnalyzeOptions();
+    : createDefaultPythonOptions();
 }
 
