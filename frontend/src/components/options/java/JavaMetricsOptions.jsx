@@ -1,4 +1,8 @@
-import { isPlainObject, toInt } from "../../../utils/uiUtils";
+import {
+  isPlainObject,
+  toInt,
+  normalizeIntInRange,
+} from "../../../utils/uiUtils";
 
 /**
  * Opciones de Lizard (metrics).
@@ -15,7 +19,6 @@ import { isPlainObject, toInt } from "../../../utils/uiUtils";
  * - onChange: (nextValue) => void
  */
 export default function JavaMetricsOptions({ options, onChange }) {
-
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
@@ -41,8 +44,11 @@ export default function JavaMetricsOptions({ options, onChange }) {
           label="cc_min"
           value={ccMin}
           min={1}
+          max={1000}
           onChange={(value) =>
-            updateMetricsOptions({ cc_min: value })
+            updateMetricsOptions({
+              cc_min: normalizeIntInRange(value, 1, 1000),
+            })
           }
           hint="Complejidad ciclomática mínima a reportar."
         />
@@ -52,8 +58,11 @@ export default function JavaMetricsOptions({ options, onChange }) {
           label="nloc_min"
           value={nlocMin}
           min={1}
+          max={100000}
           onChange={(value) =>
-            updateMetricsOptions({ nloc_min: value })
+            updateMetricsOptions({
+              nloc_min: normalizeIntInRange(value, 1, 100000),
+            })
           }
           hint="Número mínimo de líneas de código."
         />
@@ -63,8 +72,11 @@ export default function JavaMetricsOptions({ options, onChange }) {
           label="args_min"
           value={argsMin}
           min={1}
+          max={100}
           onChange={(value) =>
-            updateMetricsOptions({ args_min: value })
+            updateMetricsOptions({
+              args_min: normalizeIntInRange(value, 1, 100),
+            })
           }
           hint="Número mínimo de argumentos por método."
         />
@@ -77,13 +89,12 @@ export default function JavaMetricsOptions({ options, onChange }) {
   );
 }
 
-
 /* ------------------------------- Componentes auxiliares ------------------------------ */
 
 /**
  * Input numérico reutilizable con label y texto de ayuda opcional.
  */
-function NumberInput({ id, label, value, min, onChange, hint }) {
+function NumberInput({ id, label, value, min, max, onChange, hint }) {
   return (
     <div>
       <label
@@ -98,6 +109,7 @@ function NumberInput({ id, label, value, min, onChange, hint }) {
         name={id}
         type="number"
         min={min}
+        max={max}
         value={typeof value === "number" ? value : min}
         onChange={(e) => onChange(Number(e.target.value))}
         className={`
@@ -105,7 +117,7 @@ function NumberInput({ id, label, value, min, onChange, hint }) {
           outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
           dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-100 dark:placeholder:text-neutral-500
           dark:focus:border-sky-500 dark:focus:ring-sky-900/40 dark:[color-scheme:dark]
-        `} 
+        `}
       />
 
       {hint ? (

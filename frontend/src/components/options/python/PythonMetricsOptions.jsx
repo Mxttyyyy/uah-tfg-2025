@@ -1,4 +1,4 @@
-import { isPlainObject, pickOrEmpty } from "../../../utils/uiUtils";
+import { isPlainObject } from "../../../utils/uiUtils";
 
 /**
  * Opciones de Radon (metrics).
@@ -20,8 +20,15 @@ export default function PythonMetricsOptions({ options, onChange }) {
   const normalizedOptions = isPlainObject(options) ? options : {};
 
   // Validamos las opciones y aplicamos valores por defecto.
-  const ccMin = pickOrEmpty(normalizedOptions.cc_min);
-  const ccMax = pickOrEmpty(normalizedOptions.cc_max);
+  const ccMin =
+    typeof normalizedOptions.cc_min === "string"
+      ? normalizedOptions.cc_min
+      : "";
+      
+  const ccMax =
+    typeof normalizedOptions.cc_max === "string"
+      ? normalizedOptions.cc_max
+      : "";
 
   /**
    * Actualiza parcialmente las opciones de métricas,

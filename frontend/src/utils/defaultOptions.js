@@ -101,7 +101,7 @@ export function createDefaultJavaOptions() {
     dead_code: {
       profile: "default",
       exclude_rules: [],
-      min_priority: "",
+      minimum_priority: "",
     },
 
     // Javac

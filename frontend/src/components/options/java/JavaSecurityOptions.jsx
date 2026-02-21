@@ -104,7 +104,7 @@ export default function JavaSecurityOptions({
                 className={`
                   h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-100
                   dark:border-neutral-700 dark:bg-neutral-950/40
-                  dark:focus:ring-sky-900/40
+                  dark:focus:ring-sky-900/40 dark:[color-scheme:dark]
                 `}
               />
               {level}

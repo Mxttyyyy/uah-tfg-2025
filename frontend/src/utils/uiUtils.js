@@ -161,14 +161,6 @@ export function csvToListDecorators(text) {
 }
 
 /**
- * Devuelve el valor si es una cadena válida; en caso contrario, retorna una cadena vacía.
- * Útil para normalizar valores de entrada en la UI.
- */
-export function pickOrEmpty(v) {
-  return typeof v === "string" ? v : "";
-}
-
-/**
  * Convierte un valor en un entero dentro de un rango determinado.
  * Si el valor no es válido, aplica el mínimo como valor por defecto.
  */

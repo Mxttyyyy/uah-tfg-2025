@@ -86,8 +86,8 @@ def _build_radon_cc_command(filename: str, options: Dict[str, Any]) -> List[str]
     cc_allowed = {"A", "B", "C", "D", "E", "F"}
 
     # Permite filtrar por rango (A-F). Si no se pasa la opción, Radon usa sus defaults (A-F).
-    cc_min = options.get("cc_min") or options.get("min")
-    cc_max = options.get("cc_max") or options.get("max")
+    cc_min = options.get("cc_min")
+    cc_max = options.get("cc_max")
     
     # Validamos los campos
     if isinstance(cc_min, str) and cc_min.strip():

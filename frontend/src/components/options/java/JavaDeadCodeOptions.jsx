@@ -13,7 +13,7 @@ import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
  * Backend espera (todas opcionales):
  * - profile: "minimal" | "default" | "strict"
  * - exclude_rules: string[]
- * - min_priority: int (1..5)
+ * - minimum_priority: int (1..5)
  *
  * Props:
  * - options: objeto con opciones actuales de dead_code
@@ -35,10 +35,10 @@ export default function JavaDeadCodeOptions({
       ? normalizedOptions.profile
       : "default";
 
-  const minPriority =
-    typeof normalizedOptions.min_priority === "number"
-      ? normalizedOptions.min_priority
-      : 1;
+  const minimum_priority =
+    typeof normalizedOptions.minimum_priority === "number"
+      ? normalizedOptions.minimum_priority
+      : "";
 
   const [excludeRulesCsv, setExcludeRulesCsv] = useState(
     listToCsv(normalizedOptions.exclude_rules),
@@ -47,8 +47,6 @@ export default function JavaDeadCodeOptions({
   // Obtenemos las opciones predeterminadas
   const defaultOptionsDeadCode = createDefaultJavaOptions().dead_code;
 
-  const defaultProfile = listToCsv(defaultOptionsDeadCode.profile);
-  const defaultMinPriority = listToCsv(defaultOptionsDeadCode.min_priority);
   const defaultExcludeRules = listToCsv(defaultOptionsDeadCode.exclude_rules);
 
   /**
@@ -67,8 +65,6 @@ export default function JavaDeadCodeOptions({
     setExcludeRulesCsv(defaultExcludeRules);
 
     updateDeadCodeOptions({
-      profile: defaultProfile,
-      min_priority: defaultMinPriority,
       exclude_rules: csvToListNotUpper(defaultExcludeRules),
     });
 
@@ -87,18 +83,14 @@ export default function JavaDeadCodeOptions({
           hint="Perfil de reglas de PMD a utilizar."
         />
 
-        <NumberInput
+        <SelectInput
           id="j-dc-min-priority"
-          label="minPriority"
-          value={minPriority}
-          min={1}
-          max={5}
-          onChange={(n) =>
-            updateDeadCodeOptions({
-              min_priority: normalizeIntInRange(n, 1, 5),
-            })
-          }
-          hint="Prioridad mínima (1 = más grave, 5 = menos grave)."
+          label="minimum_priority"
+          value={minimum_priority}
+          onChange={(value) =>
+            updateDeadCodeOptions({minimum_priority: value === "" ? "" : Number(value)})}
+          options={PMD_PRIORITIES}
+          hint="Filtra por prioridad (1 = más grave, 5 = menos grave). Ejemplo: El valor '3' incluye incidencias con prioridad 1,2 y 3."
         />
       </div>
 
@@ -129,6 +121,16 @@ const PROFILES = [
   { value: "minimal", label: "minimal" },
   { value: "default", label: "default" },
   { value: "strict", label: "strict" },
+];
+
+// Prioridades de PMD
+const PMD_PRIORITIES = [
+  { value: "", label: "(por defecto)" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
 ];
 
 /* ------------------------------- Componentes auxiliares ------------------------------ */
@@ -170,43 +172,6 @@ function TextInput({ id, label, value, onChange, placeholder, hint }) {
   );
 }
 
-/**
- * Input numérico reutilizable con label, límites mínimo/máximo y texto de ayuda opcional.
- */
-function NumberInput({ id, label, value, min, max, onChange, hint }) {
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-gray-900 dark:text-neutral-100"
-      >
-        {label}
-      </label>
-
-      <input
-        id={id}
-        name={id}
-        type="number"
-        min={min}
-        max={max}
-        value={typeof value === "number" ? value : min}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className={`
-          mt-2 w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
-          outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
-          dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-100 dark:placeholder:text-neutral-500
-          dark:focus:border-sky-500 dark:focus:ring-sky-900/40 dark:[color-scheme:dark]
-        `}
-      />
-
-      {hint ? (
-        <p className="mt-1 text-xs text-gray-600 dark:text-neutral-300">
-          {hint}
-        </p>
-      ) : null}
-    </div>
-  );
-}
 
 /**
  * Select reutilizable con label y mensaje de ayuda opcional.
@@ -214,7 +179,10 @@ function NumberInput({ id, label, value, min, max, onChange, hint }) {
 function SelectInput({ id, label, value, onChange, options, hint }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-900 dark:text-neutral-100">
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-gray-900 dark:text-neutral-100"
+      >
         {label}
       </label>
 
@@ -238,7 +206,9 @@ function SelectInput({ id, label, value, onChange, options, hint }) {
       </select>
 
       {hint ? (
-        <p className="mt-1 text-xs text-gray-600 dark:text-neutral-300">{hint}</p>
+        <p className="mt-1 text-xs text-gray-600 dark:text-neutral-300">
+          {hint}
+        </p>
       ) : null}
     </div>
   );
