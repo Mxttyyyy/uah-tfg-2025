@@ -210,8 +210,6 @@ _MYPY_RE = re.compile(
     r"^(?P<path>.+?):"  # Ruta del archivo (hasta el primer ':')
     r"(?P<line>\d+)"  # Número de línea
     r"(?::(?P<col>\d+))?"  # Columna inicial (campo opcional)
-    r"(?::(?P<end_line>\d+))?"  # Línea final del rango (campo opcional)
-    r"(?::(?P<end_col>\d+))?"  # Columna final del rango (campo opcional)
     r":\s+(?P<kind>error|note):"  # Tipo de diagnóstico (error o note)
     r"\s+(?P<msg>.+)$"  # Mensaje completo hasta el final de la línea
 )
@@ -234,8 +232,6 @@ def _extract_mypy_fields(line: str) -> Optional[Dict[str, Any]]:
         "path": m.group("path"),
         "line": to_int(m.group("line")),
         "col": to_int(m.group("col")),
-        "end_line": to_int(m.group("end_line")),
-        "end_col": to_int(m.group("end_col")),
         "kind": m.group("kind"),
         "msg": m.group("msg"),
     }
@@ -266,13 +262,6 @@ def _normalize_mypy_issue(fields: Dict[str, Any]) -> Dict[str, Any]:
         "column": fields.get("col"),  # Campo opcional, aunque forma parte de la localización básica del issue
         "suggestion": _suggestion_for_mypy_rule(rule_code),
     }
-
-    # Campos opcionales menos frecuentes
-    if fields.get("end_line") is not None:
-        issue["end_line"] = fields.get("end_line")
-
-    if fields.get("end_col") is not None:
-        issue["end_column"] = fields.get("end_col")
 
     return issue
 

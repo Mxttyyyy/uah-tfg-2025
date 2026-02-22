@@ -121,7 +121,6 @@ def _normalize_lizard_row(row: List[str], options: Dict[str, Any]) -> Optional[D
     raw_func_name = row[7] or ""
     raw_long_name = row[8] or ""
     start_line = to_int(row[9])
-    end_line = to_int(row[10])
 
     # Normalizamos los nombres de las funciones
     func_name = raw_func_name.split("::")[-1]
@@ -139,7 +138,6 @@ def _normalize_lizard_row(row: List[str], options: Dict[str, Any]) -> Optional[D
         "name": func_name,
         "long_name": long_name,
         "start_line": start_line,
-        "end_line": end_line,
         "cyclomatic_complexity": cc,
         "nloc": nloc,
         "length": length,
@@ -154,7 +152,7 @@ def _parse_lizard_csv_rows(raw_csv: str) -> List[List[str]]:
     Cada fila es una lista de columnas (strings).
 
     Formato típico (sin cabecera):
-    nloc, ccn, token, param, length, location, file, function, long_name, start_line, end_line
+    nloc, ccn, token, param, length, location, file, function, long_name, start_line
     """
     rows: List[List[str]] = []
 

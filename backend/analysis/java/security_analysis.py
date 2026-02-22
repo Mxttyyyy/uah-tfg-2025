@@ -182,12 +182,9 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     #path = str(issue.get("path") or "Input.java")
 
     start = issue.get("start") if isinstance(issue.get("start"), dict) else {}
-    end = issue.get("end") if isinstance(issue.get("end"), dict) else {}
 
     line = to_int(start.get("line"))
     column = to_int(start.get("col"))
-    end_line = to_int(end.get("line"))
-    end_column = to_int(end.get("col"))
 
     # Extraer información adicional
     extra = issue.get("extra") if isinstance(issue.get("extra"), dict) else {}
@@ -209,8 +206,6 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "line": line,
         "column": column,
         "suggestion": suggestion,
-        "end_line": end_line,
-        "end_column": end_column,
         "help_url": help_url,
     }
 

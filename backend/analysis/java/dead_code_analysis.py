@@ -303,8 +303,6 @@ def _normalize_pmd_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
 
     line = to_int(issue.get("beginline"))
     column = to_int(issue.get("begincolumn"))
-    end_line = to_int(issue.get("endline"))
-    end_column = to_int(issue.get("endcolumn"))
 
     priority = to_int(issue.get("priority"))
     severity = _severity_from_priority(priority)
@@ -322,8 +320,6 @@ def _normalize_pmd_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "severity": severity,
         "line": line,
         "column": column,
-        "end_line": end_line,
-        "end_column": end_column,
         "suggestion": _suggestion_for_rule_code(rule),
         "help_url": help_url,
     }
