@@ -30,10 +30,6 @@ export default function JavaStyleOptions({
       ? normalizedOptions.min_severity
       : "";
 
-  // Obtenemos las opciones predeterminadas
-  const defaultOptionsStyle = createDefaultJavaOptions().style;
-  const defaultMinSeverity = defaultOptionsStyle.min_severity ?? "";
-
   /**
    * Actualiza parcialmente las opciones de estilo,
    * manteniendo el resto de la configuración sin cambios.
@@ -46,8 +42,6 @@ export default function JavaStyleOptions({
   // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
   useEffect(() => {
     if (!resetOptionsSignal) return;
-
-    updateStyleOptions({ min_severity: defaultMinSeverity });
 
     setResetSignal(false);
   }, [resetOptionsSignal]);

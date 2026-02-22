@@ -3,6 +3,8 @@ import {
   normalizeIntInRange,
 } from "../../../utils/uiUtils";
 
+import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
+
 /**
  * Opciones de Lizard (metrics).
  *
@@ -23,19 +25,20 @@ export default function JavaMetricsOptions({ options, onChange }) {
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
+  const defaultOptionsMetrics = createDefaultJavaOptions().metrics;
 
   // Validamos las opciones y aplicamos valores por defecto.
   const ccMin = typeof normalizedOptions.cc_min === "number"
       ? normalizedOptions.cc_min
-      : 1;
+      : defaultOptionsMetrics.cc_min;
 
   const nlocMin = typeof normalizedOptions.nloc_min === "number"
       ? normalizedOptions.nloc_min
-      : 1;
+      : defaultOptionsMetrics.nloc_min;
 
   const argsMin = typeof normalizedOptions.args_min === "number"
       ? normalizedOptions.args_min
-      : 1;
+      : defaultOptionsMetrics.args_min;
 
   /**
    * Actualiza parcialmente las opciones de métricas,

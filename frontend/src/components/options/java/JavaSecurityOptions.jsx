@@ -26,19 +26,18 @@ export default function JavaSecurityOptions({
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
+  const defaultOptionsSecurity = createDefaultJavaOptions().security;
 
   // Validamos las opciones y aplicamos valores por defecto.
   const severity = Array.isArray(normalizedOptions.severity)
     ? normalizedOptions.severity
-    : [];
+    : defaultOptionsSecurity.severity;
 
   const [configCsv, setConfigCsv] = useState(listToCsv(normalizedOptions.config));
   const [excludeRuleCsv, setExcludeRulesCsv] = useState(listToCsv(normalizedOptions.exclude_rules));
   const [excludeContainsCsv, setExcludeContainsCsv] = useState(listToCsv(normalizedOptions.exclude_contains));
-
+  
   // Obtenemos las opciones predeterminadas
-  const defaultOptionsSecurity = createDefaultJavaOptions().security;
-
   const defaultConfig = listToCsv(defaultOptionsSecurity.config);
   const defaultExcludeRules = listToCsv(defaultOptionsSecurity.exclude_rules);
   const defaultExcludeContains = listToCsv(defaultOptionsSecurity.exclude_contains);
@@ -128,7 +127,7 @@ export default function JavaSecurityOptions({
           setConfigCsv(text);
           updateSecurityOptions({ config: csvToList(text) });
         }}
-        hint="Configs de Semgrep a ejecutar (puedes poner varios)."
+        hint="Configs de Semgrep a ejecutar (puedes poner varias)."
       />
 
       <TextInput

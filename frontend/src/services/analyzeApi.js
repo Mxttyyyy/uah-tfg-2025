@@ -26,8 +26,8 @@ export async function analyzeCode(payload) {
     // Timeout del cliente: debe ser un poco mayor que el timeout del backend
     const backendTimeoutSeconds = typeof payload?.options?.timeout_seconds === "number" ? payload.options.timeout_seconds : 10;
 
-    // Convertimos a ms y agregamos margen de 5 seg
-    const timeoutMs = (backendTimeoutSeconds + 5) * 1000;
+    // Convertimos a ms y agregamos margen de 20 seg
+    const timeoutMs = (backendTimeoutSeconds + 20) * 1000;
 
     try {
         const data = await postJson("/api/analyze", payload, { timeoutMs });

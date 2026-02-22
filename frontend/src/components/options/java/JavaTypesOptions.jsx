@@ -1,5 +1,5 @@
 import { isPlainObject, normalizeIntInRange } from "../../../utils/uiUtils";
-
+import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
 /**
  * Opciones de javac (types).
  *
@@ -15,17 +15,18 @@ export default function JavaTypesOptions({ options, onChange }) {
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
-
+  const defaultOptionsTypes = createDefaultJavaOptions().types;
+  
   // Validamos las opciones y aplicamos valores por defecto
   const release =
     typeof normalizedOptions.release === "number"
       ? normalizedOptions.release
-      : 1;
+      : defaultOptionsTypes.release;
 
   const lint =
     typeof normalizedOptions.lint === "boolean"
       ? normalizedOptions.lint
-      : false;
+      : defaultOptionsTypes.lint;
 
   /**
    * Actualiza parcialmente las opciones de tipos,

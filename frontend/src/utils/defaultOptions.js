@@ -67,7 +67,7 @@ export function createDefaultPythonOptions() {
 }
 
 /**
- * Crea un objeto NUEVO con las opciones por defecto para Python.
+ * Crea un objeto NUEVO con las opciones por defecto para Java.
  * Se devuelve un objeto nuevo para evitar referencias compartidas en React state.
  */
 export function createDefaultJavaOptions() {
@@ -92,9 +92,9 @@ export function createDefaultJavaOptions() {
 
     // Lizard
     metrics: {
-      cc_min: "",
-      nloc_min: "",
-      args_min: "",
+      cc_min: 1,
+      nloc_min: 1,
+      args_min: 1,
     },
 
     // PMD
@@ -106,7 +106,7 @@ export function createDefaultJavaOptions() {
 
     // Javac
     types: {
-      release: "",
+      release: 17,
       lint: false,
     },
   };
@@ -114,7 +114,7 @@ export function createDefaultJavaOptions() {
 
 /**
  * Devuelve las opciones por defecto según el lenguaje seleccionado.
- * Si no es "java", caemos a Python.
+ * Si no es Java, caemos a Python.
  */
 export function createDefaultAnalyzeOptions(language) {
   return language === "java"

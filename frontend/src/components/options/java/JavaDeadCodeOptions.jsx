@@ -29,25 +29,24 @@ export default function JavaDeadCodeOptions({
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
+  const defaultOptionsDeadCode = createDefaultJavaOptions().dead_code;
 
   // Validamos las opciones y aplicamos valores por defecto para la UI.
   const profile =
     typeof normalizedOptions.profile === "string"
       ? normalizedOptions.profile
-      : "default";
+      : defaultOptionsDeadCode.profile;
 
   const minimum_priority =
     typeof normalizedOptions.minimum_priority === "number"
       ? normalizedOptions.minimum_priority
-      : "";
+      : defaultOptionsDeadCode.minimum_priority;
 
   const [excludeRulesCsv, setExcludeRulesCsv] = useState(
     listToCsv(normalizedOptions.exclude_rules),
   );
 
   // Obtenemos las opciones predeterminadas
-  const defaultOptionsDeadCode = createDefaultJavaOptions().dead_code;
-
   const defaultExcludeRules = listToCsv(defaultOptionsDeadCode.exclude_rules);
 
   /**
@@ -81,7 +80,7 @@ export default function JavaDeadCodeOptions({
           value={profile}
           onChange={(v) => updateDeadCodeOptions({ profile: v })}
           options={PROFILES}
-          hint="Perfil de reglas de PMD a utilizar."
+          hint="Perfil de reglas (PMD): minimal = menos avisos, default = equilibrio, strict = más avisos."
         />
 
         <SelectInput
