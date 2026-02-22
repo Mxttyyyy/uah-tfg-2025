@@ -48,7 +48,7 @@ export default function JavaTypesOptions({ options, onChange }) {
             release: normalizeIntInRange(value, 1, 50),
           })
         }
-        hint="Versión objetivo de Java. Ejemplo: 17 o 21."
+        hint="Versión de Java para la compilación. Ejemplo: 17 o 21."
       />
 
       <CheckboxRow

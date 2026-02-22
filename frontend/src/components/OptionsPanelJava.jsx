@@ -274,8 +274,8 @@ export default function OptionsPanelJava({ options, onChange }) {
       <div className="flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
         {/* Escondemos el texto en resoluciones menores */}
         <p className="hidden 2xl:block text-sm text-gray-600 dark:text-neutral-300">
-          Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture,
-          Mypy).
+          Ajustes específicos de cada herramienta (Checkstyle, Semgrep, Lizard, PMD,
+          Javac).
         </p>
 
         <details 
@@ -411,9 +411,9 @@ export default function OptionsPanelJava({ options, onChange }) {
         <details 
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
-            hover:bg-blue-50/70 border-l-orange-300 border-l-4 hover:border-l-orange-300
-            dark:border-l-orange-300 dark:border-neutral-700 dark:bg-neutral-950/50
-            dark:hover:bg-neutral-800/50 dark:hover:border-l-orange-300 dark:hover:border-sky-900/60
+            hover:bg-blue-50/70 border-l-orange-400 border-l-4 hover:border-l-orange-400
+            dark:border-l-orange-400 dark:border-neutral-700 dark:bg-neutral-950/50
+            dark:hover:bg-neutral-800/50 dark:hover:border-l-orange-400 dark:hover:border-sky-900/60
           `}
         >
           <summary 

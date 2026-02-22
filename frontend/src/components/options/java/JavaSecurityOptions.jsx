@@ -90,7 +90,7 @@ export default function JavaSecurityOptions({
       {/* Severity checkboxes */}
       <div>
         <label className="block text-sm font-medium text-gray-900 dark:text-neutral-100">
-          severity
+          severity (filtro)
         </label>
 
         <div className="mt-2 grid grid-cols-2 gap-2">
@@ -115,7 +115,7 @@ export default function JavaSecurityOptions({
         </div>
 
         <p className="mt-2 text-xs text-gray-600 dark:text-neutral-300">
-          Filtra resultados por severidad en Semgrep.
+          Filtra resultados por severidad. Si no marcas ninguna, se muestran todas.
         </p>
       </div>
 

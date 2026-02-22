@@ -137,7 +137,7 @@ export default function OptionsPanelPython({ options, onChange }) {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-base font-semibold text-gray-900 dark:text-neutral-100">
-            Opciones
+            Opciones (Python)
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-neutral-300">
             Selecciona qué análisis ejecutar. Si no seleccionas ninguno, se

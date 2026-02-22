@@ -64,10 +64,6 @@ export default function JavaStyleOptions({
         options={SEVERITY_LEVELS}
         hint={"Severidad mínima a reportar por Checkstyle."}
       />
-
-      <p className="text-xs text-gray-600 dark:text-neutral-300">
-        Nota: si lo dejas vacío, se reportarán todas las severidades.
-      </p>
     </div>
   );
 }
@@ -101,7 +97,7 @@ function SelectInput({ id, label, value, onChange, options, hint }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={`
-          mt-2 w-full cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+          mt-2 w-35 cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
           outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100
           dark:border-neutral-700 dark:bg-neutral-950/40 dark:text-neutral-100
           dark:focus:border-sky-500 dark:focus:ring-sky-900/40

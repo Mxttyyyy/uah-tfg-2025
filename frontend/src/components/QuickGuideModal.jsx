@@ -42,7 +42,7 @@ export default function QuickGuideModal({ open, onClose }) {
     },
     {
       title: "Pulsa Analizar",
-      text: "Se mostrará un resumen de los problemas encontrados (agrupados por severidad) y los resultados por módulo (Ruff, Bandit, Radon, Vulture, Mypy).",
+      text: "Se mostrará un resumen de los problemas encontrados (agrupados por severidad) y los resultados por módulo (Estilo, Seguridad, Métricas, Código muerto, Tipado).",
     },
     {
       title: "Revisa y navega",

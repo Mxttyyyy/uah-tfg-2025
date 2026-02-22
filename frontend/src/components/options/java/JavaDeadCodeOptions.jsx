@@ -91,7 +91,7 @@ export default function JavaDeadCodeOptions({
           onChange={(value) =>
             updateDeadCodeOptions({minimum_priority: value === "" ? "" : Number(value)})}
           options={PMD_PRIORITIES}
-          hint="Filtra por prioridad (1 = más grave, 5 = menos grave). Ejemplo: El valor '3' incluye incidencias con prioridad 1,2 y 3."
+          hint="Filtra por prioridad (1 = más grave, 5 = menos grave). Ejemplo: El valor '3' incluye incidencias con prioridad 1, 2 y 3."
         />
       </div>
 

@@ -1,6 +1,5 @@
 import {
   isPlainObject,
-  toInt,
   normalizeIntInRange,
 } from "../../../utils/uiUtils";
 
@@ -26,9 +25,17 @@ export default function JavaMetricsOptions({ options, onChange }) {
   const normalizedOptions = isPlainObject(options) ? options : {};
 
   // Validamos las opciones y aplicamos valores por defecto.
-  const ccMin = toInt(normalizedOptions.cc_min);
-  const nlocMin = toInt(normalizedOptions.nloc_min);
-  const argsMin = toInt(normalizedOptions.args_min);
+  const ccMin = typeof normalizedOptions.cc_min === "number"
+      ? normalizedOptions.cc_min
+      : 1;
+
+  const nlocMin = typeof normalizedOptions.nloc_min === "number"
+      ? normalizedOptions.nloc_min
+      : 1;
+
+  const argsMin = typeof normalizedOptions.args_min === "number"
+      ? normalizedOptions.args_min
+      : 1;
 
   /**
    * Actualiza parcialmente las opciones de métricas,
@@ -40,7 +47,7 @@ export default function JavaMetricsOptions({ options, onChange }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <NumberInput
           id="j-m-cc-min"
           label="cc_min"
@@ -83,10 +90,6 @@ export default function JavaMetricsOptions({ options, onChange }) {
           hint="Número mínimo de argumentos por método."
         />
       </div>
-
-      <p className="text-xs text-gray-600 dark:text-neutral-300">
-        Si se deja vacío, se utilizan los valores predeterminados del backend.
-      </p>
     </div>
   );
 }
