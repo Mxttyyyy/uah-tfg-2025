@@ -76,7 +76,7 @@ def analyze_types(
     if result.returncode == 2:
         # Si el usuario pasó opciones, entonces el error es por opciones inválidas
         if options:
-            raise ValueError("Opciones inválidas para javac.")
+            raise ValueError(raw or"Opciones inválidas para javac.")
         raise RuntimeError(f"javac falló (exit code {result.returncode}).")
 
     diagnostics = _parse_javac_output(raw)

@@ -5,7 +5,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
 
-from analysis.utils import to_int
+from analysis.utils import to_int, is_str_list
 
 # Ubicación del directorio "Checkstyle"
 _CHECKSTYLE_DIR = os.path.join(
@@ -78,14 +78,25 @@ def analyze_style(
     issues: List[Dict[str, Any]] = []
     exclude_checks = options.get("exclude_checks")
     
+    # Normalizamos los valores de la lista de checks a excluir
+    exclude_terms = []
+    if is_str_list(exclude_checks):
+        exclude_terms = [str(t).strip().lower() for t in exclude_checks if str(t).strip()]
+
+
     for file_elem in root.findall("file"):
         # En Checkstyle, error = issue
         for issue in file_elem.findall("error"):
 
             issue_normalized = _normalize_checkstyle_issue(issue) # Agregamos a la lista cada issue normalizado
-            if issue_normalized.get("code") in exclude_checks:
+            rule_code = str(issue_normalized.get("code") or "").lower()
+
+            # Si cualquier término aparece dentro del rule_code, lo excluimos
+            if exclude_terms and any(term in rule_code for term in exclude_terms):
                 continue
+
             issues.append(issue_normalized)
+            
     # Opción personalizada para filtrar issues por severidad
     min_sev = options.get("min_severity")
     if isinstance(min_sev, str) and min_sev.strip():

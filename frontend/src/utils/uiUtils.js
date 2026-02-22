@@ -219,5 +219,13 @@ export function cleanErrorDetails(error) {
     return cleaned;
   }
 
+    // Javac
+    // Cuando hay error de flags, javac imprime varias líneas.
+    // Nos quedamos solo con la primera línea relevante.
+    if (msg.includes("Usage: javac")){
+      const firstLine = msg.split("\n")[0].trim();
+      return firstLine;
+    }
+
   return msg.trim();
 }

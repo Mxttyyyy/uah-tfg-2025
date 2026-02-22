@@ -44,38 +44,29 @@ def analyze_security(
                 "Semgrep no está instalado o no se encuentra en el PATH."
             ) from exc
 
-    # Semgrep suele devolver:
-    # - 0: ejecución correcta (puede haber o no findings)
-    # - 1: ejecución correcta con findings
-    # - != 0 y != 1: error real de ejecución
-
-    # Permitimos 0 y 1 (0 = ok, 1 = findings "issues" en ciertos modos)
-    if result.returncode not in (0, 1):
-        stderr = (result.stderr or "").strip()
-        if options:
-            raise ValueError(stderr or "Opciones inválidas para Semgrep.")
-
+    # Procesamos la salida JSON de Semgrep.
+    # Aunque el exit code sea 0, Semgrep puede incluir errores en el campo "errors"
+    # del propio JSON, por lo que validamos explícitamente ese campo.
     raw = (result.stdout or "").strip()
-    if not raw:
-        if result.returncode == 0:
-            return []  # No hay issues
-
-        stderr = (result.stderr or "").strip()
-        raise RuntimeError(
-            f"Semgrep falló con un error (exit code {result.returncode})."
-        )
-
+   
     # Parseamos el JSON a estructura de Python
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
         raise RuntimeError(f"No se pudo parsear JSON de Semgrep: {exc}")
 
-    # Aunque el returncode sea 0/1, verificamos si el JSON contiene errores
+    # Si el JSON contiene errores, extraemos solo los mensajes relevantes
+    # y los mostramos de forma resumida en la UI
     errors = data.get("errors")
     if isinstance(errors, list) and errors:
+        messages = [
+            e.get("message", "").strip()
+            for e in errors
+            if isinstance(e, dict) and e.get("message")
+        ]
+        short_msg = "\n".join(messages)
         if options:
-            raise ValueError(stderr or "Opciones inválidas para Semgrep.")
+            raise ValueError(short_msg or "Opciones inválidas para Semgrep.")
         
         raise RuntimeError("Semgrep devolvió errores internos en el JSON.")
 

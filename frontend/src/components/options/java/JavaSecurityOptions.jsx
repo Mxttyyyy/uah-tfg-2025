@@ -1,4 +1,4 @@
-import { isPlainObject, listToCsv, csvToList } from "../../../utils/uiUtils";
+import { isPlainObject, listToCsv, csvToListNotUpper } from "../../../utils/uiUtils";
 import { useState, useEffect } from "react";
 import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
 
@@ -125,7 +125,7 @@ export default function JavaSecurityOptions({
         value={configCsv}
         onChange={(text) => {
           setConfigCsv(text);
-          updateSecurityOptions({ config: csvToList(text) });
+          updateSecurityOptions({ config: csvToListNotUpper(text) });
         }}
         hint="Configs de Semgrep a ejecutar (puedes poner varias)."
       />
@@ -137,7 +137,7 @@ export default function JavaSecurityOptions({
         value={excludeRuleCsv}
         onChange={(text) => {
           setExcludeRulesCsv(text);
-          updateSecurityOptions({ exclude_rules: csvToList(text) });
+          updateSecurityOptions({ exclude_rules: csvToListNotUpper(text) });
         }}
         hint="Excluye reglas concretas por su ID exacto (check_id)."
       />
@@ -148,7 +148,7 @@ export default function JavaSecurityOptions({
         value={excludeContainsCsv}
         onChange={(text) => {
           setExcludeContainsCsv(text);
-          updateSecurityOptions({ exclude_contains: csvToList(text) });
+          updateSecurityOptions({ exclude_contains: csvToListNotUpper(text) });
         }}
         hint="Excluye todas las reglas cuyo ID (check_id) contenga estos términos."
       />
