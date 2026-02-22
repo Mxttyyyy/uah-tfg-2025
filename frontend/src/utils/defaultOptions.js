@@ -107,7 +107,7 @@ export function createDefaultJavaOptions() {
     // Javac
     types: {
       release: 17,
-      lint: false,
+      lint: true,
     },
   };
 }

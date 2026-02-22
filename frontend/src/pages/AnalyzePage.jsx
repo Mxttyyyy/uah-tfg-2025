@@ -73,7 +73,8 @@ export default function AnalyzePage() {
    * Carga un ejemplo de código.
    */
   function handleLoadExample() {
-    const EXAMPLE_CODE = [
+    
+    const EXAMPLE_CODE_PYTHON = [
       "import subprocess",
       "import hashlib",
       "",
@@ -91,7 +92,22 @@ export default function AnalyzePage() {
       "print(weak_hash('1234'))",
     ].join("\n");
 
-    setCode(EXAMPLE_CODE);
+    const EXAMPLE_CODE_JAVA = [
+      "import java.util.List;",
+      "import java.util.ArrayList;",
+      "",
+      "public class Demo {",
+      "  public static void main(String[] args) {",
+      "    List list = new ArrayList();",
+      '    list.add("hola");',
+      "    List<Integer> nums = list;",
+      "    System.out.println(nums.get(0));",
+      "  }",
+      "}",
+    ].join("\n");
+
+    language === "python" ? setCode(EXAMPLE_CODE_PYTHON) : setCode(EXAMPLE_CODE_JAVA);
+    
     setResult(null); // limpia resultados anteriores
   }
 
