@@ -24,11 +24,12 @@ export default function CodeActions({
   onAnalyze,
   onClear,
   onExample,
+  onLanguageChange,
 }) {
   // Lista de lenguajes soportados por la herramienta
   const LANGUAGES = [
     { value: "python", label: "Python" },
-    { value: "java", label: "Java", disabled: true },
+    { value: "java", label: "Java" },
   ];
 
   // Obtenemos valores dependiendo del estado del análisis

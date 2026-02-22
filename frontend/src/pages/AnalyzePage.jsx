@@ -4,14 +4,9 @@ import { analyzeCode } from "../services/analyzeApi";
 import Header from "../components/Header";
 import CodeInput from "../components/CodeInput";
 import OptionsPanelPython from "../components/OptionsPanelPython";
+import OptionsPanelJava from "../components/OptionsPanelJava";
 import ResultsPanel from "../components/results/ResultsPanel";
 import ScrollToTopButton from "../components/ScrollToTopButton";
-
-import JavaSecurityOptions from "../components/options/java/JavaSecurityOptions";
-import JavaStyleOptions from "../components/options/java/JavaStyleOptions";
-import JavaMetricsOptions from "../components/options/java/JavaMetricsOptions";
-import JavaDeadCodeOptions from "../components/options/java/JavaDeadCodeOptions";
-import JavaTypesOptions from "../components/options/java/JavaTypesOptions";
 
 import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
 
@@ -165,9 +160,11 @@ export default function AnalyzePage() {
 
         {/* Panel derecho de opciones */}
         <div className="min-w-0">
-          <OptionsPanelPython options={options} onChange={setOptions} />
-          <JavaTypesOptions options={options} onChange={setOptions} />
-
+          {
+          language === "python" 
+          ? (<OptionsPanelPython options={options} onChange={setOptions} />)
+          : (<OptionsPanelJava options={options} onChange={setOptions} />)
+          }
         </div>
       </div>
 
