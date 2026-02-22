@@ -33,7 +33,7 @@ export default function OptionsPanelJava({ options, onChange }) {
   const timeoutSeconds =
     typeof normalizedOptions.timeout_seconds === "number"
       ? normalizedOptions.timeout_seconds
-      : 10;
+      : 15;
 
   // Sub-objetos por módulo (siempre deben ser dicts para el backend)
   const style = isPlainObject(normalizedOptions.style)

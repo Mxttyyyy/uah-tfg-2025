@@ -4,7 +4,8 @@
 export const ANALYSIS_KEYS = ["style", "security", "metrics", "dead_code", "types"];
 
 export const DEFAULT_LANGUAGE = "python";
-export const DEFAULT_TIMEOUT_SECONDS = 10;
+export const DEFAULT_TIMEOUT_SECONDS_PYTHON = 10;
+export const DEFAULT_TIMEOUT_SECONDS_JAVA = 15;
 
 /**
  * Crea un objeto NUEVO con las opciones por defecto para Python.
@@ -16,7 +17,7 @@ export function createDefaultPythonOptions() {
     enabled: [...ANALYSIS_KEYS],
 
     // Timeout global que el backend aplica al ejecutar sus herramientas de análisis
-    timeout_seconds: DEFAULT_TIMEOUT_SECONDS,
+    timeout_seconds: DEFAULT_TIMEOUT_SECONDS_PYTHON,
 
     // ------- Opciones por módulo (objetos serializables a JSON) -------
     // Establecemos los valores por defecto
@@ -75,11 +76,12 @@ export function createDefaultJavaOptions() {
 
     enabled: [...ANALYSIS_KEYS],
     
-    timeout_seconds: DEFAULT_TIMEOUT_SECONDS,
+    timeout_seconds: DEFAULT_TIMEOUT_SECONDS_JAVA,
 
     // Checkstyle
     style: {
       min_severity: "",
+      exclude_checks: [],
     },
 
     // Semgrep

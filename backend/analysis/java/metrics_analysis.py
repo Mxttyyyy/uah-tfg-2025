@@ -8,7 +8,7 @@ from analysis.utils import to_int
 
 
 def analyze_metrics(
-    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10,
+    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 15,
 ) -> Dict[str, Any]:
     """
     Ejecuta Lizard sobre el código Java del usuario y devuelve

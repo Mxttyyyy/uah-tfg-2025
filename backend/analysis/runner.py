@@ -19,6 +19,9 @@ from analysis.utils import is_probably_java
 # Tipos de análisis permitidos
 _ALLOWED_ANALYSES = {"style", "security", "metrics", "dead_code", "types"}
 
+PYTHON_TIMEOUT = 10
+JAVA_TIMEOUT = 15
+
 def run_analysis(
     language: str, code: str, options: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
@@ -119,7 +122,8 @@ def run_analysis(
         enabled = set(_ALLOWED_ANALYSES)
 
     # Validamos el timeout
-    timeout_seconds = options.get("timeout_seconds", 10)
+    timeout = PYTHON_TIMEOUT if language == "python" else JAVA_TIMEOUT
+    timeout_seconds = options.get("timeout_seconds", timeout)
     if "timeout_seconds" in options and (not isinstance(timeout_seconds, int) or timeout_seconds <= 0):
         return _error_response(
             language=language,

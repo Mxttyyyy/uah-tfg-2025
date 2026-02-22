@@ -23,8 +23,9 @@ export async function analyzeCode(payload) {
         return makeClientErrorResponse("El código está vacío. Pega código antes de analizar.");
     }
 
+    const timeout_language = payload?.language === "python" ? 10 : 15;
     // Timeout del cliente: debe ser un poco mayor que el timeout del backend
-    const backendTimeoutSeconds = typeof payload?.options?.timeout_seconds === "number" ? payload.options.timeout_seconds : 10;
+    const backendTimeoutSeconds = typeof payload?.options?.timeout_seconds === "number" ? payload.options.timeout_seconds : timeout_language;
 
     // Convertimos a ms y agregamos margen de 20 seg
     const timeoutMs = (backendTimeoutSeconds + 20) * 1000;

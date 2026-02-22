@@ -8,7 +8,7 @@ from analysis.utils import to_int
 
 
 def analyze_types(
-    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10
+    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 15
 ) -> List[Dict[str, Any]]:
     """
     Ejecuta javac sobre el código Java del usuario para detectar errores de tipos y compilación.

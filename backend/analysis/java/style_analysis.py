@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
@@ -18,7 +19,7 @@ GOOGLE_CONFIG_PATH = os.path.join(_CHECKSTYLE_DIR, "google_checks.xml")
 
 
 def analyze_style(
-    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10,
+    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 15,
 ) -> List[Dict[str, Any]]:
     """
     Ejecuta la herramienta Checkstyle sobre el código del usuario 'code'.
@@ -29,7 +30,7 @@ def analyze_style(
     # Ejecutamos la herramienta en un directorio temporal para aislar el análisis
     # y evitar escribir archivos en el sistema del usuario
     with tempfile.TemporaryDirectory(prefix="tfg_java_style_") as tmpdir:
-        filename = "Input.java"
+        filename = _pick_java_filename(code)
         filepath = os.path.join(tmpdir, filename)
 
         # Guardamos el código del usuario en un archivo temporal (ya que Checkstyle no acepta el código por stdin).
@@ -75,12 +76,16 @@ def analyze_style(
         raise RuntimeError(f"No se pudo parsear XML de Checkstyle: {exc}")
 
     issues: List[Dict[str, Any]] = []
-
+    exclude_checks = options.get("exclude_checks")
+    
     for file_elem in root.findall("file"):
         # En Checkstyle, error = issue
         for issue in file_elem.findall("error"):
-            issues.append(_normalize_checkstyle_issue(issue)) # Agregamos a la lista cada issue normalizado
 
+            issue_normalized = _normalize_checkstyle_issue(issue) # Agregamos a la lista cada issue normalizado
+            if issue_normalized.get("code") in exclude_checks:
+                continue
+            issues.append(issue_normalized)
     # Opción personalizada para filtrar issues por severidad
     min_sev = options.get("min_severity")
     if isinstance(min_sev, str) and min_sev.strip():
@@ -132,7 +137,8 @@ def _normalize_checkstyle_issue(issue_elem: ET.Element) -> Dict[str, Any]:
     # Quitamos el sufijo "Check" de los códigos para facilitar las sugerencias
     if rule_code.endswith("Check"):
         rule_code = rule_code[:-5]
-        
+    
+
     return {
         "tool": "checkstyle",
         "category": "style",
@@ -143,6 +149,25 @@ def _normalize_checkstyle_issue(issue_elem: ET.Element) -> Dict[str, Any]:
         "column": column,
         "suggestion": _suggestion_for_rule(rule_code),
     }
+
+# Detecta declaraciones de tipos públicos en Java (class, interface, enum, record, @interface)
+# y captura el nombre del tipo para poder generar un nombre de archivo válido (<Nombre>.java).
+_PUBLIC_TYPE_RE = re.compile(
+    r"\bpublic\s+(?:\w+\s+)*?(?:class|interface|enum|record|@interface)\s+([A-Za-z_][\w$]*)\b"
+)
+
+def _pick_java_filename(code: str) -> str:
+    """
+    Si detectamos un tipo público (public class X / public interface X / ...),
+    el fichero se llamará X.java para evitar el error:
+    'class X is public, should be declared in a file named X.java'.
+    """
+    match = _PUBLIC_TYPE_RE.search(code or "")
+    if match:
+        name = (match.group(1) or "").strip()
+        if name:
+            return f"{name}.java"
+    return "Input.java"
 
 
 def _severity_from_checkstyle(sev: Optional[str]) -> str:

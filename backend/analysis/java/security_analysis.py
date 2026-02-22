@@ -8,7 +8,7 @@ from analysis.utils import to_int, is_str_list
 
 
 def analyze_security(
-    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 10
+    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 15
 ) -> List[Dict[str, Any]]:
     """
     Ejecuta la herramienta Semgrep (SAST) sobre el código del usuario 'code'.
