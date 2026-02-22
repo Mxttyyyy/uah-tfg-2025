@@ -49,6 +49,53 @@ export default function ResultsPanel({
   const typesIssues = Array.isArray(analysis.types) ? analysis.types : [];
   const metrics = isPlainObject(analysis.metrics) ? analysis.metrics : {};
 
+
+// Configuración dinámica de títulos según lenguaje
+  const ANALYSIS_TITLES = {
+    python: {
+      style: {
+        title: "Estilo y buenas prácticas (Ruff)",
+        subtitle: "Problemas de estilo, convenciones y reglas de lint.",
+      },
+      security: {
+        title: "Seguridad básica (Bandit)",
+        subtitle: "Posibles patrones inseguros o riesgos comunes.",
+      },
+      dead_code: {
+        title: "Código muerto (Vulture)",
+        subtitle:
+          "Código potencialmente sin uso (variables, imports, funciones...).",
+      },
+      types: {
+        title: "Tipado (Mypy)",
+        subtitle: "Problemas de tipado estático y compatibilidad de tipos.",
+      },
+    },
+    java: {
+      style: {
+        title: "Estilo y buenas prácticas (Checkstyle)",
+        subtitle: "Problemas de estilo, convenciones y reglas de lint.",
+      },
+      security: {
+        title: "Seguridad básica (Semgrep)",
+        subtitle: "Posibles patrones inseguros o riesgos comunes.",
+      },
+      dead_code: {
+        title: "Código muerto (PMD)",
+        subtitle:
+          "Código potencialmente sin uso (variables, imports, funciones...).",
+      },
+      types: {
+        title: "Tipado (javac)",
+        subtitle: "Problemas de tipado estático y compatibilidad de tipos.",
+      },
+    },
+  };
+
+  // Si por cualquier motivo no llega lenguaje, usamos python como fallback
+  const titles = ANALYSIS_TITLES[language] || ANALYSIS_TITLES.python;
+
+
   // Número total de issues
   const totalIssues = useMemo(() => {
     if (typeof summary.total_issues === "number") return summary.total_issues;
@@ -155,7 +202,9 @@ export default function ResultsPanel({
           <Alert
             variant="error"
             title={error.error_code === "LANGUAGE_MISMATCH"
-                ? "El código no es Python válido o no coincide con el lenguaje seleccionado"
+                ? language === "python"
+                  ? "El código no es Python válido o no coincide con el lenguaje seleccionado"
+                  : "El código no es Java válido o no coincide con el lenguaje seleccionado"
                 : "No se pudo completar el análisis. Vuelve a intentarlo."
             }
             message={`${String(error.message || "Error desconocido")}${
@@ -207,8 +256,8 @@ export default function ResultsPanel({
       {/* Secciones de cada tipo de análisis */}
       <div className="mt-6 space-y-5">
         <IssueList
-          title="Estilo y buenas prácticas (Ruff)"
-          subtitle="Problemas de estilo, convenciones y reglas de lint."
+          title={titles.style.title}
+          subtitle={titles.style.subtitle}
           issues={styleIssues}
           emptyText="Sin issues de estilo."
           onIssueSelect={onIssueSelect}
@@ -217,8 +266,8 @@ export default function ResultsPanel({
         />
 
         <IssueList
-          title="Seguridad básica (Bandit)"
-          subtitle="Posibles patrones inseguros o riesgos comunes."
+          title={titles.security.title}
+          subtitle={titles.security.subtitle}
           issues={securityIssues}
           emptyText="Sin issues de seguridad."
           onIssueSelect={onIssueSelect}
@@ -232,8 +281,8 @@ export default function ResultsPanel({
         />
 
         <IssueList
-          title="Código muerto (Vulture)"
-          subtitle="Código potencialmente sin uso (variables, imports, funciones…)."
+          title={titles.dead_code.title}
+          subtitle={titles.dead_code.subtitle}
           issues={deadCodeIssues}
           emptyText="Sin avisos de código muerto."
           onIssueSelect={onIssueSelect}
@@ -242,8 +291,8 @@ export default function ResultsPanel({
         />
 
         <IssueList
-          title="Tipado (Mypy)"
-          subtitle="Problemas de tipado estático y compatibilidad de tipos."
+          title={titles.types.title}
+          subtitle={titles.types.subtitle}
           issues={typesIssues}
           emptyText="Sin issues de tipado."
           onIssueSelect={onIssueSelect}
