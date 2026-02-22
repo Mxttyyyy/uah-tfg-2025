@@ -17,6 +17,8 @@ import {
  * Props:
  * - value: objeto con opciones actuales de metrics
  * - onChange: (nextValue) => void
+ * - resetOptionsSignal
+ * - setResetSignal
  */
 export default function JavaMetricsOptions({ options, onChange }) {
   // Normalizamos las opciones para garantizar siempre un objeto válido

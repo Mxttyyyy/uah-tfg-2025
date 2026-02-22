@@ -14,6 +14,8 @@ import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
  * Props:
  * - options: objeto con opciones actuales de security
  * - onChange: (nextValue) => void
+ * - resetOptionsSignal
+ * - setResetSignal
  */
 export default function JavaSecurityOptions({
   options,

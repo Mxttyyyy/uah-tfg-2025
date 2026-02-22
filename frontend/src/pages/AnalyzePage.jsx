@@ -11,6 +11,7 @@ import JavaSecurityOptions from "../components/options/java/JavaSecurityOptions"
 import JavaStyleOptions from "../components/options/java/JavaStyleOptions";
 import JavaMetricsOptions from "../components/options/java/JavaMetricsOptions";
 import JavaDeadCodeOptions from "../components/options/java/JavaDeadCodeOptions";
+import JavaTypesOptions from "../components/options/java/JavaTypesOptions";
 
 import { createDefaultAnalyzeOptions } from "../utils/defaultOptions";
 
@@ -165,7 +166,7 @@ export default function AnalyzePage() {
         {/* Panel derecho de opciones */}
         <div className="min-w-0">
           <OptionsPanelPython options={options} onChange={setOptions} />
-          <JavaDeadCodeOptions options={options} onChange={setOptions} />
+          <JavaTypesOptions options={options} onChange={setOptions} />
 
         </div>
       </div>

@@ -11,6 +11,8 @@ import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
  * Props:
  * - options: objeto con opciones actuales de style
  * - onChange: (nextValue) => void
+ * - resetOptionsSignal
+ * - setResetSignal
  */
 export default function JavaStyleOptions({
   options,

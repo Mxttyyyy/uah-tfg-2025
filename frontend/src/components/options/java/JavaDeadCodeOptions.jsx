@@ -17,6 +17,8 @@ import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
  * Props:
  * - options: objeto con opciones actuales de dead_code
  * - onChange: (nextValue) => void
+ * - resetOptionsSignal
+ * - setResetSignal
  */
 export default function JavaDeadCodeOptions({
   options,
