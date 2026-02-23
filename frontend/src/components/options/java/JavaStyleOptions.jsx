@@ -59,7 +59,7 @@ export default function JavaStyleOptions({
       <TextInput
         id="j-style-exclude-checks"
         label="exclude_checks"
-        placeholder="Ej: F401, E501"
+        placeholder="Ej: LineLength, MissingJavadocType"
         value={excludeChecksCsv}
         onChange={(text) => {
           setExcludeChecksCsv(text);

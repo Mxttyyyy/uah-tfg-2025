@@ -60,7 +60,7 @@ def analyze_style(
     # >1 -> error
     if result.returncode not in (0, 1):
         stderr = (result.stderr or "").strip()
-        if options:
+        if options.get("exclude_checks"):
             raise ValueError(stderr or "Opciones inválidas para Checkstyle.")
         
         raise RuntimeError(stderr or "Checkstyle falló en la ejecución.")

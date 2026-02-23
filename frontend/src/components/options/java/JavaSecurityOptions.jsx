@@ -139,7 +139,7 @@ export default function JavaSecurityOptions({
           setExcludeRulesCsv(text);
           updateSecurityOptions({ exclude_rules: csvToListNotUpper(text) });
         }}
-        hint="Excluye reglas concretas por su ID exacto (check_id)."
+        hint="Excluye reglas concretas por su ID exacto (check_id) (puedes poner varios)."
       />
       <TextInput
         id="sec-exclude-contains"
@@ -150,7 +150,7 @@ export default function JavaSecurityOptions({
           setExcludeContainsCsv(text);
           updateSecurityOptions({ exclude_contains: csvToListNotUpper(text) });
         }}
-        hint="Excluye todas las reglas cuyo ID (check_id) contenga estos términos."
+        hint="Excluye todas las reglas cuyo ID (check_id) contenga estos términos (puedes poner varios)."
       />
 
       <p className="text-xs text-gray-600 dark:text-neutral-300">

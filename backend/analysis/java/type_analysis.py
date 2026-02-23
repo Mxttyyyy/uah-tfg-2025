@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from typing import Any, Dict, List, Optional
 
-from analysis.utils import to_int
+from analysis.utils import to_int, _pick_java_filename
 
 
 def analyze_types(
@@ -290,27 +290,8 @@ def _extract_column_from_block(block: List[str]) -> Optional[int]:
 
 
 # -----------------------------------
-# Helpers / Sugerencias
+# Sugerencias
 # -----------------------------------
-
-# Detecta declaraciones de tipos públicos en Java (class, interface, enum, record, @interface)
-# y captura el nombre del tipo para poder generar un nombre de archivo válido (<Nombre>.java).
-_PUBLIC_TYPE_RE = re.compile(
-    r"\bpublic\s+(?:\w+\s+)*?(?:class|interface|enum|record|@interface)\s+([A-Za-z_][\w$]*)\b"
-)
-
-def _pick_java_filename(code: str) -> str:
-    """
-    Si detectamos un tipo público (public class X / public interface X / ...),
-    el fichero se llamará X.java para evitar el error:
-    'class X is public, should be declared in a file named X.java'.
-    """
-    match = _PUBLIC_TYPE_RE.search(code or "")
-    if match:
-        name = (match.group(1) or "").strip()
-        if name:
-            return f"{name}.java"
-    return "Input.java"
 
 
 def _suggestion_for_javac(message: str, lint_code: Optional[str]) -> str:
