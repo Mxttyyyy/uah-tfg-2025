@@ -49,7 +49,7 @@ export default function AnalyzePage() {
    */
   async function handleAnalyze() {
     setIsLoading(true);
-
+    setResult(null);
     // analyzeCode ya valida código vacío y devuelve un error normalizado
     const data = await analyzeCode({
       language,

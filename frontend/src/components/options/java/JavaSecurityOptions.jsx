@@ -114,7 +114,7 @@ export default function JavaSecurityOptions({
         </div>
 
         <p className="mt-2 text-xs text-gray-600 dark:text-neutral-300">
-          Filtra resultados por severidad. Si no marcas ninguna, se muestran todas.
+          Filtra resultados por nivel de impacto de la vulnerabilidad. Si no marcas ninguna, se muestran todas.
         </p>
       </div>
 

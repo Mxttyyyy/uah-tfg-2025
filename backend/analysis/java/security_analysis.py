@@ -48,7 +48,7 @@ def analyze_security(
     # Aunque el exit code sea 0, Semgrep puede incluir errores en el campo "errors"
     # del propio JSON, por lo que validamos explícitamente ese campo.
     raw = (result.stdout or "").strip()
-   
+    
     # Parseamos el JSON a estructura de Python
     try:
         data = json.loads(raw)
@@ -144,14 +144,13 @@ def _build_semgrep_command(filename: str, options: Dict[str, Any]) -> List[str]:
 
     # ------- severity: str o list[str] -------
     severity = options.get("severity")
-
     # Si llega severity = "", no lo annadimos
     if isinstance(severity, str) and severity.strip():
-        cmd += ["--severity", (severity.strip().upper())]
+        cmd += ["--severity", (_severity_from_semgrep(severity).strip().upper())]
 
     elif is_str_list(severity):
         for s in severity:
-            cmd += ["--severity", (s.strip().upper())]
+            cmd += ["--severity", (_severity_from_semgrep(s).strip().upper())]
 
     cmd.append(filename)
     return cmd
