@@ -169,7 +169,7 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """
     # Obtenemos los campos relevantes a partir del issue sin normalizar
     rule_id = str(issue.get("check_id") or "").strip()
-
+    short_id = rule_id.split(".")[-1]
     #path = str(issue.get("path") or "Input.java")
 
     start = issue.get("start") if isinstance(issue.get("start"), dict) else {}
@@ -190,7 +190,7 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "tool": "semgrep",
         "category": "security",
-        "code": rule_id,
+        "code": short_id,
         "message": message,
         "severity": severity,
         #"path": path,

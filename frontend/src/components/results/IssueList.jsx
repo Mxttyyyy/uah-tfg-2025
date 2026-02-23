@@ -100,6 +100,12 @@ function IssueCard({ issue: raw_issue, onSelect }) {
   const severity = normalizeSeverity(issue.severity);
 
   const message = String(issue.message || "Issue");
+  
+  // Si el mensaje es muy largo, lo truncamos y lo colapsamos para que el usuario lo pueda abrir
+  const MAX_MSG = 150;
+  const isLongMsg= message.length > MAX_MSG;
+  const shortMsg = isLongMsg ? `${message.slice(0, MAX_MSG)}...` : message;
+
   const rule_code = typeof issue.code === "string" ? issue.code : "";
   const tool = typeof issue.tool === "string" ? issue.tool : "";
   const category = typeof issue.category === "string" ? issue.category : "";
@@ -151,13 +157,27 @@ function IssueCard({ issue: raw_issue, onSelect }) {
           </div>
 
           {/* Mensaje del issue */}
-          <p className="mt-2 text-sm font-medium text-gray-900 break-words dark:text-neutral-100">
-            {message}
-          </p>
+          <div className="mt-2">
+            <p className="text-sm font-medium text-gray-900 break-words dark:text-neutral-100">
+              {shortMsg}
+            </p>
+
+            {/* Si el mensaje es largo, creamos un details para ver el mensaje completo */}
+            {isLongMsg ? (
+              <details className="mt-2">
+                <summary className="cursor-pointer text-xs font-semibold text-blue-700 hover:underline dark:text-sky-400">
+                  Ver mensaje completo
+                </summary>
+                <pre className="mt-2 max-h-65 overflow-y-auto scrollbar-modern whitespace-pre-wrap break-words text-xs text-gray-700 dark:text-neutral-200">
+                  {message}
+                </pre>
+              </details>
+            ) : null}
+          </div>
 
           {/* Ubicación del issue */}
           {location ? (
-            <p className="mt-1 text-xs text-gray-600 dark:text-neutral-300">
+            <p className="mt-2 text-xs text-gray-600 dark:text-neutral-300">
               Ubicación: {/* Link a la ubicación del issue en el código */}
               <span
                 onClick={() => onSelect(issue)}
