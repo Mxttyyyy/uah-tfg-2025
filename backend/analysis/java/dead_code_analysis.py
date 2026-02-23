@@ -38,7 +38,7 @@ _PROFILE_RULES: Dict[str, List[str]] = {
 
 
 def analyze_dead_code(
-    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 15,
+    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 20,
 ) -> List[Dict[str, Any]]:
     """
     Ejecuta la herramienta PMD (launcher local en tools/pmd/bin) sobre el código del usuario 'code'.

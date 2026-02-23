@@ -52,7 +52,7 @@ def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
     import os
     import subprocess
 
-    with tempfile.TemporaryDirectory(prefix="tfg_java_validate_") as tmpdir:
+    with tempfile.TemporaryDirectory() as tmpdir:
         filename = _pick_java_filename(code)
         file_path = os.path.join(tmpdir, filename)
 
@@ -62,7 +62,7 @@ def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
         cmd = [
             "javac",
             "-encoding", "UTF-8",
-            "-proc:none",   # evita annotation processing
+            "-proc:none",
             file_path,
         ]
 
@@ -74,11 +74,27 @@ def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
                 timeout=timeout_seconds,
                 cwd=tmpdir,
             )
-        except Exception:
+        except FileNotFoundError:
+            raise RuntimeError("javac no está instalado o no está en el PATH.")
+
+    output = (result.stderr or "") + (result.stdout or "")
+    output = output.lower()
+
+    # Detectamos errores típicos de sintaxis pura
+    syntax_indicators = [
+        "reached end of file while parsing",
+        "';' expected",
+        "'}' expected",
+        "class, interface, enum, or record expected",
+    ]
+
+    for indicator in syntax_indicators:
+        if indicator in output:
             return False
-        
-        # Javac devuelve returncode 0 si la compilación es correcta
-        return result.returncode == 0
+
+    # Si no detectamos errores de sintaxis estructural,
+    # consideramos que es Java válido (aunque tenga errores semánticos)
+    return True
     
 # Detecta declaraciones de tipos públicos en Java (class, interface, enum, record, @interface)
 # y captura el nombre del tipo para poder generar un nombre de archivo válido (<Nombre>.java).

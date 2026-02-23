@@ -19,7 +19,7 @@ GOOGLE_CONFIG_PATH = os.path.join(_CHECKSTYLE_DIR, "google_checks.xml")
 
 
 def analyze_style(
-    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 15,
+    code: str, options: Optional[Dict[str, Any]] = None, timeout_seconds: int = 20,
 ) -> List[Dict[str, Any]]:
     """
     Ejecuta la herramienta Checkstyle sobre el código del usuario 'code'.

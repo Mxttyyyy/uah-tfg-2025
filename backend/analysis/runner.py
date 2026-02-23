@@ -20,7 +20,7 @@ from analysis.utils import is_probably_java
 _ALLOWED_ANALYSES = {"style", "security", "metrics", "dead_code", "types"}
 
 PYTHON_TIMEOUT = 10
-JAVA_TIMEOUT = 15
+JAVA_TIMEOUT = 20
 
 def run_analysis(
     language: str, code: str, options: Optional[Dict[str, Any]] = None

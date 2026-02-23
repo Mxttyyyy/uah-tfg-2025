@@ -5,7 +5,7 @@ export const ANALYSIS_KEYS = ["style", "security", "metrics", "dead_code", "type
 
 export const DEFAULT_LANGUAGE = "python";
 export const DEFAULT_TIMEOUT_SECONDS_PYTHON = 10;
-export const DEFAULT_TIMEOUT_SECONDS_JAVA = 15;
+export const DEFAULT_TIMEOUT_SECONDS_JAVA = 20;
 
 /**
  * Crea un objeto NUEVO con las opciones por defecto para Python.
