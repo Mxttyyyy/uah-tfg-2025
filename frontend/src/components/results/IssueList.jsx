@@ -102,7 +102,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
   const message = String(issue.message || "Issue");
   
   // Si el mensaje es muy largo, lo truncamos y lo colapsamos para que el usuario lo pueda abrir
-  const MAX_MSG = 150;
+  const MAX_MSG = 160;
   const isLongMsg= message.length > MAX_MSG;
   const shortMsg = isLongMsg ? `${message.slice(0, MAX_MSG)}...` : message;
 

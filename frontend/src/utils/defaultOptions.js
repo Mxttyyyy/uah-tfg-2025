@@ -80,7 +80,6 @@ export function createDefaultJavaOptions() {
 
     // Checkstyle
     style: {
-      min_severity: "",
       exclude_checks: [],
     },
 

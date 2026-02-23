@@ -96,11 +96,6 @@ def analyze_style(
                 continue
 
             issues.append(issue_normalized)
-            
-    # Opción personalizada para filtrar issues por severidad
-    min_sev = options.get("min_severity")
-    if isinstance(min_sev, str) and min_sev.strip():
-        issues = _filter_by_min_severity(issues, min_sev.strip().lower())
 
     return issues
 
@@ -241,27 +236,3 @@ def _suggestion_for_rule(rule_code: str) -> str:
 
     # Fallback genérico
     return "Revisa esta regla de estilo según Google Java Style."
-
-
-def _filter_by_min_severity(issues: List[Dict[str, Any]], min_sev: str) -> List[Dict[str, Any]]:
-    """
-    Filtra una lista de issues según una severidad mínima.
-    Solo se devuelven aquellos cuya severidad sea igual o superior.
-    """
-    # Jerarquía interna para poder comparar
-    order = {"info": 0, "warning": 1, "error": 2}
-    # Si el valor recibido no es válido, no filtramos
-    if min_sev not in order:
-        return issues  
-
-    min_value = order[min_sev]
-    filtered: List[Dict[str, Any]] = []
-    for issue in issues:
-        # Obtenemos severidad del issue
-        sev = str(issue.get("severity") or "warning").lower()
-        
-        # Conservamos solo los issues con severidad igual o superior al mínimo indicado
-        if order.get(sev, 1) >= min_value:
-            filtered.append(issue)
-
-    return filtered
