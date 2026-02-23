@@ -121,7 +121,7 @@ export default function JavaSecurityOptions({
       <TextInput
         id="sec-config"
         label="config"
-        placeholder="Ej: p/java, r2c-security-audit"
+        placeholder="Ej: p/java, p/owasp-top-ten"
         value={configCsv}
         onChange={(text) => {
           setConfigCsv(text);

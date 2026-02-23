@@ -122,6 +122,9 @@ function IssueCard({ issue: raw_issue, onSelect }) {
   // Exclusivamente para Vulture
   const confidenceLevelVulture = typeof issue.confidence === "number" ? issue.confidence : "";
 
+  // Exclusivamente para PMD
+  const priority = typeof issue.priority === "number" ? issue.priority : "";
+
   return (
     <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -150,6 +153,17 @@ function IssueCard({ issue: raw_issue, onSelect }) {
                 {confidenceLevelVulture ? (
                   <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium dark:border-neutral-700 dark:bg-neutral-950/40">
                     Confianza: {confidenceLevelVulture}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+
+            {/* Metadatos específicos de PMD */}
+            {tool === "pmd" && priority ? (
+              <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-neutral-300">
+                {priority ? (
+                  <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium dark:border-neutral-700 dark:bg-neutral-950/40">
+                    Priority {priority}
                   </span>
                 ) : null}
               </div>

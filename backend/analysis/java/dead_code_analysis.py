@@ -21,6 +21,7 @@ _PROFILE_RULES: Dict[str, List[str]] = {
         "category/java/bestpractices.xml/UnusedPrivateMethod",
         "category/java/bestpractices.xml/UnusedFormalParameter",
         "category/java/bestpractices.xml/UnusedAssignment",
+        "category/java/errorprone.xml/UnreachableCode",
         "category/java/codestyle.xml/UnnecessaryImport",
     ],
     # Incluye el default y añade algunas reglas habituales que pueden señalar "código innecesario".
@@ -30,9 +31,13 @@ _PROFILE_RULES: Dict[str, List[str]] = {
         "category/java/bestpractices.xml/UnusedPrivateMethod",
         "category/java/bestpractices.xml/UnusedFormalParameter",
         "category/java/bestpractices.xml/UnusedAssignment",
+        "category/java/errorprone.xml/UnreachableCode",
+        "category/java/errorprone.xml/EmptyIfStmt",
+        "category/java/errorprone.xml/EmptyStatementBlock",
         "category/java/codestyle.xml/UnnecessaryImport",
         "category/java/bestpractices.xml/AvoidReassigningParameters",
-        "category/java/bestpractices.xml/AvoidUnusedPrivateConstructor",
+        "category/java/bestpractices.xml/UnusedPrivateConstructor",
+        "category/java/bestpractices.xml/UselessOverridingMethod",
     ],
 }
 
@@ -169,7 +174,7 @@ def _build_pmd_command(filename: str, options: Dict[str, Any]) -> List[str]:
     # Permite filtrar por severidad mínima
     min_prio = options.get("minimum_priority")
 
-    if min_prio is not None and min_prio.strip():
+    if min_prio is not None and str(min_prio).strip():
         if not isinstance(min_prio, int) or not (1 <= min_prio <= 5):
             raise ValueError("options.dead_code.minimum_priority debe ser un entero entre 1 y 5.")
         cmd += ["--minimum-priority", str(min_prio)]
@@ -318,6 +323,7 @@ def _normalize_pmd_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule,
         "message": message,
         "severity": severity,
+        "priority": priority,
         "line": line,
         "column": column,
         "suggestion": _suggestion_for_rule_code(rule),
