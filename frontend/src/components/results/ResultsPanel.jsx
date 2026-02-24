@@ -49,8 +49,7 @@ export default function ResultsPanel({
   const typesIssues = Array.isArray(analysis.types) ? analysis.types : [];
   const metrics = isPlainObject(analysis.metrics) ? analysis.metrics : {};
 
-
-// Configuración dinámica de títulos según lenguaje
+  // Configuración dinámica de títulos según lenguaje
   const ANALYSIS_TITLES = {
     python: {
       style: {
@@ -94,7 +93,6 @@ export default function ResultsPanel({
 
   // Si por cualquier motivo no llega lenguaje, usamos python como fallback
   const titles = ANALYSIS_TITLES[language] || ANALYSIS_TITLES.python;
-
 
   // Número total de issues
   const totalIssues = useMemo(() => {
@@ -156,7 +154,10 @@ export default function ResultsPanel({
     return (
       <section
         ref={sectionRef}
-        className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-900"
+        className={`
+          rounded-xl border border-gray-200 bg-white p-4
+          shadow-sm dark:border-neutral-700 dark:bg-neutral-900
+        `}
       >
         <h2 className="text-base font-semibold text-gray-900 dark:text-neutral-100">
           Resultados
@@ -191,7 +192,9 @@ export default function ResultsPanel({
         {/* Etiquetas del análisis - lenguaje, tiempo, issues */}
         <div className="flex flex-wrap items-center gap-2">
           {language ? <IssueLabel label={`Lenguaje: ${language}`} /> : null}
-          {analysisTimeMs !== null ? <IssueLabel label={`Tiempo: ${analysisTimeMs} ms`}/> : null}
+          {analysisTimeMs !== null ? (
+            <IssueLabel label={`Tiempo: ${analysisTimeMs} ms`} />
+          ) : null}
           <IssueLabel label={`Issues: ${totalIssues}`} />
         </div>
       </div>
@@ -201,7 +204,8 @@ export default function ResultsPanel({
         <div className="mt-4">
           <Alert
             variant="error"
-            title={error.error_code === "LANGUAGE_MISMATCH"
+            title={
+              error.error_code === "LANGUAGE_MISMATCH"
                 ? language === "python"
                   ? "El código no es Python válido o no coincide con el lenguaje seleccionado"
                   : "El código no es Java válido o no coincide con el lenguaje seleccionado"
@@ -216,8 +220,18 @@ export default function ResultsPanel({
 
           {/* Ver detalles */}
           {typeof error.message === "string" && error.message.trim() && (
-            <details className="mt-3 rounded-lg border border-red-200 bg-red-100 p-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
-              <summary className="cursor-pointer font-medium text-gray-800 hover:text-red-900 dark:text-neutral-100 dark:hover:text-red-200">
+            <details 
+              className={`
+                mt-3 rounded-lg border border-red-200 bg-red-100 p-3 text-sm text-red-800
+                dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200
+              `}
+            >
+              <summary 
+                className={`
+                  cursor-pointer font-medium text-gray-800
+                  hover:text-red-900 dark:text-neutral-100 dark:hover:text-red-200
+                `}
+              >
                 Ver detalles
               </summary>
 
@@ -262,7 +276,10 @@ export default function ResultsPanel({
           emptyText="Sin issues de estilo."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-cyan-300 border-l-4 hover:border-l-cyan-300 dark:border-l-cyan-300 border-l-4 dark:hover:border-l-cyan-300"
+          leftBorderClass={`
+            border-l-cyan-300 border-l-4 hover:border-l-cyan-300
+            dark:border-l-cyan-300 border-l-4 dark:hover:border-l-cyan-300
+          `}
         />
 
         <IssueList
@@ -272,13 +289,29 @@ export default function ResultsPanel({
           emptyText="Sin issues de seguridad."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-purple-300 border-l-4 hover:border-l-purple-300 dark:border-l-purple-300 border-l-4 dark:hover:border-l-purple-300"
+          leftBorderClass={`
+            border-l-purple-300 border-l-4 hover:border-l-purple-300
+            dark:border-l-purple-300 border-l-4 dark:hover:border-l-purple-300
+          `}
         />
 
-        <MetricsSection
-          metrics={metrics}
-          leftBorderClass="border-l-amber-300 border-l-4 hover:border-l-amber-300 dark:border-l-amber-300 border-l-4 dark:hover:border-l-amber-300"
-        />
+        {language === "python" ? (
+          <MetricsSection
+            metrics={metrics}
+            leftBorderClass={`
+              border-l-amber-300 border-l-4 hover:border-l-amber-300
+              dark:border-l-amber-300 border-l-4 dark:hover:border-l-amber-300
+            `}
+          />
+        ) : (
+          <JavaMetricsSection
+            metrics={metrics}
+            leftBorderClass={`
+              border-l-amber-300 border-l-4 hover:border-l-amber-300
+              dark:border-l-amber-300 border-l-4 dark:hover:border-l-amber-300
+            `}
+          />
+        )}
 
         <IssueList
           title={titles.dead_code.title}
@@ -287,7 +320,10 @@ export default function ResultsPanel({
           emptyText="Sin avisos de código muerto."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-emerald-300 border-l-4 hover:border-l-emerald-300 dark:border-l-emerald-300 border-l-4 dark:hover:border-l-emerald-300"
+          leftBorderClass={`
+            border-l-emerald-300 border-l-4 hover:border-l-emerald-300
+            dark:border-l-emerald-300 border-l-4 dark:hover:border-l-emerald-300
+          `}
         />
 
         <IssueList
@@ -297,7 +333,10 @@ export default function ResultsPanel({
           emptyText="Sin issues de tipado."
           onIssueSelect={onIssueSelect}
           severitySelected={severitySelected}
-          leftBorderClass="border-l-orange-400 border-l-4 hover:border-l-orange-400 dark:border-l-orange-400 border-l-4 dark:hover:border-l-orange-400"
+          leftBorderClass={`
+            border-l-orange-400 border-l-4 hover:border-l-orange-400
+            dark:border-l-orange-400 border-l-4 dark:hover:border-l-orange-400
+          `}
         />
       </div>
     </section>
@@ -335,9 +374,9 @@ function MetricsSection({ metrics, leftBorderClass }) {
       open={false}
       className={`
         rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
-        hover:bg-blue-100/60 transition ${leftBorderClass}
+        hover:bg-blue-50/80 transition ${leftBorderClass}
         dark:border-neutral-700 dark:bg-neutral-950/30
-        dark:hover:border-sky-900/60 dark:hover:bg-sky-950/30
+        dark:hover:border-sky-900/60 dark:hover:bg-neutral-800/50 
       `}
     >
       {/* Cabecera del panel */}
@@ -358,7 +397,7 @@ function MetricsSection({ metrics, leftBorderClass }) {
 
       <div className="px-3 pb-3">
         {!hasMetrics ? (
-          <div 
+          <div
             className={`
             rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
             dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200
@@ -370,13 +409,18 @@ function MetricsSection({ metrics, leftBorderClass }) {
           <div className="space-y-3">
             <div className="grid gap-3 lg:grid-cols-2">
               {/* Panel de índice de mantenibilidad global del código */}
-              <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+              <div 
+                className={`
+                  rounded-md border border-gray-200 bg-white
+                  p-3 dark:border-neutral-700 dark:bg-neutral-900
+                `}
+              >
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
                   Maintainability Index (MI)
                 </h4>
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-neutral-200">
-                  <IssueLabel label={`Score: ${mi.score ?? "—"}`} />
-                  <IssueLabel label={`Rank: ${mi.rank || "—"}`} />
+                  <IssueLabel label={`Score: ${mi.score ?? "-"}`} />
+                  <IssueLabel label={`Rank: ${mi.rank || "-"}`} />
                 </div>
                 <p className="mt-2 text-xs text-gray-600 dark:text-neutral-300">
                   Cuanto mayor es el MI, mejor mantenibilidad global.
@@ -384,7 +428,12 @@ function MetricsSection({ metrics, leftBorderClass }) {
               </div>
 
               {/* Panel/Tabla de métricas básicas */}
-              <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+              <div 
+                className={`
+                  rounded-md border border-gray-200 bg-white
+                  p-3 dark:border-neutral-700 dark:bg-neutral-900
+                `}
+              >
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
                   Raw metrics
                 </h4>
@@ -400,7 +449,12 @@ function MetricsSection({ metrics, leftBorderClass }) {
             </div>
 
             {/* Panel/Tabla de complejidad ciclomática */}
-            <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+            <div 
+              className={`
+                rounded-md border border-gray-200 bg-white
+                p-3 dark:border-neutral-700 dark:bg-neutral-900
+              `}
+            >
               <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
                 Complejidad ciclomática (top bloques)
               </h4>
@@ -427,15 +481,11 @@ function MetricsSection({ metrics, leftBorderClass }) {
                           key={`${b.name || "block"}-${idx}`}
                           className="border-t border-gray-200 dark:border-neutral-700"
                         >
-                          <td className="py-2 pr-3 font-medium">
-                            {String(b.name || "—")}
-                          </td>
-                          <td className="py-2 pr-3">{String(b.type || "—")}</td>
-                          <td className="py-2 pr-3">
-                            {toInt(b.complexity) ?? "—"}
-                          </td>
-                          <td className="py-2 pr-3">{String(b.rank || "—")}</td>
-                          <td className="py-2 pr-3">{toInt(b.line) ?? "—"}</td>
+                          <td className="py-2 pr-3 font-medium">{String(b.name || "-")}</td>
+                          <td className="py-2 pr-3">{String(b.type || "-")}</td>
+                          <td className="py-2 pr-3">{toInt(b.complexity) ?? "-"}</td>
+                          <td className="py-2 pr-3">{String(b.rank || "-")}</td>
+                          <td className="py-2 pr-3">{toInt(b.line) ?? "-"}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -454,6 +504,169 @@ function MetricsSection({ metrics, leftBorderClass }) {
   );
 }
 
+/* --------------------------- Metrics (Lizard) --------------------------- */
+
+/**
+ * Sección de métricas estáticas del código (Lizard).
+ *
+ * Muestra índices de mantenibilidad, métricas básicas de código
+ * y los bloques con mayor complejidad ciclomática.
+ */
+
+function JavaMetricsSection({ metrics, leftBorderClass }) {
+  const hasMetrics = isPlainObject(metrics) && Object.keys(metrics).length > 0;
+
+  // Funciones
+  const functions = Array.isArray(metrics?.functions) ? metrics.functions : [];
+  const totalFunctions = functions.length;
+
+  // Líneas de código (NLOCS) totales
+  let nlocs_total = 0;
+  if (totalFunctions > 0) {
+    for (let f of functions) {
+      nlocs_total += f.nloc;
+    }
+  }
+
+  // CC media
+  let cc_media = 0;
+  if (totalFunctions > 0) {
+    for (let f of functions) {
+      cc_media += f.cyclomatic_complexity;
+    }
+    cc_media /= totalFunctions;
+  }
+
+  // Funciones con mayor CC. Ordenamos por complejidad ciclomática descendente
+  const topFunctions = [...functions]
+    .filter((m) => isPlainObject(m))
+    .sort(
+      (a, b) =>(toInt(b.cyclomatic_complexity) || 0) - (toInt(a.cyclomatic_complexity) || 0),
+    )
+    .slice(0, 8);
+
+  return (
+    <details
+      open={false}
+      className={`
+        rounded-lg border border-gray-200 bg-gray-50/60 hover:border-blue-200
+        hover:bg-blue-50/80 transition ${leftBorderClass}
+        dark:border-neutral-700 dark:bg-neutral-950/30
+        dark:hover:border-sky-900/60 dark:hover:bg-neutral-800/50 
+      `}
+    >
+      {/* Cabecera del panel */}
+      <summary
+        className={`
+          flex cursor-pointer list-item items-center justify-between
+          gap-3 px-3 py-2 text-sm font-semibold text-gray-900 hover:text-blue-700
+          dark:text-neutral-100 dark:hover:text-sky-400
+        `}
+      >
+        <span className="flex items-center gap-2">
+          Métricas (Lizard)
+          <span className="text-xs font-semibold text-gray-600 dark:text-neutral-300">
+            {hasMetrics ? "" : "(vacío)"}
+          </span>
+        </span>
+      </summary>
+
+      <div className="px-3 pb-3">
+        {!hasMetrics ? (
+          <div
+            className={`
+              rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
+              dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200
+            `}
+          >
+            No se devolvieron métricas.
+          </div>
+        ) : (
+          <div className="mt-2 overflow-x-auto space-y-3">
+            <div 
+              className={`
+                rounded-md border border-gray-200 bg-white
+                p-3 dark:border-neutral-700 dark:bg-neutral-900
+              `}
+            >
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100">
+                Resumen
+              </h4>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-neutral-200">
+                <IssueLabel
+                  label={`Funciones analizadas: ${totalFunctions ?? "-"}`}
+                />
+                <IssueLabel
+                  label={`CC max: ${topFunctions[0]?.cyclomatic_complexity || "-"}`}
+                />
+                <IssueLabel label={`CC media: ${cc_media || "-"}`} />
+                <IssueLabel label={`NLOC totales: ${nlocs_total || "-"}`} />
+              </div>
+            </div>
+
+            <div 
+              className={`
+                rounded-md border border-gray-200 bg-white
+                p-3 dark:border-neutral-700 dark:bg-neutral-900
+              `}
+            >
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100 mb-2">
+                Top funciones por complejidad (CC)
+              </h4>
+              {topFunctions.length === 0 ? (
+                <p className="text-sm text-gray-700 dark:text-neutral-200">
+                  No hay funciones para mostrar.
+                </p>
+              ) : (
+                <div className="mt-2 overflow-x-auto">
+                  <table className="min-w-[720px] w-full text-left text-sm">
+                    <thead className="text-xs uppercase tracking-wide text-gray-600 dark:text-neutral-300">
+                      <tr>
+                        <th className="py-2 pr-3">Función</th>
+                        <th className="py-2 pr-3">CC</th>
+                        <th className="py-2 pr-3">NLOC</th>
+                        <th className="py-2 pr-3">Params</th>
+                        <th className="py-2 pr-3">Tokens</th>
+                        <th className="py-2 pr-3">Línea</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-800 dark:text-neutral-200">
+                      {topFunctions.map((f, idx) => (
+                        <tr
+                          key={`${f.name || "func"}-${idx}`}
+                          className="border-t border-gray-200 dark:border-neutral-700"
+                        >
+                          <td className="py-2 pr-3 font-medium">{f.long_name || f.name || "-"}</td>
+                          <td className="py-2 pr-3">{toInt(f.cyclomatic_complexity) ?? "-"}</td>
+                          <td className="py-2 pr-3">{toInt(f.nloc) ?? "-"}</td>
+                          <td className="py-2 pr-3">{toInt(f.parameter_count) ?? "-"}</td>
+                          <td className="py-2 pr-3">{toInt(f.token_count) ?? "-"}</td>
+                          <td className="py-2 pr-3">{toInt(f.start_line) ?? "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <p className="mt-4 text-xs text-gray-600 dark:text-neutral-300">
+                    CC: complejidad ciclomática | NLOC: líneas de código sin
+                    comentarios | Params: número de parámetros del método |
+                    Tokens: número de elementos léxicos del método | Línea:
+                    Línea donde comienza el método en el código analizado
+                  </p>
+                  <p className="mt-3 text-xs text-gray-600 dark:text-neutral-300">
+                    CC más alto → función más compleja y potencialmente más
+                    difícil de mantener.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </details>
+  );
+}
+
 /* ------------------------------ Componentes auxiliares ------------------------------ */
 
 /**
@@ -461,8 +674,12 @@ function MetricsSection({ metrics, leftBorderClass }) {
  */
 function MetricItem({ label, value }) {
   return (
-    <div className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5 dark:border-neutral-700 dark:bg-neutral-950/40">
-      
+    <div 
+      className={`
+        rounded-md border border-gray-200 bg-gray-50
+        px-2 py-1.5 dark:border-neutral-700 dark:bg-neutral-950/40
+      `}
+    >
       <p className="text-xs font-semibold text-gray-600 dark:text-neutral-300">
         {label}
       </p>
@@ -470,7 +687,6 @@ function MetricItem({ label, value }) {
       <p className="text-sm font-medium text-gray-900 dark:text-neutral-100">
         {value ?? "-"}
       </p>
-
     </div>
   );
 }

@@ -95,7 +95,7 @@ export function createDefaultJavaOptions() {
     metrics: {
       cc_min: 1,
       nloc_min: 1,
-      args_min: 1,
+      args_min: 0,
     },
 
     // PMD
