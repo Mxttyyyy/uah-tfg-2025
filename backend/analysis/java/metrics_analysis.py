@@ -71,6 +71,11 @@ def analyze_metrics(
     }
 
 
+# -----------------------
+# Build command
+# -----------------------
+
+
 def _build_lizard_command(filename: str) -> List[str]:
     """
     Construye el comando Lizard.
@@ -85,6 +90,31 @@ def _build_lizard_command(filename: str) -> List[str]:
 # -----------------------
 
 
+def _parse_lizard_csv_rows(raw_csv: str) -> List[List[str]]:
+    """
+    Convierte el CSV crudo de Lizard (stdout) en una lista de filas.
+    Cada fila es una lista de columnas (strings).
+
+    Formato típico (sin cabecera):
+    nloc, ccn, token, param, length, location, file, function, long_name, start_line
+    """
+    rows: List[List[str]] = []
+
+    # Leemos el CSV de Lizard
+    # raw_csv es el conjunto de resultados (líneas) con este formato:
+    # 3,1,12,1,3,"Input::simple@2-4@Input.java","Input.java","Input::simple","Input::simple( int a)",2,4
+
+    # csv.reader divide por comas y genera una lista por cada fila
+    reader = csv.reader(raw_csv.splitlines())
+
+    for row in reader:
+        # Necesitamos al menos 11 columnas para parsear de forma segura
+        if isinstance(row, list) and len(row) >= 11:
+            rows.append(row)
+
+    return rows
+
+
 def _normalize_lizard_row(row: List[str], options: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """
     Normaliza una fila CSV de Lizard y aplica filtros
@@ -97,7 +127,7 @@ def _normalize_lizard_row(row: List[str], options: Dict[str, Any]) -> Optional[D
 
     - nloc_min (int, opcional):
         Número mínimo de líneas de código (NLOC).
-        Solo se incluirán funciones con tamaño >= a este valor.
+        Solo se incluirán funciones con tamanno >= a este valor.
 
     - args_min (int, opcional):
         Número mínimo de parámetros.
@@ -144,28 +174,3 @@ def _normalize_lizard_row(row: List[str], options: Dict[str, Any]) -> Optional[D
         "parameter_count": param_count,
         "token_count": token_count,
     }
-
-
-def _parse_lizard_csv_rows(raw_csv: str) -> List[List[str]]:
-    """
-    Convierte el CSV crudo de Lizard (stdout) en una lista de filas.
-    Cada fila es una lista de columnas (strings).
-
-    Formato típico (sin cabecera):
-    nloc, ccn, token, param, length, location, file, function, long_name, start_line
-    """
-    rows: List[List[str]] = []
-
-    # Leemos el CSV de Lizard
-    # raw_csv es el conjunto de resultados (líneas) con este formato:
-    # 3,1,12,1,3,"Input::simple@2-4@Input.java","Input.java","Input::simple","Input::simple( int a)",2,4
-
-    # csv.reader divide por comas y genera una lista por cada fila
-    reader = csv.reader(raw_csv.splitlines())
-
-    for row in reader:
-        # Necesitamos al menos 11 columnas para parsear de forma segura
-        if isinstance(row, list) and len(row) >= 11:
-            rows.append(row)
-
-    return rows

@@ -1,5 +1,6 @@
 from typing import Any, Optional
 import re
+
 def to_int(value: Any) -> Optional[int]:
     """
     Intenta convertir el valor a entero (no usamos el casteo int() directamente, ya que necesitamos controlar posibles valores None)

@@ -24,11 +24,7 @@ class AnalyzeRequest(BaseModel):
     code: str
     options: Optional[Dict[str, Any]] = None  # Campo para flags del analizador
 
-
-######### CORS (o proxy en vite) ¿?
-
 # ----------------------------ENDPOINTS----------------------------
-
 
 # Endpoint para comprobar si el backend está funcionando
 @app.get("/health")

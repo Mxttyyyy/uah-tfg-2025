@@ -86,7 +86,7 @@ def _build_vulture_command(filename: str, options: Dict[str, Any]) -> List[str]:
     """
     cmd = ["vulture"]
 
-    # Validamos los campos
+    # Validamos las opciones
     min_confidence = options.get("min_confidence", 60)
     if isinstance(min_confidence, int) and 0 <= min_confidence <= 100:
         cmd += ["--min-confidence", str(min_confidence)]
@@ -124,7 +124,6 @@ def _normalize_vulture_line(line: str) -> Optional[Dict[str, Any]]:
         return None
 
     # Obtenemos cada parte
-    #path = parts[0].strip() or "input.py"  # Obtenemos: "input.py"
     line_number = to_int(parts[1].strip())  # Obtenemos: "1"
     raw_message = parts[2].strip()  # Obtenemos: "unused import 'os' (90% confidence)"
 
@@ -141,7 +140,6 @@ def _normalize_vulture_line(line: str) -> Optional[Dict[str, Any]]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        #"path": path,
         "line": line_number,
         "column": None,  # Vulture no proporciona información de columnas
         "suggestion": suggestion,

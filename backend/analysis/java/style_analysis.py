@@ -30,6 +30,9 @@ def analyze_style(
     # Ejecutamos la herramienta en un directorio temporal para aislar el análisis
     # y evitar escribir archivos en el sistema del usuario
     with tempfile.TemporaryDirectory(prefix="tfg_java_style_") as tmpdir:
+
+        # Elegimos filename intentando respetar la regla de Java:
+        # si hay una clase pública "X", el fichero debe llamarse X.java
         filename = _pick_java_filename(code)
         filepath = os.path.join(tmpdir, filename)
 
@@ -83,7 +86,6 @@ def analyze_style(
     if is_str_list(exclude_checks):
         exclude_terms = [str(t).strip().lower() for t in exclude_checks if str(t).strip()]
 
-
     for file_elem in root.findall("file"):
         # En Checkstyle, error = issue
         for issue in file_elem.findall("error"):
@@ -100,21 +102,23 @@ def analyze_style(
     return issues
 
 
+# -----------------------
+# Build command
+# -----------------------
+
+
 def _build_checkstyle_command(filepath: str) -> List[str]:
     """
     Construye el comando de ejecución de Checkstyle, aplicando opciones de entrada.
     Se utilizará una configuración fija (Google Java Style) para garantizar consistencia y simplicidad
-    en el análisis, evitando variaciones de resultados debidas configuraciones personalizadas.
+    en el análisis, evitando variaciones de resultados debidas a configuraciones personalizadas.
     """
 
     return [
         "java",
-        "-jar",
-        CHECKSTYLE_JAR_PATH,
-        "-c",
-        GOOGLE_CONFIG_PATH,
-        "-f",
-        "xml",
+        "-jar", CHECKSTYLE_JAR_PATH, # Ubicación del jar
+        "-c", GOOGLE_CONFIG_PATH, # Configuración por defecto
+        "-f", "xml", # Formato de salida XML
         filepath,
     ]
 
@@ -122,6 +126,7 @@ def _build_checkstyle_command(filepath: str) -> List[str]:
 # ------------------------
 # Normalización
 # ------------------------
+
 
 def _normalize_checkstyle_issue(issue_elem: ET.Element) -> Dict[str, Any]:
     """
@@ -136,7 +141,7 @@ def _normalize_checkstyle_issue(issue_elem: ET.Element) -> Dict[str, Any]:
 
     severity = _severity_from_checkstyle(issue_elem.get("severity"))
 
-    # Extraer el código de la regla (último elemento de la lista de strings)
+    # Extraemos el código de la regla (último elemento de la lista de strings)
     # Por ejemplo: "com.puppycrawl.tools.checkstyle.checks.javadoc.PackageJavadocCheck" --> "PackageJavadocCheck"
     rule_code = source.split(".")[-1] if source else ""
 
@@ -144,7 +149,6 @@ def _normalize_checkstyle_issue(issue_elem: ET.Element) -> Dict[str, Any]:
     if rule_code.endswith("Check"):
         rule_code = rule_code[:-5]
     
-
     return {
         "tool": "checkstyle",
         "category": "style",

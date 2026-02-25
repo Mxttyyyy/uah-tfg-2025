@@ -79,6 +79,7 @@ def analyze_types(
             raise ValueError(raw or"Opciones inválidas para javac.")
         raise RuntimeError(f"javac falló (exit code {result.returncode}).")
 
+    # Parseamos la salida a estructura de Python
     diagnostics = _parse_javac_output(raw)
 
     issues: List[Dict[str, Any]] = []
@@ -287,11 +288,6 @@ def _extract_column_from_block(block: List[str]) -> Optional[int]:
             if idx >= 0:
                 return idx + 1 # Sumamos 1 ya que Java usa columnas empezando en 1 (no 0)
     return None
-
-
-# -----------------------------------
-# Sugerencias
-# -----------------------------------
 
 
 def _suggestion_for_javac(message: str, lint_code: Optional[str]) -> str:

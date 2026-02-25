@@ -24,7 +24,7 @@ _PROFILE_RULES: Dict[str, List[str]] = {
         "category/java/errorprone.xml/UnreachableCode",
         "category/java/codestyle.xml/UnnecessaryImport",
     ],
-    # Incluye el default y añade algunas reglas habituales que pueden señalar "código innecesario".
+    # Incluye el default y annade algunas reglas habituales que pueden indicar "código innecesario".
     "strict": [
         "category/java/bestpractices.xml/UnusedLocalVariable",
         "category/java/bestpractices.xml/UnusedPrivateField",
@@ -119,6 +119,11 @@ def analyze_dead_code(
     return issues
 
 
+# -----------------------
+# Build command
+# -----------------------
+
+
 def _build_pmd_command(filename: str, options: Dict[str, Any]) -> List[str]:
     """
     Construye el comando PMD, aplicando opciones de entrada.
@@ -133,9 +138,8 @@ def _build_pmd_command(filename: str, options: Dict[str, Any]) -> List[str]:
 
     cmd = [
         *launcher, # Insertamos el launcher (path al script pmd.bat)
-        "check", # modo análisis
-        "-f",
-        "json",
+        "check", # Modo análisis
+        "-f", "json", # Formato de salida JSON
     ]
 
     # ------- profile -------
@@ -184,44 +188,6 @@ def _build_pmd_command(filename: str, options: Dict[str, Any]) -> List[str]:
     return cmd
 
 
-def _extract_pmd_violations(data: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    PMD JSON -> lista plana de violations (issues).
-    Estructura típica:
-      {
-        "files": [
-          {
-            "filename": "...",
-            "violations": [ {...}, {...} ]
-          },
-          ...
-        ]
-      }
-    """
-
-    # PMD agrupa resultados por archivo
-    files = data.get("files")
-    if not isinstance(files, list):
-        return []
-
-    flat: List[Dict[str, Any]] = []
-    for f in files:
-        if not isinstance(f, dict):
-            continue
-
-        # Lista de issues
-        violations = f.get("violations")
-        if not isinstance(violations, list):
-            continue
-
-        for v in violations:
-            # Cada violation debe ser un dict con campos como rule/description/beginline...
-            if isinstance(v, dict):
-                flat.append(v)
-
-    return flat
-
-
 def _apply_exclusions(rule_list: List[str], exclude_short_names: List[str]) -> List[str]:
     """
     Filtra una lista de referencias de reglas de PMD eliminando aquellas
@@ -266,7 +232,7 @@ def _get_pmd_launcher() -> List[str]:
     Devuelve una lista con el path al launcher (por ejemplo [".../pmd.bat"]) para poder hacer:
     cmd = [*launcher, "check", ...]
     """
-    # Carpeta del archivo actual
+    # Carpeta del archivo actual (java/dead_code_analysis.py)
     here = os.path.dirname(os.path.abspath(__file__))
 
     # Subimos hasta backend/ y construimos la ruta a backend/tools/pmd
@@ -329,6 +295,44 @@ def _normalize_pmd_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "suggestion": _suggestion_for_rule_code(rule),
         "help_url": help_url,
     }
+
+
+def _extract_pmd_violations(data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Convierte el JSON de PMD en una lista plana de violations (issues).
+    Estructura típica del JSON que devuelve PMD:
+      {
+        "files": [
+          {
+            "filename": "...",
+            "violations": [ {...}, {...} ]
+          },
+          ...
+        ]
+      }
+    """
+
+    # PMD agrupa resultados por archivo
+    files = data.get("files")
+    if not isinstance(files, list):
+        return []
+
+    flat: List[Dict[str, Any]] = []
+    for f in files:
+        if not isinstance(f, dict):
+            continue
+
+        # Lista de issues
+        violations = f.get("violations")
+        if not isinstance(violations, list):
+            continue
+
+        for v in violations:
+            # Cada violation debe ser un dict con campos como rule/description/beginline...
+            if isinstance(v, dict):
+                flat.append(v)
+
+    return flat
 
 
 def _severity_from_priority(priority: Optional[int]) -> str:

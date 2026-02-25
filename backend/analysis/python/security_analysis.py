@@ -137,7 +137,6 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     # Obtenemos los campos relevantes a partir del issue sin normalizar
     rule_code = str(issue.get("test_id") or "")
     message = str(issue.get("issue_text") or "").strip()
-    #filename = str(issue.get("filename") or "input.py")
     line = to_int(issue.get("line_number"))
 
     bandit_sev = str(issue.get("issue_severity") or "").upper()
@@ -162,7 +161,6 @@ def _normalize_bandit_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        #"path": filename,
         "line": line,
         "column": None,  # Bandit no proporciona información de columnas
         "suggestion": suggestion,

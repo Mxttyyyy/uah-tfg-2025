@@ -257,7 +257,6 @@ def _normalize_mypy_issue(fields: Dict[str, Any]) -> Dict[str, Any]:
         "code": rule_code,
         "message": message,
         "severity": severity,
-        #"path": str(fields.get("path") or "input.py"),
         "line": fields.get("line"),
         "column": fields.get("col"),  # Campo opcional, aunque forma parte de la localización básica del issue
         "suggestion": _suggestion_for_mypy_rule(rule_code),

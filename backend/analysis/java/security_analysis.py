@@ -76,7 +76,7 @@ def analyze_security(
     
     # Opción personalizada: permitir excluir reglas por sufijo/fragmento del check_id.
     # Semgrep suele exigir el check_id completo para excluir, y puede ser largo (incluye namespace).
-    # Con 'exclude_contains', filtramos resultados normalizados si el code contiene alguno de estos fragment
+    # Con 'exclude_contains', filtramos resultados normalizados si el code contiene alguno de estos fragmentos.
     exclude_contains = options.get("exclude_contains")
     if isinstance(exclude_contains, list):
         cleaned = []
@@ -105,11 +105,16 @@ def analyze_security(
     return issues
 
 
+# -----------------------
+# Build command
+# -----------------------
+
+
 def _build_semgrep_command(filename: str, options: Dict[str, Any]) -> List[str]:
     """
     Construye el comando de Semgrep, aplicando opciones de entrada.
     Las flags repetibles (--config, --exclude-rule, --severity)
-    se añaden tantas veces como valores existan.
+    se annaden tantas veces como valores existan.
     """
     cmd = [
         "semgrep",  # Herramienta empleada
@@ -125,8 +130,6 @@ def _build_semgrep_command(filename: str, options: Dict[str, Any]) -> List[str]:
 
     # ------- config: str o list[str] -------
     config = options.get("config", "p/findsecbugs")
-
-    # Si config es un string, lo agregamos
 
     if is_str_list(config):
         for c in config:
@@ -144,6 +147,7 @@ def _build_semgrep_command(filename: str, options: Dict[str, Any]) -> List[str]:
 
     # ------- severity: str o list[str] -------
     severity = options.get("severity")
+
     # Si llega severity = "", no lo annadimos
     if isinstance(severity, str) and severity.strip():
         cmd += ["--severity", (_severity_from_semgrep(severity).strip().upper())]
@@ -169,7 +173,6 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     # Obtenemos los campos relevantes a partir del issue sin normalizar
     rule_id = str(issue.get("check_id") or "").strip()
     short_id = rule_id.split(".")[-1]
-    #path = str(issue.get("path") or "Input.java")
 
     start = issue.get("start") if isinstance(issue.get("start"), dict) else {}
 
@@ -192,7 +195,6 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "code": short_id,
         "message": message,
         "severity": severity,
-        #"path": path,
         "line": line,
         "column": column,
         "suggestion": suggestion,
@@ -274,7 +276,7 @@ def _suggestion_for_rule(rule_id: str, message: str) -> str:
     if code.startswith("java.lang.security") or "security" in code:
         return "Revisa este problema: puede implicar un riesgo de seguridad. Aplica mitigaciones recomendadas."
 
-    # Fallback por keywords del mensaje
+    # Fallback por palabras clave del mensaje
     if "sql" in msg and "inject" in msg:
         return "Evita concatenar SQL con entradas del usuario; usa consultas parametrizadas."
     if "deserialize" in msg:
@@ -290,6 +292,4 @@ def _suggestion_for_rule(rule_id: str, message: str) -> str:
     if "sql" in msg:
         return "Evita concatenación SQL; usa consultas preparadas."
 
-
     return "Revisa este hallazgo de seguridad y aplica la mitigación recomendada."
-

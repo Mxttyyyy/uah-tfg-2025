@@ -19,6 +19,7 @@ from analysis.utils import is_probably_java
 # Tipos de análisis permitidos
 _ALLOWED_ANALYSES = {"style", "security", "metrics", "dead_code", "types"}
 
+# Timeouts para cada lenguaje
 PYTHON_TIMEOUT = 10
 JAVA_TIMEOUT = 20
 
@@ -86,7 +87,7 @@ def run_analysis(
                     analysis_time_ms=int((time.perf_counter() - start) * 1000),
                 )
         except RuntimeError as exc:
-            # javalang no instalado, etc.
+            # javac no instalado, etc.
             return _error_response(
                 language=language,
                 message=str(exc),
@@ -94,7 +95,6 @@ def run_analysis(
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
     
-
     # Validamos que las opciones por módulo (style/security/metrics/type/dead_code) sean objetos JSON (dict)
     for key in _ALLOWED_ANALYSES:
         if key in options and not isinstance(options.get(key), dict):
@@ -105,7 +105,7 @@ def run_analysis(
                 analysis_time_ms=int((time.perf_counter() - start) * 1000),
             )
 
-    # Validamos la opción enabled (opción que permitirá al usuario seleccionar el/los análisis a ejecutar)
+    # Validamos la opción enabled (opción que permite al usuario seleccionar el/los análisis a ejecutar)
     enabled_raw = options.get("enabled")
     if isinstance(enabled_raw, list) and enabled_raw:
         enabled = set()  # No queremos duplicados
@@ -124,6 +124,7 @@ def run_analysis(
     # Validamos el timeout
     timeout = PYTHON_TIMEOUT if language == "python" else JAVA_TIMEOUT
     timeout_seconds = options.get("timeout_seconds", timeout)
+    
     if "timeout_seconds" in options and (not isinstance(timeout_seconds, int) or timeout_seconds <= 0):
         return _error_response(
             language=language,
