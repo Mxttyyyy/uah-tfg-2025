@@ -43,6 +43,9 @@ def is_str_list(value: Any) -> bool:
 
     return True
 
+# Expresión regular para detectar cualquier declaración de tipo (pública o no)
+_TYPE_DECL_RE = re.compile(r"\b(class|interface|enum|record|@interface)\b")
+
 def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
     """
     Valida Java usando javac.
@@ -51,6 +54,13 @@ def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
     import tempfile
     import os
     import subprocess
+
+    src = code or ""
+    
+    # Si no hay ninguna clase/interfaz/enum/record, lo consideramos Java inválido
+    # Evita snippets sueltos tipo "int x = 5;"
+    if not _TYPE_DECL_RE.search(src):
+        return False
 
     with tempfile.TemporaryDirectory() as tmpdir:
         filename = _pick_java_filename(code)
@@ -62,6 +72,7 @@ def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
         cmd = [
             "javac",
             "-encoding", "UTF-8",
+            "--release", "17",
             "-proc:none",
             file_path,
         ]
@@ -77,15 +88,19 @@ def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
         except FileNotFoundError:
             raise RuntimeError("javac no está instalado o no está en el PATH.")
 
-    output = (result.stderr or "") + (result.stdout or "")
+    output = ((result.stderr or "") + (result.stdout or "")).lower()
     output = output.lower()
-
+    print(result.returncode, output)
     # Detectamos errores típicos de sintaxis pura
     syntax_indicators = [
         "reached end of file while parsing",
         "';' expected",
         "'}' expected",
+        "'{' expected",
         "class, interface, enum, or record expected",
+        "illegal start of type",
+        "illegal character",
+        "not a statement",
     ]
 
     for indicator in syntax_indicators:

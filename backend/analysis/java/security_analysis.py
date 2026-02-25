@@ -65,10 +65,10 @@ def analyze_security(
             if isinstance(e, dict) and e.get("message")
         ]
         short_msg = "\n".join(messages)
-        if options:
+        if "invalid" in result.stdout:
             raise ValueError(short_msg or "Opciones inválidas para Semgrep.")
         
-        raise RuntimeError("Semgrep devolvió errores internos en el JSON.")
+        raise RuntimeError("Semgrep falló en la ejecución.")
 
     results = data.get("results")
     if not isinstance(results, list):
