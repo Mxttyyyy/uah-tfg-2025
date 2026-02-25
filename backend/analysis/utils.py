@@ -90,7 +90,7 @@ def is_probably_java(code: str, timeout_seconds: int = 5) -> bool:
 
     output = ((result.stderr or "") + (result.stdout or "")).lower()
     output = output.lower()
-    print(result.returncode, output)
+
     # Detectamos errores típicos de sintaxis pura
     syntax_indicators = [
         "reached end of file while parsing",
