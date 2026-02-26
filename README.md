@@ -82,7 +82,7 @@ Tener instalado previamente:
   Puedes comprobar que está correctamente instalado ejecutando:
 
 ```bash
-  javac -version
+javac -version
 ```
 
 ### Recomendado
@@ -177,5 +177,6 @@ Dentro de **Analyth** se incluye una sección de **Guía rápida**, accesible de
 
 ## 📄 Autor
 
-**Alex Bretones Kaznowska**
-Grado en Ingeniería de Computadores - Universidad de Alcalá
+**Alex Bretones Kaznowska**  
+Grado en Ingeniería de Computadores - Universidad de Alcalá  
+Curso académico 2025-2026
