@@ -180,7 +180,12 @@ def _normalize_semgrep_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     column = to_int(start.get("col"))
 
     # Extraer información adicional
-    extra = issue.get("extra") if isinstance(issue.get("extra"), dict) else {}
+    raw_extra = issue.get("extra")
+    if isinstance(raw_extra, dict):
+        extra: Dict[str, Any] = raw_extra
+    else:
+        extra = {}
+
     message = str(extra.get("message") or "").strip()
 
     semgrep_sev = str(extra.get("severity") or "").strip().upper()

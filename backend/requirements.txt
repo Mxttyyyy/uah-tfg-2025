@@ -12,6 +12,7 @@ click==8.1.8
 click-option-group==0.5.9
 colorama==0.4.6
 cryptography==46.0.5
+defusedxml==0.7.1
 exceptiongroup==1.2.2
 face==26.0.0
 fastapi==0.127.1

@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 import tempfile
+from defusedxml.ElementTree import fromstring
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
 
@@ -74,7 +75,7 @@ def analyze_style(
 
     # Parseamos el XML a estructura de Python
     try:
-        root = ET.fromstring(raw_xml)
+        root = fromstring(raw_xml)
     except ET.ParseError as exc:
         raise RuntimeError(f"No se pudo parsear XML de Checkstyle: {exc}")
 
