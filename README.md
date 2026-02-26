@@ -29,6 +29,11 @@ Ambos se comunican mediante una API REST propia.
 
 ---
 
+## 🌐 Lenguajes soportados actualmente
+
+- Python
+- Java
+
 ## 🚀 Tecnologías principales
 
 ### Backend
@@ -36,11 +41,22 @@ Ambos se comunican mediante una API REST propia.
 - Python 3.10+
 - FastAPI
 - Uvicorn
+
+#### Análisis para Python
 - Ruff
 - Bandit
 - Vulture
 - Radon
 - Mypy
+
+#### Análisis para Java
+- Checkstyle
+- Semgrep
+- Lizard
+- PMD
+- Javac
+
+> Las herramientas de Checkstyle y PMD están incluidas en el propio repositorio (carpeta `backend/tools/`) y no requieren instalación adicional.
 
 ### Frontend
 
@@ -59,6 +75,15 @@ Tener instalado previamente:
 
 - **Node.js (LTS)** (incluye npm)
   https://nodejs.org/en/download
+
+- **Java JDK 17 o superior**
+  https://adoptium.net/download
+  
+  Puedes comprobar que está correctamente instalado ejecutando:
+
+```bash
+  javac -version
+```
 
 ### Recomendado
 
