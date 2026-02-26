@@ -24,6 +24,7 @@ import { createDefaultPythonOptions } from "../utils/defaultOptions";
  * - onChange: (nextOptions) => void
  */
 export default function OptionsPanelPython({ options, onChange }) {
+
   // Opciones normalizadas para garantizar una estructura válida
   const normalizedOptions = isPlainObject(options) ? options : {};
 
@@ -89,7 +90,7 @@ export default function OptionsPanelPython({ options, onChange }) {
   /**
    * Activa o desactiva una herramienta de análisis.
    *
-   * Añade o elimina la herramienta del conjunto de análisis habilitados,
+   * Annade o elimina la herramienta del conjunto de análisis habilitados,
    * manteniendo un orden estable para preservar la coherencia visual.
    */
   function toggleEnabled(moduleName) {
@@ -272,12 +273,14 @@ export default function OptionsPanelPython({ options, onChange }) {
 
       {/* Opciones por herramienta */}
       <div className="flex-1 min-h-0 overflow-auto pr-1 space-y-3 scrollbar-modern">
+
         {/* Escondemos el texto en resoluciones menores */}
         <p className="hidden 2xl:block text-sm text-gray-600 dark:text-neutral-300">
           Ajustes específicos de cada herramienta (Ruff, Bandit, Radon, Vulture,
           Mypy).
         </p>
-
+        
+        {/* Ruff (Estilo) */}
         <details
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
@@ -311,6 +314,7 @@ export default function OptionsPanelPython({ options, onChange }) {
           </div>
         </details>
 
+        {/* Bandit (Seguridad) */}
         <details
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
@@ -344,6 +348,7 @@ export default function OptionsPanelPython({ options, onChange }) {
           </div>
         </details>
 
+        {/* Radon (Métricas) */}
         <details
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
@@ -375,6 +380,7 @@ export default function OptionsPanelPython({ options, onChange }) {
           </div>
         </details>
 
+        {/* Vulture (Código Muerto) */}
         <details
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200
@@ -408,6 +414,7 @@ export default function OptionsPanelPython({ options, onChange }) {
           </div>
         </details>
 
+        {/* Mypy (Tipos) */}
         <details
           className={`
             rounded-lg border border-gray-200 bg-gray-100/50 transition hover:border-blue-200

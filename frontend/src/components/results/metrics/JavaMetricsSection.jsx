@@ -78,6 +78,7 @@ export default function JavaMetricsSection({ metrics, leftBorderClass }) {
           </div>
         ) : (
           <div className="mt-2 overflow-x-auto space-y-3">
+            {/* Resumen de métricas */}
             <div 
               className={`
                 rounded-md border border-gray-200 bg-white
@@ -99,6 +100,7 @@ export default function JavaMetricsSection({ metrics, leftBorderClass }) {
               </div>
             </div>
 
+            {/* Panel de funciones con mayor complejidad ciclomática */}
             <div 
               className={`
                 rounded-md border border-gray-200 bg-white

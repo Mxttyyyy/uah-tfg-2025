@@ -7,7 +7,7 @@ import { isPlainObject } from "../../../utils/uiUtils";
  * - cc_min: "A"|"B"|"C"|"D"|"E"|"F"
  * - cc_max: "A"|"B"|"C"|"D"|"E"|"F"
  *
- * En la UI usamos <select> con "(por defecto)".
+ * En la UI usamos <select> con el valor "(por defecto)".
  *
  * Props:
  * - value: objeto con opciones actuales de metrics
@@ -68,7 +68,7 @@ export default function PythonMetricsOptions({ options, onChange }) {
   );
 }
 
-// Rangos de valores soportados por Radon para las métricas CC y MI.
+// Rangos de valores soportados por Radon para la métrica CC.
 // La opción vacía indica el uso del valor predeterminado.
 const CC_LEVELS = [
   { value: "", label: "(por defecto)" },

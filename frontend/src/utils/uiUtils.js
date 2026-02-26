@@ -14,6 +14,7 @@ export function normalizeSeverity(value) {
  */
 export function buildSeverityCounts(issues) {
   const counts = { info: 0, warning: 0, error: 0 };
+
   for (const it of issues || []) {
     const sev = normalizeSeverity(it?.severity);
     counts[sev] += 1;

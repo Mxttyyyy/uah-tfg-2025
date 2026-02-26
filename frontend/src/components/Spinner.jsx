@@ -7,6 +7,7 @@
 import SpinnerIcon from "./icons/SpinnerIcon";
 
 export default function Spinner({ size = "md", label = "Cargando..." }) {
+  
   // Altura y anchura
   const sizeClass =
     size === "sm" ? "h-4 w-4" : size === "lg" ? "h-8 w-8" : "h-6 w-6";

@@ -59,6 +59,7 @@ function asArray(value) {
  * frente a nulls, tipos raros o respuestas parciales.
  */
 export function normalizeAnalyzeResponse(raw) {
+
   // Plantilla con valores por defecto
   const out = createEmptyResponse();
 
@@ -108,9 +109,10 @@ export function normalizeAnalyzeResponse(raw) {
 
 /**
  * Devuelve la plantilla de respuesta por defecto, marcándola como error de cliente (red, timeout, etc.)
- * De esta manera, la UI puede pintar errores 
+ * De esta manera, la UI puede mostrar errores.
  */
 export function makeClientErrorResponse(message) {
+  
   // Plantilla con valores por defecto
   const out = createEmptyResponse();
 

@@ -2,6 +2,7 @@ import Spinner from "./Spinner";
 
 /**
  * Acciones sobre el código.
+ * Se sitúa dentro del CodeInput.
  *
  * Función:
  * - Contiene los botones que disparan acciones globales:
@@ -26,6 +27,7 @@ export default function CodeActions({
   onExample,
   onLanguageChange,
 }) {
+
   // Lista de lenguajes soportados por la herramienta
   const LANGUAGES = [
     { value: "python", label: "Python" },

@@ -23,6 +23,7 @@ export default function JavaSecurityOptions({
   resetOptionsSignal,
   setResetSignal,
 }) {
+
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};
@@ -50,8 +51,8 @@ export default function JavaSecurityOptions({
     onChange({ ...normalizedOptions, ...patch });
   }
 
-  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
-  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  // Si el usuario pulsa el botón "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta sennal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
   useEffect(() => {
     if (!resetOptionsSignal) return;
 

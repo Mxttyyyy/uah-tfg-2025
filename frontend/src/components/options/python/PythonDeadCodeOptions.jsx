@@ -41,6 +41,7 @@ export default function PythonDeadCodeOptions({
       ? normalizedOptions.min_confidence
       : 60;
 
+  // Convertimos las listas de reglas a CSV para mostrarlas en la UI.
   const [ignoreNamesCsv, setIgnoreNamesCsv] = useState(listToCsv(normalizedOptions.ignore_names));
   const [ignoreDecoratorsCsv, setIgnoreDecoratorsCsv] = useState(listToCsv(normalizedOptions.ignore_decorators));
 
@@ -57,8 +58,8 @@ export default function PythonDeadCodeOptions({
     onChange({ ...normalizedOptions, ...patch });
   }
 
-  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
-  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  // Si el usuario pulsa el botón "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta sennal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
   useEffect(() => {
     if (!resetOptionsSignal) return;
     setIgnoreNamesCsv(defaultIgnoreNames);

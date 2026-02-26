@@ -8,6 +8,8 @@ import { useDarkMode } from "../utils/useDarkMode";
  */
 
 export default function Header() {
+
+  // Modal de Guía Rápida
   const [showGuide, setShowGuide] = useState(false);
 
   // Tema oscuro
@@ -31,6 +33,7 @@ export default function Header() {
         {/* Contenedor más estrecho => logo y links */}
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:max-w-5xl">
           <div className="flex h-16 items-center justify-between">
+
             {/* Logo */}
             <a
               href="#"
@@ -164,7 +167,8 @@ export default function Header() {
           `}
         />
       </header>
-
+      
+      {/* Modal de guía rápida */}
       <QuickGuideModal open={showGuide} onClose={() => setShowGuide(false)} />
     </>
   );

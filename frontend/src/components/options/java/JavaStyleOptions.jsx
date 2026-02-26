@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
 
 /**
- * Opciones de Checkstyle (style - Java).
+ * Opciones de Checkstyle (style).
  *
  * Backend espera (opcional):
  * - exclude_checks: []
@@ -20,12 +20,12 @@ export default function JavaStyleOptions({
   resetOptionsSignal,
   setResetSignal,
 }) {
+
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined.
   const normalizedOptions = isPlainObject(options) ? options : {};
 
-  // Convertimos las listas de reglas a CSV para mostrarlas en la UI.
-
+  // Convertimos las listas de reglas a CSV para mostrarlas en la UI y guardamos estado local.
   const [excludeChecksCsv, setExcludeChecksCsv] = useState(listToCsv(normalizedOptions.exclude_checks));
 
   // Obtenemos las opciones predeterminadas
@@ -40,8 +40,8 @@ export default function JavaStyleOptions({
     onChange({ ...normalizedOptions, ...patch });
   }
 
-  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
-  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  // Si el usuario pulsa el botón "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta sennal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
   useEffect(() => {
     if (!resetOptionsSignal) return;
 

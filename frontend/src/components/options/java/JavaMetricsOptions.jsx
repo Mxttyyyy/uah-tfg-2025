@@ -22,6 +22,7 @@ import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
  * - setResetSignal
  */
 export default function JavaMetricsOptions({ options, onChange }) {
+  
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};

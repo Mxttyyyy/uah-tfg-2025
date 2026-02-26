@@ -12,6 +12,7 @@ import { createDefaultJavaOptions } from "../../../utils/defaultOptions";
  * - onChange: (nextValue) => void
  */
 export default function JavaTypesOptions({ options, onChange }) {
+  
   // Normalizamos las opciones para garantizar siempre un objeto válido
   // y evitar valores null/undefined en la UI.
   const normalizedOptions = isPlainObject(options) ? options : {};

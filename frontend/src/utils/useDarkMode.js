@@ -29,8 +29,7 @@ export function useDarkMode() {
   // Alternar tema
   function toggleDark() {
     setIsDark((prev) => {
-      // Tema contrario
-      const next = !prev;
+      const next = !prev; // Tema contrario
       document.documentElement.classList.toggle("dark", next);
       localStorage.setItem("theme", next ? "dark" : "light");
       return next;

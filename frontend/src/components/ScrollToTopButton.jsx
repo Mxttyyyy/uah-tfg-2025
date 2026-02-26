@@ -40,7 +40,8 @@ export default function ScrollToTopButton({
    * Realiza el desplazamiento hacia la parte superior de la página.
    */
   function scrollToTop() {
-    // Si existe un ancla, lo usamos
+
+    // Si existe un elemento ancla, lo usamos
     const anchorElement = document.getElementById(anchorId);
     if (anchorElement) {
       anchorElement.scrollIntoView({ behavior: "smooth", block: "start" });

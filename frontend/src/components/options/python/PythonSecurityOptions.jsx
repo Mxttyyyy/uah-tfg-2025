@@ -40,6 +40,7 @@ export default function PythonSecurityOptions({
       ? normalizedOptions.confidence_level
       : "all";
 
+  // Convertimos las listas de reglas a CSV para mostrarlas en la UI.
   const [skipCsv, setSkipCsv] = useState(listToCsv(normalizedOptions.skip));
   const [testsCsv, setTestsCsv] = useState(listToCsv(normalizedOptions.tests));
 
@@ -56,8 +57,8 @@ export default function PythonSecurityOptions({
     onChange({ ...normalizedOptions, ...patch });
   }
 
-  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
-  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  // Si el usuario pulsa el botón "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta sennal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
   useEffect(() => {
     if (!resetOptionsSignal) return;
     setSkipCsv(defaultSkip);

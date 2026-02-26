@@ -46,8 +46,8 @@ export default function PythonStyleOptions({
     onChange({ ...normalizedOptions, ...patch });
   }
 
-  // Si el usuario pulsa "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
-  // Importante: usamos esta señal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
+  // Si el usuario pulsa el botón "Restablecer todas las opciones", reiniciamos el input local a su valor por defecto.
+  // Importante: usamos esta sennal (resetOptionsSignal) para no sobrescribir lo que el usuario está escribiendo.
   useEffect(() => {
     if (!resetOptionsSignal) return;
     setSelectCsv(defaultSelect);

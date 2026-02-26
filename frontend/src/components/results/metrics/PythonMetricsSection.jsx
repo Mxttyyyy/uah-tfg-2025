@@ -65,6 +65,7 @@ export default function PythonMetricsSection({ metrics, leftBorderClass }) {
         ) : (
           <div className="space-y-3">
             <div className="grid gap-3 lg:grid-cols-2">
+
               {/* Panel de índice de mantenibilidad global del código */}
               <div 
                 className={`

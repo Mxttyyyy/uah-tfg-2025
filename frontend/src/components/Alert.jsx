@@ -10,7 +10,6 @@ import ErrorIcon from "./icons/ErrorIcon";
  * - variant: "error" | "warning" | "info" | "success"
  * - title: string (opcional)
  * - children: contenido (mensaje)
- * - onClose: function (opcional) -> si se pasa, muestra botón de cerrar
  */
 export default function Alert({ variant = "info", title, children }) {
 

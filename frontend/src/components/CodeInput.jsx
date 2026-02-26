@@ -10,7 +10,7 @@ import CodeActions from "./CodeActions";
  * - isLoading: boolean (indica si el análisis está en curso)
  * - onAnalyze: () => void (lanza el análisis del código)
  * - onClear: () => void (limpia el contenido del editor)
- * - onExample: () => void (carga un ejemplo de código) ---- ¿? ----
+ * - onExample: () => void (carga un ejemplo de código)
  * - textareaRef: (referencia al textarea)
  */
 export default function CodeInput({
@@ -26,6 +26,7 @@ export default function CodeInput({
   onLanguageChange,
   textareaRef,
 }) {
+
   // Número de líneas del código
   const lines = countLines(value);
 
@@ -103,7 +104,7 @@ export default function CodeInput({
 // Contar el número de líneas del texto introducido
 function countLines(text) {
   if (!text) return 0;
-  // Si el usuario acaba con salto de línea, no contamos una línea vacía extra.
+  // Si el usuario termina el texto con salto de línea, no contamos una línea vacía extra.
   const trimmed = text.endsWith("\n") ? text.slice(0, -1) : text;
   return trimmed.split("\n").length;
 }

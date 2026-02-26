@@ -50,6 +50,7 @@ export default function AnalyzePage() {
   async function handleAnalyze() {
     setIsLoading(true);
     setResult(null);
+
     // analyzeCode ya valida código vacío y devuelve un error normalizado
     const data = await analyzeCode({
       language,
@@ -112,9 +113,8 @@ export default function AnalyzePage() {
   }
 
   /**
-   *
    * Gestiona la selección de un issue y posiciona el cursor en la línea afectada del código
-   * */
+   */
   function handleIssueSelect(issue) {
     const line = Number(issue?.line);
     if (!Number.isFinite(line) || line <= 0) return;
@@ -159,6 +159,7 @@ export default function AnalyzePage() {
 
     <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8 2xl:max-w-[1660px] 2xl:px-10">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_clamp(420px,35vw,650px)]">
+
         {/* Panel izquierdo de código */}
         <div ref={codeSectionRef} className="min-w-0 scroll-mt-24">
           <CodeInput

@@ -73,7 +73,12 @@ export default function IssueList({
 
         {/* Lista de issues */}
         {issueCount === 0 ? (
-          <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200">
+          <div 
+            className={`
+              rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
+              dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200
+            `}
+          >
             {emptyText}
           </div>
         ) : (
@@ -95,13 +100,14 @@ export default function IssueList({
  * mensaje, localización y sugerencias asociadas.
  */
 function IssueCard({ issue: raw_issue, onSelect }) {
+
   // Obtenemos todos los campos del issue y los normalizamos para evitar errores
   const issue = isPlainObject(raw_issue) ? raw_issue : {};
   const severity = normalizeSeverity(issue.severity);
 
   const message = String(issue.message || "Issue");
   
-  // Si el mensaje es muy largo, lo truncamos y lo colapsamos para que el usuario lo pueda abrir
+  // Si el mensaje es muy largo, lo truncamos y lo colapsamos en un details para que el usuario lo pueda abrir
   const MAX_MSG = 160;
   const isLongMsg= message.length > MAX_MSG;
   const shortMsg = isLongMsg ? `${message.slice(0, MAX_MSG)}...` : message;
@@ -129,6 +135,7 @@ function IssueCard({ issue: raw_issue, onSelect }) {
     <div className="rounded-md border border-gray-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
+
           {/* Labels informativos */}
           <div className="flex flex-wrap items-center gap-2">
             <SeverityLabel severity={severity} />
@@ -140,7 +147,12 @@ function IssueCard({ issue: raw_issue, onSelect }) {
             {tool === "bandit" && confidenceLevelBandit ? (
               <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-neutral-300">
                 {confidenceLevelBandit ? (
-                  <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium dark:border-neutral-700 dark:bg-neutral-950/40">
+                  <span 
+                    className={`
+                      rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5
+                      font-medium dark:border-neutral-700 dark:bg-neutral-950/40
+                    `}
+                  >
                     Confianza: {confidenceLevelBandit}
                   </span>
                 ) : null}
@@ -151,7 +163,12 @@ function IssueCard({ issue: raw_issue, onSelect }) {
             {tool === "vulture" && confidenceLevelVulture > 60 ? (
               <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-neutral-300">
                 {confidenceLevelVulture ? (
-                  <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium dark:border-neutral-700 dark:bg-neutral-950/40">
+                  <span 
+                    className={`
+                      rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5
+                      font-medium dark:border-neutral-700 dark:bg-neutral-950/40
+                    `}
+                  >
                     Confianza: {confidenceLevelVulture}
                   </span>
                 ) : null}
@@ -162,7 +179,12 @@ function IssueCard({ issue: raw_issue, onSelect }) {
             {tool === "pmd" && priority ? (
               <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-neutral-300">
                 {priority ? (
-                  <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium dark:border-neutral-700 dark:bg-neutral-950/40">
+                  <span 
+                    className={`
+                      rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5
+                      font-medium dark:border-neutral-700 dark:bg-neutral-950/40
+                    `}
+                  >
                     Priority {priority}
                   </span>
                 ) : null}
@@ -182,7 +204,12 @@ function IssueCard({ issue: raw_issue, onSelect }) {
                 <summary className="cursor-pointer text-xs font-semibold text-blue-700 hover:underline dark:text-sky-400">
                   Ver mensaje completo
                 </summary>
-                <pre className="mt-2 max-h-65 overflow-y-auto scrollbar-modern whitespace-pre-wrap break-words text-xs text-gray-700 dark:text-neutral-200">
+                <pre 
+                  className={`
+                    mt-2 max-h-65 overflow-y-auto scrollbar-modern whitespace-pre-wrap
+                    break-words text-xs text-gray-700 dark:text-neutral-200
+                  `}
+                >
                   {message}
                 </pre>
               </details>
@@ -195,7 +222,10 @@ function IssueCard({ issue: raw_issue, onSelect }) {
               Ubicación: {/* Link a la ubicación del issue en el código */}
               <span
                 onClick={() => onSelect(issue)}
-                className="font-medium cursor-pointer text-blue-700 hover:text-blue-800 hover:underline dark:text-sky-400 dark:hover:text-sky-300"
+                className={`
+                  font-medium cursor-pointer text-blue-700 hover:text-blue-800
+                  hover:underline dark:text-sky-400 dark:hover:text-sky-300
+                `}
               >
                 {location}
               </span>
@@ -206,7 +236,12 @@ function IssueCard({ issue: raw_issue, onSelect }) {
 
       {/* Sugerencia */}
       {suggestion ? (
-        <div className="mt-3 rounded-md border border-blue-100 bg-blue-50/50 px-3 py-2 dark:border-sky-900/50 dark:bg-sky-950/20">
+        <div 
+          className={`
+            mt-3 rounded-md border border-blue-100 bg-blue-50/50
+            px-3 py-2 dark:border-sky-900/50 dark:bg-sky-950/20
+          `}
+        >
           <p className="text-xs font-semibold text-blue-900 dark:text-sky-200">
             Sugerencia
           </p>
@@ -237,7 +272,10 @@ function IssueCard({ issue: raw_issue, onSelect }) {
             href={helpUrl}
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-semibold text-blue-700 hover:text-blue-800 hover:underline dark:text-sky-400 dark:hover:text-sky-300"
+            className={`
+              text-sm font-semibold text-blue-700 hover:text-blue-800
+              hover:underline dark:text-sky-400 dark:hover:text-sky-300
+            `}
           >
             Abrir enlace de ayuda
           </a>
