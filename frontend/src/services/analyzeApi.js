@@ -23,12 +23,12 @@ export async function analyzeCode(payload) {
         return makeClientErrorResponse("El código está vacío. Pega código antes de analizar.");
     }
 
-    const timeout_language = payload?.language === "python" ? 10 : 20;
+    const timeout_language = payload?.language === "python" ? 10 : 25;
     // Timeout del cliente: debe ser un poco mayor que el timeout del backend
     const backendTimeoutSeconds = typeof payload?.options?.timeout_seconds === "number" ? payload.options.timeout_seconds : timeout_language;
 
-    // Convertimos a ms y agregamos margen de 20 seg
-    const timeoutMs = (backendTimeoutSeconds + 20) * 1000;
+    // Convertimos a ms y agregamos margen de 30 seg
+    const timeoutMs = (backendTimeoutSeconds + 30) * 1000;
 
     try {
         const data = await postJson("/api/analyze", payload, { timeoutMs });
