@@ -76,7 +76,7 @@ export default function Header() {
 
                   <li>
                     <a
-                      href="https://github.com/Mxttyyyy/uah-tfg-2025/tree/development"
+                      href="https://github.com/Mxttyyyy/uah-tfg-2025/tree/main"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`
